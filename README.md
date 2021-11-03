@@ -9,13 +9,12 @@ Based on [rate-limiter](https://github.com/poshjosh/rate-limiter)
 __1. Annotate your spring application class as shown:__
 
 ```java
-import com.looseboxes.ratelimiter.spring.util.RateLimitPropertiesSpring;
 
 @SpringBootApplication(scanBasePackageClasses = {
-        com.looseboxes.ratelimiter.spring.web.RateLimiterConfiguration
+        com.looseboxes.ratelimiter.spring.web.RateLimiterWebMvcConfiguration.class
 })
 @EnableConfigurationProperties({
-        com.looseboxes.ratelimiter.spring.util.RateLimitPropertiesSpring.class
+        com.looseboxes.ratelimiter.spring.util.RateLimitProperties.class
 })
 @ServletComponentScan // Required for scanning of components like @WebListener
 public class MySpringApplication {
@@ -66,6 +65,8 @@ public class MyResource {
 
 You could use a `RateLimiter` directly.
 
+The library provides a `RateLimiter<HttpServletRequest>` based on the limits specified in the properties file, for example: 
+
 __1. Add some properties__
 
 ```yaml
@@ -89,6 +90,7 @@ import com.looseboxes.ratelimiter.RateLimitExceededException;
 import com.looseboxes.ratelimiter.RateLimiter;
 import com.looseboxes.ratelimiter.RateLimiterImpl;
 import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
+import com.looseboxes.ratelimiter.spring.util.RateLimitProperties;
 import com.looseboxes.ratelimiter.spring.util.RateLimitPropertiesSpring;
 import org.springframework.stereotype.Component;
 
@@ -97,14 +99,14 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class DirectUsage {
 
-    private final RateLimiter rateLimiter;
+    private final RateLimiter<HttpServletRequest> rateLimiter;
 
-    public DirectUsage(RateLimitPropertiesSpring properties) {
-        rateLimiter = new RateLimiterImpl(() -> new LimitWithinDuration(), properties.toRates().values());
+    public DirectUsage(RateLimiter rateLimiter) {
+        this.rateLimiter = rateLimiter;
     }
 
     public void rateLimit(HttpServletRequest request) throws RateLimitExceededException {
-        rateLimiter.record(request.getRequestURI());
+        rateLimiter.record(request);
     }
 }
 ```

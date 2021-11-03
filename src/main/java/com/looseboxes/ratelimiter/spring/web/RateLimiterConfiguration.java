@@ -1,88 +1,59 @@
 package com.looseboxes.ratelimiter.spring.web;
 
+import com.looseboxes.ratelimiter.RateExceededExceptionThrower;
+import com.looseboxes.ratelimiter.RateExceededHandler;
 import com.looseboxes.ratelimiter.RateLimiter;
 import com.looseboxes.ratelimiter.RateSupplier;
-import com.looseboxes.ratelimiter.annotation.AnnotatedElementIdProvider;
-import com.looseboxes.ratelimiter.annotation.RateFactoryForClassLevelAnnotation;
-import com.looseboxes.ratelimiter.annotation.RateFactoryForMethodLevelAnnotation;
+import com.looseboxes.ratelimiter.cache.RateCache;
+import com.looseboxes.ratelimiter.cache.RateCacheInMemory;
 import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
-import com.looseboxes.ratelimiter.spring.util.ClassFilterForAnnotation;
-import com.looseboxes.ratelimiter.spring.util.ClassesInPackageFinderSpring;
-import com.looseboxes.ratelimiter.util.ClassFilter;
-import com.looseboxes.ratelimiter.util.ClassesInPackageFinder;
-import com.looseboxes.ratelimiter.util.RateFactory;
-import org.springframework.beans.factory.annotation.Value;
+import com.looseboxes.ratelimiter.rates.Rate;
+import com.looseboxes.ratelimiter.spring.repository.RateRepository;
+import com.looseboxes.ratelimiter.spring.repository.RateRepositoryForCachedLimitWithinDuration;
+import com.looseboxes.ratelimiter.spring.util.ConditionalOnRateLimiterEnabled;
+import com.looseboxes.ratelimiter.spring.util.RateLimitProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
-public class RateLimiterConfiguration extends WebMvcConfigurationSupport {
+@ConditionalOnRateLimiterEnabled
+public class RateLimiterConfiguration {
 
-    private final String controllerPackageName;
-
-    public RateLimiterConfiguration(@Value("${rate-limiter.controller-package:''}") String controllerPackageName) {
-        this.controllerPackageName = controllerPackageName;
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-
-        if(StringUtils.hasText(controllerPackageName)) {
-
-            final RateSupplier rateSupplier = () -> new LimitWithinDuration();
-
-            RateLimitingInterceptorForRequest rateLimitingInterceptor = new RateLimitingInterceptorForRequest(
-                    rateLimiterForClassLevelAnnotation(rateSupplier), rateLimiterForMethodLevelAnnotation(rateSupplier)
-            );
-
-            registry.addInterceptor(rateLimitingInterceptor);
+    public static final class RateSupplierImpl implements RateSupplier {
+        @Override
+        public Rate getInitialRate() {
+            return new LimitWithinDuration();
         }
     }
 
-    public RateLimiter<HttpServletRequest> rateLimiterForClassLevelAnnotation(RateSupplier rateSupplier) {
-        return new RateLimiterForClassLevelAnnotation(rateSupplier, rateFactoryForClassLevelAnnotation().getRates());
+    @Bean
+    public RateLimiter<HttpServletRequest> rateLimiter(RateLimitProperties properties,
+                                                       RateCache rateCache,
+                                                       RateSupplier rateSupplier,
+                                                       RateExceededHandler rateExceededHandler) {
+        return new RateLimiterHttpServletRequest(properties, rateCache, rateSupplier, rateExceededHandler);
     }
 
-    public RateLimiter<HttpServletRequest> rateLimiterForMethodLevelAnnotation(RateSupplier rateSupplier) {
-        return new RateLimiterForMethodLevelAnnotation(rateSupplier, rateFactoryForMethodLevelAnnotation().getRates());
+    @Bean
+    public RateSupplier newRateSupplier() {
+        return  new RateSupplierImpl();
     }
 
-    public RateFactory<AnnotatedRequestMapping> rateFactoryForClassLevelAnnotation() {
-        return new RateFactoryForClassLevelAnnotation(getClasses(), annotatedElementIdProviderForClass());
+    @Bean
+    public RateCache rateCache() {
+        return new RateCacheInMemory(new ConcurrentHashMap());
     }
 
-    public RateFactory<AnnotatedRequestMapping> rateFactoryForMethodLevelAnnotation() {
-        return new RateFactoryForMethodLevelAnnotation(getClasses(), annotatedElementIdProviderForMethod());
+    @Bean
+    public RateRepository rateRepository(RateCache rateCache) {
+        return new RateRepositoryForCachedLimitWithinDuration(rateCache);
     }
 
-    private List<Class<?>> getClasses() {
-        if(!StringUtils.hasText(controllerPackageName)) {
-            return Collections.emptyList();
-        }
-        return classesInPackageFinder().findClasses(controllerPackageName, classFilter());
-    }
-
-    public ClassesInPackageFinder classesInPackageFinder() {
-        return new ClassesInPackageFinderSpring();
-    }
-
-    public ClassFilter classFilter() {
-        return new ClassFilterForAnnotation(RestController.class);
-    }
-
-    public AnnotatedElementIdProvider<Method, AnnotatedRequestMapping> annotatedElementIdProviderForMethod() {
-        return new AnnotatedElementIdProviderForMethodMappings(annotatedElementIdProviderForClass());
-    }
-
-    public AnnotatedElementIdProvider<Class<?>, AnnotatedRequestMapping> annotatedElementIdProviderForClass() {
-        return new AnnotatedElementIdProviderForRequestMapping();
+    @Bean
+    public RateExceededHandler rateExceededHandler() {
+        return new RateExceededExceptionThrower();
     }
 }
