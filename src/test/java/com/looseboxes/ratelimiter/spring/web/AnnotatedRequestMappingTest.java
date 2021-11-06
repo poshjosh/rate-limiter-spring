@@ -9,8 +9,8 @@ class AnnotatedRequestMappingTest {
     @Test
     void shouldCombine() {
         AnnotatedRequestMapping annotatedRequestMapping = requestPaths("/numbers");
-        AnnotatedRequestMapping result = annotatedRequestMapping.combine("/1", "/2");
-        AnnotatedRequestMapping expected = requestPaths("/numbers/1", "/numbers/2");
+        AnnotatedRequestMapping result = annotatedRequestMapping.combine("/1/**", "/2/*");
+        AnnotatedRequestMapping expected = requestPaths("/numbers/1/**", "/numbers/2/*");
         assertThat(result).isEqualTo(expected);
     }
 
@@ -31,6 +31,7 @@ class AnnotatedRequestMappingTest {
     @Test
     void shouldMatchStartOf() {
         AnnotatedRequestMapping annotatedRequestMapping = requestPaths("/numbers");
+        assertThat(annotatedRequestMapping.matchesStartOf("/numbers")).isTrue();
         assertThat(annotatedRequestMapping.matchesStartOf("/numbers/1")).isTrue();
         assertThat(annotatedRequestMapping.matchesStartOf("/letters/a")).isFalse();
     }

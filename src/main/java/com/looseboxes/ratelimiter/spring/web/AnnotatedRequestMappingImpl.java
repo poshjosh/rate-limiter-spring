@@ -1,5 +1,7 @@
 package com.looseboxes.ratelimiter.spring.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.server.PathContainer;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.pattern.PathPattern;
@@ -8,6 +10,8 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 
 public class AnnotatedRequestMappingImpl implements AnnotatedRequestMapping {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AnnotatedRequestMappingImpl.class);
 
     private final PathPattern [] pathPatterns;
 
@@ -19,6 +23,7 @@ public class AnnotatedRequestMappingImpl implements AnnotatedRequestMapping {
         for(int i = 0; i<pathPatterns.length; i++) {
             this.pathPatterns[i] = pathPatternParser.parse(pathPatterns[i]);
         }
+        LOG.trace("Path patterns: {}", Arrays.toString(pathPatterns));
     }
 
     public AnnotatedRequestMappingImpl(PathPattern... pathPatterns) {
@@ -51,9 +56,11 @@ public class AnnotatedRequestMappingImpl implements AnnotatedRequestMapping {
         final PathContainer pathContainer = pathContainer(uri);
         for(PathPattern pathPattern : pathPatterns) {
             if(pathPattern.matches(pathContainer)) {
+                LOG.trace("Matches: true, uri: {}, pathPattern: {}", uri, pathPattern);
                 return true;
             }
         }
+        LOG.trace("Matches: false, uri: {}", uri);
         return false;
     }
 
@@ -62,9 +69,11 @@ public class AnnotatedRequestMappingImpl implements AnnotatedRequestMapping {
         final PathContainer pathContainer = pathContainer(uri);
         for(PathPattern pathPattern : pathPatterns) {
             if(pathPattern.matchStartOfPath(pathContainer) != null) {
+                LOG.trace("Matches start: true, uri: {}, pathPattern: {}", uri, pathPattern);
                 return true;
             }
         }
+        LOG.trace("Matches start: false, uri: {}", uri);
         return false;
     }
 

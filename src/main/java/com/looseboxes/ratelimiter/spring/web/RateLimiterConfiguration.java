@@ -31,10 +31,11 @@ public class RateLimiterConfiguration {
 
     @Bean
     public RateLimiter<HttpServletRequest> rateLimiter(RateLimitProperties properties,
+                                                       RequestToIdConverterRegistry requestToIdConverterRegistry,
                                                        RateCache rateCache,
                                                        RateSupplier rateSupplier,
                                                        RateExceededHandler rateExceededHandler) {
-        return new RateLimiterHttpServletRequest(properties, rateCache, rateSupplier, rateExceededHandler);
+        return new RateLimiterHttpServletRequest(properties, requestToIdConverterRegistry, rateCache, rateSupplier, rateExceededHandler);
     }
 
     @Bean

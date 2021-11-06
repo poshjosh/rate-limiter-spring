@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rate-limiter-spring</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <description>Light weight rate limiting library for spring rest controllers, based on https://github.com/poshjosh/rate-limiter</description>
 
     <properties>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.looseboxes</groupId>
             <artifactId>rate-limiter</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

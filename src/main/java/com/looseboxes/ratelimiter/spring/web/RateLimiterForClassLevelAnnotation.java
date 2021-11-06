@@ -1,9 +1,6 @@
 package com.looseboxes.ratelimiter.spring.web;
 
-import com.looseboxes.ratelimiter.RateExceededExceptionThrower;
-import com.looseboxes.ratelimiter.RateLimitExceededException;
-import com.looseboxes.ratelimiter.RateLimiter;
-import com.looseboxes.ratelimiter.RateSupplier;
+import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.rates.Rate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,22 +17,22 @@ public class RateLimiterForClassLevelAnnotation implements RateLimiter<HttpServl
 
     private final ConcurrentMap<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> rateLimiters;
 
-    public RateLimiterForClassLevelAnnotation(Rate first, Map<AnnotatedRequestMapping, Rate> limits) {
-        this(() -> first, limits);
-    }
-
-    public RateLimiterForClassLevelAnnotation(RateSupplier rateSupplier, Map<AnnotatedRequestMapping, Rate> limits) {
-        this(Util.createRateLimiters(limits, rateSupplier, new RateExceededExceptionThrower<>()));
+    public RateLimiterForClassLevelAnnotation(
+            RateSupplier rateSupplier,
+            Map<AnnotatedRequestMapping, Rate[]> limits,
+            RateExceededHandler rateExceededHandler) {
+        this(Util.createRateLimiters(rateSupplier, limits, rateExceededHandler));
     }
 
     public RateLimiterForClassLevelAnnotation(Map<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> rateLimiters) {
         this.rateLimiters = new ConcurrentHashMap<>(rateLimiters);
+        LOG.debug("Rate limiters: {}", rateLimiters);
     }
 
     @Override
     public Rate record(HttpServletRequest request) throws RateLimitExceededException {
         final String requestURI = request.getRequestURI();
-        LOG.trace("Rate limiting: {}", requestURI);
+        LOG.trace("Invoking {} rate limiters for {}", rateLimiters.size(), requestURI);
         Set<Map.Entry<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>>> entrySet = rateLimiters.entrySet();
         for(Map.Entry<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> entry : entrySet) {
             AnnotatedRequestMapping annotatedRequestMapping = entry.getKey();

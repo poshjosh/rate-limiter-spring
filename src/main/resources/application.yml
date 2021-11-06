@@ -1,0 +1,8 @@
+debug: false
+
+logging:
+  level:
+    ROOT: INFO
+    com.looseboxes.ratelimiter: INFO
+    com.sun: INFO
+    com.sun.jmx: INFO

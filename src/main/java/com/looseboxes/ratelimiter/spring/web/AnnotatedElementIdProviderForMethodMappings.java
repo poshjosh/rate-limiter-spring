@@ -2,7 +2,6 @@ package com.looseboxes.ratelimiter.spring.web;
 
 import com.looseboxes.ratelimiter.annotation.AnnotatedElementIdProvider;
 import org.springframework.web.bind.annotation.*;
-
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -20,27 +19,51 @@ public class AnnotatedElementIdProviderForMethodMappings implements AnnotatedEle
         final AnnotatedRequestMapping annotatedRequestMapping = annotatedElementIdProvider.getId(method.getDeclaringClass());
 
         if (method.getAnnotation(GetMapping.class) != null) {
-            return buildPathPatterns(annotatedRequestMapping, method.getAnnotation(GetMapping.class).path());
+            AnnotatedRequestMapping mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(GetMapping.class).value());
+            if(mapping == AnnotatedRequestMapping.NONE) {
+                mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(GetMapping.class).path());
+            }
+            return mapping;
         }
 
         if (method.getAnnotation(PostMapping.class) != null) {
-            return buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PostMapping.class).path());
+            AnnotatedRequestMapping mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PostMapping.class).value());
+            if(mapping == AnnotatedRequestMapping.NONE) {
+                mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PostMapping.class).path());
+            }
+            return mapping;
         }
 
         if (method.getAnnotation(PutMapping.class) != null) {
-            return buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PutMapping.class).path());
+            AnnotatedRequestMapping mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PutMapping.class).value());
+            if(mapping == AnnotatedRequestMapping.NONE) {
+                mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PutMapping.class).path());
+            }
+            return mapping;
         }
 
         if (method.getAnnotation(DeleteMapping.class) != null) {
-            return buildPathPatterns(annotatedRequestMapping, method.getAnnotation(DeleteMapping.class).path());
+            AnnotatedRequestMapping mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(DeleteMapping.class).value());
+            if(mapping == AnnotatedRequestMapping.NONE) {
+                mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(DeleteMapping.class).path());
+            }
+            return mapping;
         }
 
         if (method.getAnnotation(PatchMapping.class) != null) {
-            return buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PatchMapping.class).path());
+            AnnotatedRequestMapping mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PatchMapping.class).value());
+            if(mapping == AnnotatedRequestMapping.NONE) {
+                mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(PatchMapping.class).path());
+            }
+            return mapping;
         }
 
         if (method.getAnnotation(RequestMapping.class) != null) {
-            return buildPathPatterns(annotatedRequestMapping, method.getAnnotation(RequestMapping.class).path());
+            AnnotatedRequestMapping mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(RequestMapping.class).value());
+            if(mapping == AnnotatedRequestMapping.NONE) {
+                mapping = buildPathPatterns(annotatedRequestMapping, method.getAnnotation(RequestMapping.class).path());
+            }
+            return mapping;
         }
 
         return annotatedRequestMapping;

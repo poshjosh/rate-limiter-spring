@@ -11,7 +11,7 @@ __1. Annotate your spring application class as shown:__
 ```java
 
 @SpringBootApplication(scanBasePackageClasses = {
-        com.looseboxes.ratelimiter.spring.web.RateLimiterWebMvcConfiguration.class
+        com.looseboxes.ratelimiter.spring.web.RateLimiterWebMvcConfigurer.class
 })
 @EnableConfigurationProperties({
         com.looseboxes.ratelimiter.spring.util.RateLimitProperties.class
@@ -74,10 +74,14 @@ rate-limiter:
   disabled: false
   rate-limits:
     per-second:
+      # (Optional) A java.util.function.Function<HttpServletRequest, Object> 
+      request-to-id-converter-function: 
       count: 90
       duration: 1
       time-unit: SECONDS
     per-minute:
+      # (Optional) A java.util.function.Function<HttpServletRequest, Object> 
+      request-to-id-converter-function:
       count: 300
       duration: 1
       time-unit: MINUTES
