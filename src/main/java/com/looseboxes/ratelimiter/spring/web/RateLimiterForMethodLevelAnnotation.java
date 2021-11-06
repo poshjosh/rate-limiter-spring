@@ -1,11 +1,13 @@
 package com.looseboxes.ratelimiter.spring.web;
 
 import com.looseboxes.ratelimiter.*;
+import com.looseboxes.ratelimiter.annotation.RateComposition;
 import com.looseboxes.ratelimiter.rates.Rate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,9 +21,9 @@ public class RateLimiterForMethodLevelAnnotation implements RateLimiter<HttpServ
 
     public RateLimiterForMethodLevelAnnotation(
             RateSupplier rateSupplier,
-            Map<AnnotatedRequestMapping, Rate[]> limits,
-            RateExceededHandler rateExceededHandler) {
-        this(Util.createRateLimiters(rateSupplier, limits, rateExceededHandler));
+            RateExceededHandler rateExceededHandler,
+            List<RateComposition<AnnotatedRequestMapping>> limits) {
+        this(Util.createRateLimiters(rateSupplier, rateExceededHandler, limits));
     }
 
     public RateLimiterForMethodLevelAnnotation(Map<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> rateLimiters) {

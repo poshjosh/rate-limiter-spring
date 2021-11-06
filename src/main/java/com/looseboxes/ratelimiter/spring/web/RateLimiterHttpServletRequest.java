@@ -39,7 +39,7 @@ public class RateLimiterHttpServletRequest implements RateLimiter<HttpServletReq
             limitMap.forEach((name, limits) -> {
                 RequestToIdConverter requestToIdConverter = requestToIdConverterRegistry.getConverter(name);
                 Rates.Logic logic = properties.getLogic(name);
-                RateLimiter rateLimiter = new RateLimiterImpl(rateCache, rateSupplier, logic, limits, rateExceededHandler);
+                RateLimiter rateLimiter = new RateLimiterImpl(rateCache, rateSupplier, logic, rateExceededHandler, limits.toArray(new Rate[0]));
                 LOG.debug("Request to id converter: {}, RateLimiter: {}", requestToIdConverter, rateLimiter);
                 this.rateLimiterMap.put(name, rateLimiter);
             });

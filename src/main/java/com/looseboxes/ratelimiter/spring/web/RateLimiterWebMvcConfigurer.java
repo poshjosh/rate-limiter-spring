@@ -71,12 +71,12 @@ public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
 
     public RateLimiter<HttpServletRequest> rateLimiterForClassLevelAnnotation() {
         return new RateLimiterForClassLevelAnnotation(
-                rateSupplier, rateFactoryForClassLevelAnnotation().getRates(), rateExceededHandler);
+                rateSupplier, rateExceededHandler, rateFactoryForClassLevelAnnotation().getRates());
     }
 
     public RateLimiter<HttpServletRequest> rateLimiterForMethodLevelAnnotation() {
         return new RateLimiterForMethodLevelAnnotation(
-                rateSupplier, rateFactoryForMethodLevelAnnotation().getRates(), rateExceededHandler);
+                rateSupplier, rateExceededHandler, rateFactoryForMethodLevelAnnotation().getRates());
     }
 
     public RateFactory<AnnotatedRequestMapping> rateFactoryForClassLevelAnnotation() {
