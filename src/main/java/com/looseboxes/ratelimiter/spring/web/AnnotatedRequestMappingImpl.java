@@ -53,6 +53,9 @@ public class AnnotatedRequestMappingImpl implements AnnotatedRequestMapping {
 
     @Override
     public boolean matches(String uri) {
+        if(LOG.isTraceEnabled()) {
+            LOG.trace("Checking if: {} matches: {}", uri, Arrays.toString(pathPatterns));
+        }
         final PathContainer pathContainer = pathContainer(uri);
         for(PathPattern pathPattern : pathPatterns) {
             if(pathPattern.matches(pathContainer)) {
@@ -66,6 +69,9 @@ public class AnnotatedRequestMappingImpl implements AnnotatedRequestMapping {
 
     @Override
     public boolean matchesStartOf(String uri) {
+        if(LOG.isTraceEnabled()) {
+            LOG.trace("Checking if: {}, matches start of any: {}", uri, Arrays.toString(pathPatterns));
+        }
         final PathContainer pathContainer = pathContainer(uri);
         for(PathPattern pathPattern : pathPatterns) {
             if(pathPattern.matchStartOfPath(pathContainer) != null) {

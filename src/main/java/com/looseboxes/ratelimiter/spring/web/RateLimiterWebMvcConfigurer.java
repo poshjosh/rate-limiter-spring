@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -41,32 +42,25 @@ public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
     private final RateExceededHandler rateExceededHandler;
 
     public RateLimiterWebMvcConfigurer(
-            @Autowired(required = false) RateLimitProperties properties,
-            @Autowired(required = false) RateSupplier rateSupplier,
-            @Autowired(required = false) RateExceededHandler rateExceededHandler,
-            @Autowired(required = false) RateLimiterConfigurer rateLimiterConfigurer,
-            @Autowired(required = false) RequestToIdConverterRegistry requestToIdConverterRegistry) {
+            RateLimitProperties properties,
+            RateSupplier rateSupplier,
+            RateExceededHandler rateExceededHandler) {
         this.controllerPackages = properties.getControllerPackages();
         this.rateSupplier = rateSupplier;
         this.rateExceededHandler = rateExceededHandler;
-        if(rateLimiterConfigurer != null && requestToIdConverterRegistry != null) {
-            log.debug("Adding Converters to registry");
-            rateLimiterConfigurer.addConverters(requestToIdConverterRegistry);
-        }
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
 
-        if(controllerPackages == null || controllerPackages.isEmpty()) {
-            return;
+        if (controllerPackages != null && !controllerPackages.isEmpty()) {
+
+            RateLimitingInterceptorForRequest rateLimitingInterceptor = new RateLimitingInterceptorForRequest(
+                    rateLimiterForClassLevelAnnotation(), rateLimiterForMethodLevelAnnotation()
+            );
+
+            registry.addInterceptor(rateLimitingInterceptor);
         }
-
-        RateLimitingInterceptorForRequest rateLimitingInterceptor = new RateLimitingInterceptorForRequest(
-                rateLimiterForClassLevelAnnotation(), rateLimiterForMethodLevelAnnotation()
-        );
-
-        registry.addInterceptor(rateLimitingInterceptor);
     }
 
     public RateLimiter<HttpServletRequest> rateLimiterForClassLevelAnnotation() {

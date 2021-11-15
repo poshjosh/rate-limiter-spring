@@ -1,6 +1,5 @@
 package com.looseboxes.ratelimiter.spring.util;
 
-import com.looseboxes.ratelimiter.rates.CompositeRate;
 import com.looseboxes.ratelimiter.rates.Rate;
 import com.looseboxes.ratelimiter.rates.Rates;
 

@@ -12,6 +12,7 @@ import com.looseboxes.ratelimiter.spring.repository.RateRepository;
 import com.looseboxes.ratelimiter.spring.repository.RateRepositoryForCachedLimitWithinDuration;
 import com.looseboxes.ratelimiter.spring.util.ConditionalOnRateLimiterEnabled;
 import com.looseboxes.ratelimiter.spring.util.RateLimitProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,6 +31,7 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
+    @ConditionalOnRateLimiterEnabled
     public RateLimiter<HttpServletRequest> rateLimiter(RateLimitProperties properties,
                                                        RequestToIdConverterRegistry requestToIdConverterRegistry,
                                                        RateCache rateCache,
@@ -39,22 +41,32 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
+    @ConditionalOnRateLimiterEnabled
     public RateSupplier newRateSupplier() {
         return  new RateSupplierImpl();
     }
 
     @Bean
+    @ConditionalOnRateLimiterEnabled
     public RateCache rateCache() {
         return new RateCacheInMemory(new ConcurrentHashMap());
     }
 
     @Bean
+    @ConditionalOnRateLimiterEnabled
     public RateRepository rateRepository(RateCache rateCache) {
         return new RateRepositoryForCachedLimitWithinDuration(rateCache);
     }
 
     @Bean
+    @ConditionalOnRateLimiterEnabled
     public RateExceededHandler rateExceededHandler() {
         return new RateExceededExceptionThrower();
+    }
+
+    @Bean
+    @ConditionalOnRateLimiterEnabled
+    public RequestToIdConverterRegistry requestToIdConverterRegistry(@Autowired(required = false) RateLimiterConfigurer rateLimiterConfigurer) {
+        return new RequestToIdConverterRegistry(rateLimiterConfigurer);
     }
 }

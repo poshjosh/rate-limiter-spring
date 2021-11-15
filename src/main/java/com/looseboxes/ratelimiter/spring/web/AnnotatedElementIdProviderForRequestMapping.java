@@ -16,9 +16,15 @@ public class AnnotatedElementIdProviderForRequestMapping implements AnnotatedEle
             return AnnotatedRequestMapping.NONE;
         }
 
-        final String [] paths = requestAnnotation.value();
+        String [] paths = requestAnnotation.value();
 
         if(paths == null || paths.length == 0) {
+
+            paths = requestAnnotation.path();
+        }
+
+        if(paths == null || paths.length == 0) {
+
             return AnnotatedRequestMapping.NONE;
         }
 

@@ -7,7 +7,7 @@ public interface AnnotatedRequestMapping {
     AnnotatedRequestMapping NONE = new AnnotatedRequestMapping() {
         @Override
         public AnnotatedRequestMapping combine(String... uris) {
-            return this;
+            return new AnnotatedRequestMappingImpl(uris);
         }
 
         @Override

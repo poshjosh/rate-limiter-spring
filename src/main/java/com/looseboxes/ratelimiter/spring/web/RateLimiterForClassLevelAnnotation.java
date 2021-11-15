@@ -10,14 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class RateLimiterForClassLevelAnnotation implements RateLimiter<HttpServletRequest> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RateLimiterForClassLevelAnnotation.class);
 
-    private final ConcurrentMap<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> rateLimiters;
+    private final AnnotatedRequestMapping [] requestMappings;
+    private final RateLimiter<AnnotatedRequestMapping> [] rateLimiters;
 
     public RateLimiterForClassLevelAnnotation(
             RateSupplier rateSupplier,
@@ -27,19 +26,26 @@ public class RateLimiterForClassLevelAnnotation implements RateLimiter<HttpServl
     }
 
     public RateLimiterForClassLevelAnnotation(Map<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> rateLimiters) {
-        this.rateLimiters = new ConcurrentHashMap<>(rateLimiters);
         LOG.debug("Rate limiters: {}", rateLimiters);
+        this.requestMappings = new AnnotatedRequestMapping[rateLimiters.size()];
+        this.rateLimiters = new RateLimiter[rateLimiters.size()];
+        int i = 0;
+        Set<Map.Entry<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>>> entrySet = rateLimiters.entrySet();
+        for(Map.Entry<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> entry : entrySet) {
+            this.requestMappings[i] = entry.getKey();
+            this.rateLimiters[i] = entry.getValue();
+            ++i;
+        }
     }
 
     @Override
     public Rate record(HttpServletRequest request) throws RateLimitExceededException {
         final String requestURI = request.getRequestURI();
-        LOG.trace("Invoking {} rate limiters for {}", rateLimiters.size(), requestURI);
-        Set<Map.Entry<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>>> entrySet = rateLimiters.entrySet();
-        for(Map.Entry<AnnotatedRequestMapping, RateLimiter<AnnotatedRequestMapping>> entry : entrySet) {
-            AnnotatedRequestMapping annotatedRequestMapping = entry.getKey();
+        LOG.trace("Invoking {} rate limiters for {}", rateLimiters.length, requestURI);
+        for(int i=0; i<rateLimiters.length; i++) {
+            AnnotatedRequestMapping annotatedRequestMapping = requestMappings[i];
             if(annotatedRequestMapping.matchesStartOf(request)) {
-                final RateLimiter<AnnotatedRequestMapping> rateLimiter = entry.getValue();
+                final RateLimiter<AnnotatedRequestMapping> rateLimiter = rateLimiters[i];
                 final Rate result = rateLimiter.record(annotatedRequestMapping);
                 LOG.trace("Result: {}, for rate limiting: {}", result, requestURI);
                 return result;

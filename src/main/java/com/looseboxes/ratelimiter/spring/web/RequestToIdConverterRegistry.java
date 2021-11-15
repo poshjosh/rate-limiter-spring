@@ -1,19 +1,17 @@
 package com.looseboxes.ratelimiter.spring.web;
 
-import com.looseboxes.ratelimiter.spring.util.ConditionalOnRateLimiterEnabled;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-@ConditionalOnRateLimiterEnabled
 public class RequestToIdConverterRegistry {
 
     private final Map<String, RequestToIdConverter> converters;
 
-    public RequestToIdConverterRegistry() {
+    public RequestToIdConverterRegistry(RateLimiterConfigurer rateLimiterConfigurer) {
         converters = new HashMap<>();
+        if(rateLimiterConfigurer != null) {
+            rateLimiterConfigurer.addConverters(this);
+        }
     }
 
     public void setConverter(String rateLimiterName, RequestToIdConverter requestToIdConverter) {

@@ -15,9 +15,9 @@ public class RateLimiterHttpServletRequest implements RateLimiter<HttpServletReq
 
     private static final Logger LOG = LoggerFactory.getLogger(RateLimiterHttpServletRequest.class);
 
-    private final Map<String, RateLimiter> rateLimiterMap;
+    private final RequestToIdConverter[] requestToIdConverters;
 
-    private final RequestToIdConverterRegistry requestToIdConverterRegistry;
+    private final RateLimiter[] rateLimiters;
 
     public RateLimiterHttpServletRequest(
             RateLimitProperties properties,
@@ -25,24 +25,36 @@ public class RateLimiterHttpServletRequest implements RateLimiter<HttpServletReq
             RateCache rateCache,
             RateSupplier rateSupplier,
             RateExceededHandler rateExceededHandler) {
-        this.requestToIdConverterRegistry = requestToIdConverterRegistry;
         if(isDisabled(properties)) {
-            rateLimiterMap = Collections.emptyMap();
+            this.requestToIdConverters = new RequestToIdConverter[0];
+            this.rateLimiters = new RateLimiter[0];
         }else {
 
             final Map<String, List<Rate>> limitMap = properties.toRateLists();
 
             final int size = limitMap.size();
 
-            this.rateLimiterMap = new LinkedHashMap<>(size, 1.0f);
+            this.requestToIdConverters = new RequestToIdConverter[size];
+            this.rateLimiters = new RateLimiter[0];
 
-            limitMap.forEach((name, limits) -> {
+            int i = 0;
+            Set<Map.Entry<String, List<Rate>>> entrySet = limitMap.entrySet();
+            for(Map.Entry<String, List<Rate>> entry : entrySet) {
+                String name = entry.getKey();
                 RequestToIdConverter requestToIdConverter = requestToIdConverterRegistry.getConverter(name);
+                if(requestToIdConverter == null) {
+                    throw new IllegalStateException(
+                            String.format("For key: %s, could not find any %s instance in registry %s",
+                                    name, RequestToIdConverter.class.getSimpleName(), RequestToIdConverterRegistry.class)
+                    );
+                }
+                List<Rate> limits = entry.getValue();
                 Rates.Logic logic = properties.getLogic(name);
                 RateLimiter rateLimiter = new RateLimiterImpl(rateCache, rateSupplier, logic, rateExceededHandler, limits.toArray(new Rate[0]));
                 LOG.debug("Request to id converter: {}, RateLimiter: {}", requestToIdConverter, rateLimiter);
-                this.rateLimiterMap.put(name, rateLimiter);
-            });
+
+                ++i;
+            }
         }
     }
 
@@ -55,21 +67,13 @@ public class RateLimiterHttpServletRequest implements RateLimiter<HttpServletReq
         Rate result = null;
         RateLimitExceededException exception = null;
 
-        final Set<Map.Entry<String, RateLimiter>>  entrySet = rateLimiterMap.entrySet();
-
-        for(Map.Entry<String, RateLimiter> entry : entrySet) {
-            RequestToIdConverter requestToIdConverter = requestToIdConverterRegistry.getConverter(entry.getKey());
-            if(requestToIdConverter == null) {
-                throw new IllegalStateException(
-                        String.format("For key: %s, could not find any %s instance in registry %s",
-                                entry.getKey(), RequestToIdConverter.class.getName(), RequestToIdConverterRegistry.class)
-                );
-            }
+        for(int i=0; i<rateLimiters.length; i++) {
+            RequestToIdConverter requestToIdConverter = requestToIdConverters[i];
             Object id = requestToIdConverter.convert(request);
             if(id == null) {
                 continue;
             }
-            RateLimiter rateLimiter = entry.getValue();
+            RateLimiter rateLimiter = rateLimiters[i];
             try {
                 Rate rate = rateLimiter.record(id);
                 if(result == null) {
