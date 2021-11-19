@@ -49,7 +49,7 @@ public class RateLimiterConfiguration {
     @Bean
     @ConditionalOnRateLimiterEnabled
     public RateCache rateCache() {
-        return new RateCacheInMemory(new ConcurrentHashMap());
+        return new RateCacheInMemory();
     }
 
     @Bean
