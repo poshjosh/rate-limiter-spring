@@ -18,13 +18,6 @@ abstract class AbstractPathPatternsTestBase {
     }
 
     @Test
-    void shouldMatchSingleAsterix() {
-         PathPatterns  pathPatterns = pathPatterns("/*");
-        assertThat( pathPatterns.matches("/numbers")).isTrue();
-        assertThat( pathPatterns.matches("/numbers/1")).isFalse();
-    }
-
-    @Test
     void shouldMatchDoubleAsterix() {
          PathPatterns  pathPatterns = pathPatterns("/**");
         assertThat( pathPatterns.matches("/numbers")).isTrue();
