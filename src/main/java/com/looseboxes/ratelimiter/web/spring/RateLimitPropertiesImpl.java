@@ -1,19 +1,25 @@
-package com.looseboxes.ratelimiter.spring.util;
+package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.rates.Rate;
 import com.looseboxes.ratelimiter.rates.Rates;
+import com.looseboxes.ratelimiter.web.core.util.RateLimitConfigList;
+import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.*;
 
 @ConfigurationProperties(prefix = "rate-limiter", ignoreUnknownFields = false)
-public class RateLimitProperties {
+public class RateLimitPropertiesImpl implements RateLimitProperties {
 
-    private List<String> controllerPackages;
+    private List<String> resourcePackages;
 
     private Boolean disabled;
 
     private Map<String, RateLimitConfigList> rateLimitConfigs;
+
+    public String getApplicationPath() {
+        return "";
+    }
 
     public Map<String, Rate> toRates() {
         final Map<String, Rate> rateMap;
@@ -55,12 +61,12 @@ public class RateLimitProperties {
         return rateLimitConfigs.get(name).getLogic();
     }
 
-    public List<String> getControllerPackages() {
-        return controllerPackages;
+    public List<String> getResourcePackages() {
+        return resourcePackages;
     }
 
-    public void setControllerPackages(List<String> controllerPackages) {
-        this.controllerPackages = controllerPackages;
+    public void setResourcePackages(List<String> resourcePackages) {
+        this.resourcePackages = resourcePackages;
     }
 
     public Boolean getDisabled() {
@@ -81,8 +87,8 @@ public class RateLimitProperties {
 
     @Override
     public String toString() {
-        return "RateLimitProperties{" +
-                "controllerPackages=" + controllerPackages +
+        return "RateLimitPropertiesImpl{" +
+                "resourcePackages=" + resourcePackages +
                 ", disabled=" + disabled +
                 ", rateLimitConfigs=" + rateLimitConfigs +
                 '}';

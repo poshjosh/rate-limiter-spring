@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.spring.util;
+package com.looseboxes.ratelimiter.web.spring;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 

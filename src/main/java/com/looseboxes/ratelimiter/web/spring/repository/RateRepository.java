@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.spring.repository;
+package com.looseboxes.ratelimiter.web.spring.repository;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

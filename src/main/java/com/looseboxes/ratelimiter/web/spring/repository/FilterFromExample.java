@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.spring.repository;
+package com.looseboxes.ratelimiter.web.spring.repository;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;

@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.spring.repository;
+package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.rates.LimitWithinDuration;

@@ -10,11 +10,14 @@ __1. Annotate your spring application class as shown:__
 
 ```java
 
+import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
+import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
+
 @SpringBootApplication(scanBasePackageClasses = {
-        com.looseboxes.ratelimiter.spring.web.RateLimiterWebMvcConfigurer.class
+        RateLimiterWebMvcConfigurer.class
 })
 @EnableConfigurationProperties({
-        com.looseboxes.ratelimiter.spring.util.RateLimitProperties.class
+        RateLimitPropertiesImpl.class
 })
 @ServletComponentScan // Required for scanning of components like @WebListener
 public class MySpringApplication {
@@ -92,9 +95,6 @@ __2. Create and use the RateLimiter manually__
 ```java
 import com.looseboxes.ratelimiter.RateLimitExceededException;
 import com.looseboxes.ratelimiter.RateLimiter;
-import com.looseboxes.ratelimiter.RateLimiterImpl;
-import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
-import com.looseboxes.ratelimiter.spring.util.RateLimitProperties;
 import com.looseboxes.ratelimiter.spring.util.RateLimitPropertiesSpring;
 import org.springframework.stereotype.Component;
 

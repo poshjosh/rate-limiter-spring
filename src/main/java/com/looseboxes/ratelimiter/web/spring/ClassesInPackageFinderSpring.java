@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.spring.util;
+package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.util.ClassFilter;
 import com.looseboxes.ratelimiter.util.ClassesInPackageFinder;
