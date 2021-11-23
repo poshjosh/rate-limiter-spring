@@ -10,13 +10,13 @@ import org.springframework.data.domain.*;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class RateRepositoryForCachedLimitWithinDuration<ID> implements RateRepository<ID, LimitWithinDurationDTO> {
+public class LimitWithinDurationRepository<ID> implements RateRepository<ID, LimitWithinDurationDTO> {
 
-    private final Logger log = LoggerFactory.getLogger(RateRepositoryForCachedLimitWithinDuration.class);
+    private final Logger log = LoggerFactory.getLogger(LimitWithinDurationRepository.class);
 
     private final RateCache<ID> rateCache;
 
-    public RateRepositoryForCachedLimitWithinDuration(RateCache<ID> rateCache) {
+    public LimitWithinDurationRepository(RateCache<ID> rateCache) {
         this.rateCache = Objects.requireNonNull(rateCache);
     }
 

@@ -1,8 +1,9 @@
 # rate limiter spring
 
-Light weight rate limiting library for spring rest controllers.
+Light-weight rate limiting library for spring controllers, based on 
+[rate-limiter-web-core](https://github.com/poshjosh/rate-limiter-web-core).
 
-Based on [rate-limiter](https://github.com/poshjosh/rate-limiter)
+Please first read the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core).
 
 ### Usage
 

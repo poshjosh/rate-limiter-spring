@@ -1,37 +1,36 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.RateExceededExceptionThrower;
-import com.looseboxes.ratelimiter.RateExceededHandler;
-import com.looseboxes.ratelimiter.RateLimiter;
-import com.looseboxes.ratelimiter.RateSupplier;
+import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.cache.RateCache;
-import com.looseboxes.ratelimiter.cache.RateCacheInMemory;
-import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
-import com.looseboxes.ratelimiter.rates.Rate;
+import com.looseboxes.ratelimiter.cache.InMemoryRateCache;
+import com.looseboxes.ratelimiter.web.core.*;
+import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
-import com.looseboxes.ratelimiter.web.spring.repository.RateRepositoryForCachedLimitWithinDuration;
-import com.looseboxes.ratelimiter.web.core.RateLimiterConfigurer;
-import com.looseboxes.ratelimiter.web.core.RateLimiterFromProperties;
-import com.looseboxes.ratelimiter.web.core.RequestToIdConverterRegistry;
+import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Configuration
-@ConditionalOnRateLimiterEnabled
 public class RateLimiterConfiguration {
 
-    public static final class RateSupplierImpl implements RateSupplier {
+    public static final class RequestToUriConverter implements RequestToIdConverter<HttpServletRequest>{
         @Override
-        public Rate getInitialRate() {
-            return new LimitWithinDuration();
+        public Object convert(HttpServletRequest request) {
+            return request.getRequestURI();
         }
     }
 
     @Bean
-    @ConditionalOnRateLimiterEnabled
+    public RequestToIdConverter<HttpServletRequest> requestToIdConverter() {
+        return new RequestToUriConverter();
+    }
+
+    @Bean
     public RateLimiter<HttpServletRequest> rateLimiter(RateLimitPropertiesImpl properties,
                                                        RequestToIdConverterRegistry<HttpServletRequest> requestToIdConverterRegistry,
                                                        RateCache<Object> rateCache,
@@ -42,33 +41,36 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    @ConditionalOnRateLimiterEnabled
     public RateSupplier newRateSupplier() {
-        return  new RateSupplierImpl();
+        return  new LimitWithinDurationSupplier();
     }
 
     @Bean
-    @ConditionalOnRateLimiterEnabled
     public RateCache<Object> rateCache() {
-        return new RateCacheInMemory<>();
+        return new InMemoryRateCache<>();
     }
 
     @Bean
-    @ConditionalOnRateLimiterEnabled
     public RateRepository<Object, ?> rateRepository(RateCache<Object> rateCache) {
-        return new RateRepositoryForCachedLimitWithinDuration<>(rateCache);
+        return new LimitWithinDurationRepository<>(rateCache);
     }
 
     @Bean
-    @ConditionalOnRateLimiterEnabled
     public RateExceededHandler rateExceededHandler() {
         return new RateExceededExceptionThrower();
     }
 
     @Bean
-    @ConditionalOnRateLimiterEnabled
     public RequestToIdConverterRegistry<HttpServletRequest> requestToIdConverterRegistry(
+            RequestToIdConverter<HttpServletRequest> defaultRequestToIdConverter,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
-        return new RequestToIdConverterRegistryImpl(rateLimiterConfigurer);
+        return new RequestToIdConverterRegistry<>(defaultRequestToIdConverter, rateLimiterConfigurer);
+    }
+
+    @Bean
+    public ResourceClassesSupplier resourceClassesSupplier(RateLimitProperties properties) {
+        return new ResourceClassesSupplierImpl(
+                new ClassesInPackageFinderSpring(), properties.getResourcePackages(),
+                Controller.class, RestController.class);
     }
 }

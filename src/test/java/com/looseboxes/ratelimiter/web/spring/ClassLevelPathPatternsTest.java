@@ -5,17 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class PathPatternsForClassTest extends AbstractPathPatternsTestBase {
+public class ClassLevelPathPatternsTest extends AbstractPathPatternsTestBase {
 
     @Test
-    void shouldMatchStartOf() {
-        com.looseboxes.ratelimiter.web.core.PathPatterns pathPatterns = pathPatterns("/numbers");
+    public void shouldMatchStartOf() {
+        PathPatterns<String> pathPatterns = pathPatterns("/numbers");
         assertThat( pathPatterns.matches("/numbers")).isTrue();
         assertThat( pathPatterns.matches("/numbers/1")).isTrue();
         assertThat( pathPatterns.matches("/letters/a")).isFalse();
     }
 
-    PathPatterns pathPatterns(String... uris) {
-        return new PathPatternsForClass(uris);
+    PathPatterns<String> pathPatterns(String... uris) {
+        return new ClassLevelPathPatterns(uris);
     }
 }

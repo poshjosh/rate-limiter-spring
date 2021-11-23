@@ -4,9 +4,9 @@ import com.looseboxes.ratelimiter.annotation.AnnotatedElementIdProvider;
 import com.looseboxes.ratelimiter.web.core.PathPatterns;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-public class AnnotatedElementIdProviderForClass implements AnnotatedElementIdProvider<Class<?>, PathPatterns<String>> {
+public class ClassIdProvider implements AnnotatedElementIdProvider<Class<?>, PathPatterns<String>> {
 
-    public AnnotatedElementIdProviderForClass() { }
+    public ClassIdProvider() { }
 
     @Override
     public PathPatterns<String> getId(Class<?> source) {
@@ -29,6 +29,6 @@ public class AnnotatedElementIdProviderForClass implements AnnotatedElementIdPro
             return PathPatterns.none();
         }
 
-        return new PathPatternsForClass(paths);
+        return new ClassLevelPathPatterns(paths);
     }
 }

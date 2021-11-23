@@ -11,13 +11,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rate-limiter-spring</artifactId>
-    <version>0.0.5</version>
+    <version>${rate-limiter.version}</version>
     <description>Light weight rate limiting library for spring base web apps, based on https://github.com/poshjosh/rate-limiter</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.2.5.RELEASE</spring-boot.version>
+        <rate-limiter.version>0.0.6</rate-limiter.version>
         <it.skip>true</it.skip>
         <tests.skip>false</tests.skip>
         <maven.failsafle.plugin.version>2.22.2</maven.failsafle.plugin.version>
@@ -40,7 +41,7 @@
         <dependency>
             <groupId>com.looseboxes</groupId>
             <artifactId>rate-limiter-web-core</artifactId>
-            <version>0.0.5</version>
+            <version>${rate-limiter.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -51,22 +52,22 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

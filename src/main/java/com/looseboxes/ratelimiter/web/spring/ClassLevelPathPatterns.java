@@ -8,40 +8,42 @@ import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class PathPatternsForClass implements PathPatterns<String> {
+public class ClassLevelPathPatterns implements PathPatterns<String> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PathPatternsForClass.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClassLevelPathPatterns.class);
 
     private final PathPattern [] pathPatterns;
+    private final List<String> stringPatterns;
 
     private final PathPatternParser pathPatternParser;
 
-    public PathPatternsForClass(String... pathPatterns) {
+    public ClassLevelPathPatterns(String... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = new PathPattern[pathPatterns.length];
         for(int i = 0; i<pathPatterns.length; i++) {
             this.pathPatterns[i] = pathPatternParser.parse(pathPatterns[i]);
         }
-        LOG.trace("Path patterns: {}", Arrays.toString(pathPatterns));
+        this.stringPatterns = Arrays.asList(pathPatterns);
+        LOG.trace("Path patterns: {}", stringPatterns);
     }
 
-    public PathPatternsForClass(PathPattern... pathPatterns) {
-        this.pathPatterns = Objects.requireNonNull(pathPatterns);
+    private ClassLevelPathPatterns(PathPattern... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
+        this.pathPatterns = Objects.requireNonNull(pathPatterns);
+        this.stringPatterns = Arrays.asList(pathPatterns).stream()
+                .map(pathPattern -> pathPattern.getPatternString())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<String> getPathPatterns() {
-        final List<String> result = new ArrayList<>(pathPatterns.length);
-        for(PathPattern pathPattern : pathPatterns) {
-            result.add(pathPattern.getPatternString());
-        }
-        return result.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(result);
+        return stringPatterns;
     }
 
     public PathPatterns<String> combine(PathPatterns<String> other) {
-        return new PathPatternsForClass(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPathPatterns()));
+        return new ClassLevelPathPatterns(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPathPatterns()));
     }
 
     @Override
@@ -52,11 +54,13 @@ public class PathPatternsForClass implements PathPatterns<String> {
         final PathContainer pathContainer = pathContainer(uri);
         for(PathPattern pathPattern : pathPatterns) {
             if(pathPattern.matchStartOfPath(pathContainer) != null) {
-                LOG.trace("Matches start: true, uri: {}, pathPattern: {}", uri, pathPattern);
+                LOG.trace("Matches start: true, uri: {}, path pattern: {}", uri, pathPattern);
                 return true;
             }
         }
-        LOG.trace("Matches start: false, uri: {}", uri);
+        if(LOG.isInfoEnabled()) {
+            LOG.trace("Matches start: false, uri: {}, path patterns:{} ", uri, Arrays.toString(pathPatterns));
+        }
         return false;
     }
 
@@ -68,7 +72,7 @@ public class PathPatternsForClass implements PathPatterns<String> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PathPatternsForClass that = (PathPatternsForClass) o;
+        ClassLevelPathPatterns that = (ClassLevelPathPatterns) o;
         return Arrays.equals(pathPatterns, that.pathPatterns);
     }
 
@@ -79,7 +83,7 @@ public class PathPatternsForClass implements PathPatterns<String> {
 
     @Override
     public String toString() {
-        return "PathPatternsForClass{" +
+        return "ClassLevelPathPatterns{" +
                 "pathPatterns=" + Arrays.toString(pathPatterns) +
                 '}';
     }
