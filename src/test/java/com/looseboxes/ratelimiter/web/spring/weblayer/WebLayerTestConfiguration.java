@@ -1,8 +1,8 @@
 package com.looseboxes.ratelimiter.web.spring.weblayer;
 
 import com.looseboxes.ratelimiter.rates.Rates;
+import com.looseboxes.ratelimiter.web.core.util.RateConfig;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitConfig;
-import com.looseboxes.ratelimiter.web.core.util.RateLimitConfigList;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,15 +25,15 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
         rateLimitProperties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));
     }
 
-    private RateLimitConfigList getRateLimitConfigList() {
-        RateLimitConfigList rateLimitConfigList = new RateLimitConfigList();
-        rateLimitConfigList.setLimits(getRateLimits());
-        rateLimitConfigList.setLogic(Rates.Logic.OR);
-        return rateLimitConfigList;
+    private RateLimitConfig getRateLimitConfigList() {
+        RateLimitConfig rateLimitConfig = new RateLimitConfig();
+        rateLimitConfig.setLimits(getRateLimits());
+        rateLimitConfig.setLogic(Rates.Logic.OR);
+        return rateLimitConfig;
     }
 
-    private List<RateLimitConfig> getRateLimits() {
-        RateLimitConfig config = new RateLimitConfig();
+    private List<RateConfig> getRateLimits() {
+        RateConfig config = new RateConfig();
         config.setDuration(1);
         config.setLimit(200);
         config.setTimeUnit(TimeUnit.MINUTES);
