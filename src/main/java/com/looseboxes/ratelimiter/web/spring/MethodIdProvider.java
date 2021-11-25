@@ -1,16 +1,16 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.annotation.AnnotatedElementIdProvider;
+import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.web.core.PathPatterns;
 import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class MethodIdProvider implements AnnotatedElementIdProvider<Method, PathPatterns<String>> {
+public class MethodIdProvider implements IdProvider<Method, PathPatterns<String>> {
 
-    private final AnnotatedElementIdProvider<Class<?>, PathPatterns<String>> classIdProvider;
+    private final IdProvider<Class<?>, PathPatterns<String>> classIdProvider;
 
-    public MethodIdProvider(AnnotatedElementIdProvider<Class<?>, PathPatterns<String>> classIdProvider) {
+    public MethodIdProvider(IdProvider<Class<?>, PathPatterns<String>> classIdProvider) {
         this.classIdProvider = Objects.requireNonNull(classIdProvider);
     }
 

@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring.weblayer;
+package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 public interface Constants {
     long DURATION_SECONDS = 3;

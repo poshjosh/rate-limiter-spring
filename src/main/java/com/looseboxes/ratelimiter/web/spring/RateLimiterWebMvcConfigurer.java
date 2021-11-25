@@ -3,7 +3,7 @@ package com.looseboxes.ratelimiter.web.spring;
 import com.looseboxes.ratelimiter.RateExceededHandler;
 import com.looseboxes.ratelimiter.RateLimiter;
 import com.looseboxes.ratelimiter.RateSupplier;
-import com.looseboxes.ratelimiter.annotation.AnnotatedElementIdProvider;
+import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.web.core.*;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.List;
 
 @Configuration
 public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
@@ -22,22 +23,24 @@ public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
     private final HandlerInterceptor handlerInterceptor;
 
     public RateLimiterWebMvcConfigurer(
-            RateSupplier rateSupplier,
-            RateExceededHandler rateExceededHandler,
             RateLimiter<HttpServletRequest> rateLimiter,
-            RequestToIdConverter<HttpServletRequest> requestToIdConverter,
+            RateLimiterConfigurationRegistry<HttpServletRequest> rateLimiterConfigurationRegistry,
             ResourceClassesSupplier resourceClassesSupplier,
             RateLimitProperties properties) {
 
+        List<Class<?>> classes = resourceClassesSupplier.get();
+
+        RateLimiter<String> classRateLimiter = classes.isEmpty() ? RateLimiter.noop() : new ClassPatternsRateLimiter<>(
+                classes, rateLimiterConfigurationRegistry, classIdProvider());
+
+        RateLimiter<String> methodRateLimiter = classes.isEmpty() ? RateLimiter.noop() : new MethodPatternsRateLimiter<>(
+                classes, rateLimiterConfigurationRegistry, methodIdProvider());
+
         RateLimitHandler<HttpServletRequest> rateLimitHandler = new RateLimitHandler<>(
                 properties,
-                rateSupplier,
-                rateExceededHandler,
                 rateLimiter,
-                requestToIdConverter,
-                annotatedElementIdProviderForClass(),
-                annotatedElementIdProviderForMethod(),
-                resourceClassesSupplier.get()
+                rateLimiterConfigurationRegistry.getDefaultRequestToIdConverter(),
+                classRateLimiter, methodRateLimiter
         );
 
         handlerInterceptor = new HandlerInterceptor() {
@@ -54,11 +57,11 @@ public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(handlerInterceptor);
     }
 
-    public AnnotatedElementIdProvider<Method, PathPatterns<String>> annotatedElementIdProviderForMethod() {
-        return new MethodIdProvider(annotatedElementIdProviderForClass());
+    public IdProvider<Method, PathPatterns<String>> methodIdProvider() {
+        return new MethodIdProvider(classIdProvider());
     }
 
-    public AnnotatedElementIdProvider<Class<?>, PathPatterns<String>> annotatedElementIdProviderForClass() {
+    public IdProvider<Class<?>, PathPatterns<String>> classIdProvider() {
         return new ClassIdProvider();
     }
 }

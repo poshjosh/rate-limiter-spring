@@ -31,13 +31,10 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateLimiter<HttpServletRequest> rateLimiter(RateLimitPropertiesImpl properties,
-                                                       RequestToIdConverterRegistry<HttpServletRequest> requestToIdConverterRegistry,
-                                                       RateCache<Object> rateCache,
-                                                       RateSupplier rateSupplier,
-                                                       RateExceededHandler rateExceededHandler) {
+    public RateLimiter<HttpServletRequest> rateLimiter(RateLimitProperties properties,
+                                                       RateLimiterConfigurationRegistry<HttpServletRequest> rateLimiterConfigurationRegistry) {
 
-        return new RateLimiterFromProperties<>(properties, requestToIdConverterRegistry, rateCache, rateSupplier, rateExceededHandler);
+        return new RateLimiterImpl<>(properties.getRateLimitConfigs(), rateLimiterConfigurationRegistry);
     }
 
     @Bean
@@ -61,10 +58,14 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RequestToIdConverterRegistry<HttpServletRequest> requestToIdConverterRegistry(
+    public RateLimiterConfigurationRegistry<HttpServletRequest> requestToIdConverterRegistry(
             RequestToIdConverter<HttpServletRequest> defaultRequestToIdConverter,
+            RateCache<Object> rateCache,
+            RateSupplier rateSupplier,
+            RateExceededHandler rateExceededHandler,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
-        return new RequestToIdConverterRegistry<>(defaultRequestToIdConverter, rateLimiterConfigurer);
+        return new RateLimiterConfigurationRegistry<>(
+                defaultRequestToIdConverter, rateCache, rateSupplier, rateExceededHandler, rateLimiterConfigurer);
     }
 
     @Bean

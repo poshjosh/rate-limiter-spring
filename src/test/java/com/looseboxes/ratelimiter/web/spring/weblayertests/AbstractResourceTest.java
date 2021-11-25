@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring.weblayer;
+package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;

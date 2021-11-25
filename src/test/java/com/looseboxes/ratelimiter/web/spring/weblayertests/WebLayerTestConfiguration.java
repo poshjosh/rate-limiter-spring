@@ -1,8 +1,8 @@
-package com.looseboxes.ratelimiter.web.spring.weblayer;
+package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.rates.Rates;
-import com.looseboxes.ratelimiter.web.core.util.RateConfig;
-import com.looseboxes.ratelimiter.web.core.util.RateLimitConfig;
+import com.looseboxes.ratelimiter.util.RateConfig;
+import com.looseboxes.ratelimiter.util.RateLimitConfig;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

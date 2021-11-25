@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring.weblayer;
+package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

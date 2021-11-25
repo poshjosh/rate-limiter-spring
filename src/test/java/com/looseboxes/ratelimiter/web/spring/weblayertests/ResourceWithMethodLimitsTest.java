@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring.weblayer;
+package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,10 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.annotation.AnnotatedElementIdProvider;
+import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.web.core.PathPatterns;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-public class ClassIdProvider implements AnnotatedElementIdProvider<Class<?>, PathPatterns<String>> {
+public class ClassIdProvider implements IdProvider<Class<?>, PathPatterns<String>> {
 
     public ClassIdProvider() { }
 
