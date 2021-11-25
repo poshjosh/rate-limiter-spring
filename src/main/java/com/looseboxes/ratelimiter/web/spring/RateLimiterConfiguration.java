@@ -53,7 +53,7 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateExceededHandler rateExceededHandler() {
+    public RateRecordedListener rateExceededHandler() {
         return new RateExceededExceptionThrower();
     }
 
@@ -62,10 +62,10 @@ public class RateLimiterConfiguration {
             RequestToIdConverter<HttpServletRequest> defaultRequestToIdConverter,
             RateCache<Object> rateCache,
             RateSupplier rateSupplier,
-            RateExceededHandler rateExceededHandler,
+            RateRecordedListener rateRecordedListener,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
         return new RateLimiterConfigurationSource<>(
-                defaultRequestToIdConverter, rateCache, rateSupplier, rateExceededHandler, rateLimiterConfigurer);
+                defaultRequestToIdConverter, rateCache, rateSupplier, rateRecordedListener, rateLimiterConfigurer);
     }
 
     @Bean
