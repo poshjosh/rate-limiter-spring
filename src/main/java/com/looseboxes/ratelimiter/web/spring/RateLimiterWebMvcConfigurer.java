@@ -1,8 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.RateExceededHandler;
 import com.looseboxes.ratelimiter.RateLimiter;
-import com.looseboxes.ratelimiter.RateSupplier;
 import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.web.core.*;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
@@ -24,22 +22,22 @@ public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
 
     public RateLimiterWebMvcConfigurer(
             RateLimiter<HttpServletRequest> rateLimiter,
-            RateLimiterConfigurationRegistry<HttpServletRequest> rateLimiterConfigurationRegistry,
+            RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource,
             ResourceClassesSupplier resourceClassesSupplier,
             RateLimitProperties properties) {
 
         List<Class<?>> classes = resourceClassesSupplier.get();
 
         RateLimiter<String> classRateLimiter = classes.isEmpty() ? RateLimiter.noop() : new ClassPatternsRateLimiter<>(
-                classes, rateLimiterConfigurationRegistry, classIdProvider());
+                classes, rateLimiterConfigurationSource, classIdProvider());
 
         RateLimiter<String> methodRateLimiter = classes.isEmpty() ? RateLimiter.noop() : new MethodPatternsRateLimiter<>(
-                classes, rateLimiterConfigurationRegistry, methodIdProvider());
+                classes, rateLimiterConfigurationSource, methodIdProvider());
 
         RateLimitHandler<HttpServletRequest> rateLimitHandler = new RateLimitHandler<>(
                 properties,
                 rateLimiter,
-                rateLimiterConfigurationRegistry.getDefaultRequestToIdConverter(),
+                rateLimiterConfigurationSource.getDefaultRequestToIdConverter(),
                 classRateLimiter, methodRateLimiter
         );
 

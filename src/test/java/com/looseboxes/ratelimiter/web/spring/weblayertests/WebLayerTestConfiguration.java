@@ -34,9 +34,9 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
 
     private List<RateConfig> getRateLimits() {
         RateConfig config = new RateConfig();
-        config.setDuration(1);
-        config.setLimit(200);
-        config.setTimeUnit(TimeUnit.MINUTES);
+        config.setLimit(Constants.OVERALL_LIMIT);
+        config.setDuration(Constants.OVERALL_DURATION_SECONDS);
+        config.setTimeUnit(TimeUnit.SECONDS);
         return Collections.singletonList(config);
     }
 }
