@@ -1,10 +1,12 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
+import com.looseboxes.ratelimiter.util.Experimental;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Experimental
 public class LimitWithinDurationDTO<ID> implements Serializable {
 
     private ID id;

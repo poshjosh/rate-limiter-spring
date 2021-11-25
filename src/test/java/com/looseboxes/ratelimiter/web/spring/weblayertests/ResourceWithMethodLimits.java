@@ -2,7 +2,7 @@ package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.annotation.RateLimit;
 import com.looseboxes.ratelimiter.annotation.RateLimitGroup;
-import com.looseboxes.ratelimiter.rates.Rates;
+import com.looseboxes.ratelimiter.rates.Logic;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +39,7 @@ public class ResourceWithMethodLimits {
     }
 
     @RequestMapping(ApiEndpoints.LIMIT_1_AND_5)
-    @RateLimitGroup(logic = Rates.Logic.AND)
+    @RateLimitGroup(logic = Logic.AND)
     @RateLimit(limit = Constants.LIMIT_1, duration = Constants.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
     @RateLimit(limit = Constants.LIMIT_5, duration = Constants.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
     public String limit_1_and_10(HttpServletRequest request) {

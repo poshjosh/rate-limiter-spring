@@ -1,5 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
+import com.looseboxes.ratelimiter.util.Experimental;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Example;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Example;
 import java.beans.PropertyDescriptor;
 import java.util.function.Predicate;
 
+@Experimental
 public class FilterFromExample<E> implements Predicate<E> {
 
     private final BeanWrapper probeBeanWrapper;

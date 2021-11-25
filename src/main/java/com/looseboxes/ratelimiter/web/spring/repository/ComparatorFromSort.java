@@ -1,5 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
+import com.looseboxes.ratelimiter.util.Experimental;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Sort;
@@ -9,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+@Experimental
 public class ComparatorFromSort<E> implements Comparator<E> {
 
     private final Sort sort;

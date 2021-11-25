@@ -3,6 +3,7 @@ package com.looseboxes.ratelimiter.web.spring.repository;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
 import com.looseboxes.ratelimiter.rates.Rate;
+import com.looseboxes.ratelimiter.util.Experimental;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -10,7 +11,8 @@ import org.springframework.data.domain.*;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class LimitWithinDurationRepository<ID> implements RateRepository<ID, LimitWithinDurationDTO> {
+@Experimental
+public class LimitWithinDurationRepository<ID> implements RateRepository<ID, LimitWithinDurationDTO<ID>> {
 
     private final Logger log = LoggerFactory.getLogger(LimitWithinDurationRepository.class);
 
@@ -21,21 +23,21 @@ public class LimitWithinDurationRepository<ID> implements RateRepository<ID, Lim
     }
 
     @Override
-    public Optional<LimitWithinDurationDTO> findById(ID id) {
+    public Optional<LimitWithinDurationDTO<ID>> findById(ID id) {
         Rate rate = this.rateCache.get(id);
         return rate == null ? Optional.empty() : Optional.of(toDto(id, rate));
     }
 
     @Override
-    public Page<LimitWithinDurationDTO> findAll(Pageable pageable) {
+    public Page<LimitWithinDurationDTO<ID>> findAll(Pageable pageable) {
         return findAll(null, pageable);
     }
 
     @Override
-    public Page<LimitWithinDurationDTO> findAll(Example<LimitWithinDurationDTO> example, Pageable pageable) {
+    public Page<LimitWithinDurationDTO<ID>> findAll(Example<LimitWithinDurationDTO<ID>> example, Pageable pageable) {
         log.debug("Request to get rate-limit data: {}", pageable);
 
-        final Page<LimitWithinDurationDTO> result;
+        final Page<LimitWithinDurationDTO<ID>> result;
 
         final long offset = pageable.getOffset();
         final long pageSize = pageable.getPageSize();
@@ -43,7 +45,7 @@ public class LimitWithinDurationRepository<ID> implements RateRepository<ID, Lim
         if(pageSize < 1 || offset < 0) {
             result = Page.empty(pageable);
         }else{
-            final List<LimitWithinDurationDTO> rateList = example == null ? findAll() : findAll(example);
+            final List<LimitWithinDurationDTO<ID>> rateList = example == null ? findAll() : findAll(example);
 
             log.debug("Found {} rates for {}", rateList.size(), example);
 
@@ -69,31 +71,26 @@ public class LimitWithinDurationRepository<ID> implements RateRepository<ID, Lim
         return result;
     }
 
-    private List<LimitWithinDurationDTO> findAll(Example<LimitWithinDurationDTO> example) {
+    private List<LimitWithinDurationDTO<ID>> findAll(Example<LimitWithinDurationDTO<ID>> example) {
         return findAll(new FilterFromExample<>(example));
     }
 
-    private List<LimitWithinDurationDTO> findAll() {
+    private List<LimitWithinDurationDTO<ID>> findAll() {
         return findAll(limitWithinDurationDTO -> true);
     }
 
-    private List<LimitWithinDurationDTO> findAll(Predicate<LimitWithinDurationDTO> filter) {
-        final List<LimitWithinDurationDTO> rateList;
-        if(rateCache == null) {
-            rateList = Collections.emptyList();
-        }else {
-            rateList = new ArrayList<>();
-            rateCache.forEach((id, rate) -> {
-                LimitWithinDurationDTO dto = toDto(id, rate);
-                if (filter.test(dto)) {
-                    rateList.add(dto);
-                }
-            });
-        }
+    private List<LimitWithinDurationDTO<ID>> findAll(Predicate<LimitWithinDurationDTO<ID>> filter) {
+        final List<LimitWithinDurationDTO<ID>> rateList = new ArrayList<>();
+        rateCache.forEach((id, rate) -> {
+            LimitWithinDurationDTO<ID> dto = toDto(id, rate);
+            if (filter.test(dto)) {
+                rateList.add(dto);
+            }
+        });
         return rateList;
     }
 
-    private LimitWithinDurationDTO toDto(ID id, Rate rate) {
-        return new LimitWithinDurationDTO(id, (LimitWithinDuration) rate);
+    private LimitWithinDurationDTO<ID> toDto(ID id, Rate rate) {
+        return new LimitWithinDurationDTO<>(id, (LimitWithinDuration) rate);
     }
 }
