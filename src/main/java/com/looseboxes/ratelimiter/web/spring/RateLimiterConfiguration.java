@@ -38,8 +38,8 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateSupplier newRateSupplier() {
-        return  new LimitWithinDurationSupplier();
+    public RateFactory rateFactory() {
+        return  new LimitWithinDurationFactory();
     }
 
     @Bean
@@ -53,7 +53,7 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateRecordedListener rateExceededHandler() {
+    public RateRecordedListener rateRecordedListener() {
         return new RateExceededExceptionThrower();
     }
 
@@ -61,11 +61,11 @@ public class RateLimiterConfiguration {
     public RateLimiterConfigurationSource<HttpServletRequest> requestToIdConverterRegistry(
             RequestToIdConverter<HttpServletRequest> defaultRequestToIdConverter,
             RateCache<Object> rateCache,
-            RateSupplier rateSupplier,
+            RateFactory rateFactory,
             RateRecordedListener rateRecordedListener,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
         return new RateLimiterConfigurationSource<>(
-                defaultRequestToIdConverter, rateCache, rateSupplier, rateRecordedListener, rateLimiterConfigurer);
+                defaultRequestToIdConverter, rateCache, rateFactory, rateRecordedListener, rateLimiterConfigurer);
     }
 
     @Bean
