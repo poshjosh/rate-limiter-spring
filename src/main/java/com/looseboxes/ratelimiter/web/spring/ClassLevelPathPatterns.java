@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.web.core.PathPatterns;
+import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.PathContainer;
@@ -29,21 +29,22 @@ public class ClassLevelPathPatterns implements PathPatterns<String> {
         LOG.trace("Path patterns: {}", stringPatterns);
     }
 
-    private ClassLevelPathPatterns(PathPattern... pathPatterns) {
+    ClassLevelPathPatterns(PathPattern... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = Objects.requireNonNull(pathPatterns);
-        this.stringPatterns = Arrays.asList(pathPatterns).stream()
-                .map(pathPattern -> pathPattern.getPatternString())
+        this.stringPatterns = Arrays.stream(pathPatterns)
+                .map(PathPattern::getPatternString)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<String> getPathPatterns() {
+    public List<String> getPatterns() {
         return stringPatterns;
     }
 
     public PathPatterns<String> combine(PathPatterns<String> other) {
-        return new ClassLevelPathPatterns(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPathPatterns()));
+        // issue #001 For now Parent patterns must always return a child type from the combine method
+        return new MethodLevelPathPatterns(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
     }
 
     @Override

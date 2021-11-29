@@ -71,11 +71,13 @@ public class LimitWithinDurationRepository<ID> implements RateRepository<ID, Lim
         return result;
     }
 
-    private List<LimitWithinDurationDTO<ID>> findAll(Example<LimitWithinDurationDTO<ID>> example) {
+    @Override
+    public List<LimitWithinDurationDTO<ID>> findAll(Example<LimitWithinDurationDTO<ID>> example) {
         return findAll(new FilterFromExample<>(example));
     }
 
-    private List<LimitWithinDurationDTO<ID>> findAll() {
+    @Override
+    public List<LimitWithinDurationDTO<ID>> findAll() {
         return findAll(limitWithinDurationDTO -> true);
     }
 

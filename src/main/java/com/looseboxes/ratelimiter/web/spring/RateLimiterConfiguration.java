@@ -1,10 +1,14 @@
 package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.*;
+import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
+import com.looseboxes.ratelimiter.annotation.DefaultAnnotationProcessor;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.cache.InMemoryRateCache;
+import com.looseboxes.ratelimiter.util.Experimental;
 import com.looseboxes.ratelimiter.web.core.*;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
+import com.looseboxes.ratelimiter.web.spring.repository.CachingRateRecordedListener;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
 import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,23 +22,23 @@ import javax.servlet.http.HttpServletRequest;
 @Configuration
 public class RateLimiterConfiguration {
 
-    public static final class RequestToUriConverter implements RequestToIdConverter<HttpServletRequest>{
+    public static final class RequestToUriConverter implements RequestToIdConverter<HttpServletRequest, String>{
         @Override
-        public Object convert(HttpServletRequest request) {
+        public String convert(HttpServletRequest request) {
             return request.getRequestURI();
         }
     }
 
-    @Bean
-    public RequestToIdConverter<HttpServletRequest> requestToIdConverter() {
-        return new RequestToUriConverter();
+    @Experimental
+    private final RateCache<Object> rateCacheForRepository;
+
+    public RateLimiterConfiguration() {
+        this.rateCacheForRepository = getGlobalRateCache();
     }
 
     @Bean
-    public RateLimiter<HttpServletRequest> rateLimiter(RateLimitProperties properties,
-                                                       RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource) {
-
-        return new RateLimiterImpl<>(properties.getRateLimitConfigs(), rateLimiterConfigurationSource);
+    public RequestToIdConverter<HttpServletRequest, String> requestToIdConverter() {
+        return new RequestToUriConverter();
     }
 
     @Bean
@@ -48,24 +52,41 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateRepository<Object, ?> rateRepository(RateCache<Object> rateCache) {
-        return new LimitWithinDurationRepository<>(rateCache);
-    }
-
-    @Bean
     public RateRecordedListener rateRecordedListener() {
         return new RateExceededExceptionThrower();
     }
 
     @Bean
-    public RateLimiterConfigurationSource<HttpServletRequest> requestToIdConverterRegistry(
-            RequestToIdConverter<HttpServletRequest> defaultRequestToIdConverter,
+    public RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource(
+            RequestToIdConverter<HttpServletRequest, String> requestToUriConverter,
             RateCache<Object> rateCache,
             RateFactory rateFactory,
             RateRecordedListener rateRecordedListener,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
-        return new RateLimiterConfigurationSource<>(
-                defaultRequestToIdConverter, rateCache, rateFactory, rateRecordedListener, rateLimiterConfigurer);
+
+        RateLimiterConfigurationSource<HttpServletRequest> configurationSource = new RateLimiterConfigurationSource<>(
+                requestToUriConverter, rateCache, rateFactory, rateRecordedListener, rateLimiterConfigurer,
+                new ClassIdProvider(), new MethodIdProvider());
+
+        // This listener caches rates for use by RateRepository - currently an experimental feature
+        configurationSource.registerRootRateRecordedListener(new CachingRateRecordedListener(rateCacheForRepository));
+
+        return configurationSource;
+    }
+
+    @Bean
+    @Experimental
+    public RateRepository<Object, ?> rateRepository() {
+        return new LimitWithinDurationRepository<>(rateCacheForRepository);
+    }
+
+    /**
+     * Experimental feature.
+     * @return A cache for caching all rates recorded by this application.
+     */
+    @Experimental
+    protected RateCache<Object> getGlobalRateCache() {
+        return new InMemoryRateCache<>();
     }
 
     @Bean
@@ -73,5 +94,10 @@ public class RateLimiterConfiguration {
         return new ResourceClassesSupplierImpl(
                 new ClassesInPackageFinderSpring(), properties.getResourcePackages(),
                 Controller.class, RestController.class);
+    }
+
+    @Bean
+    public AnnotationProcessor<Class<?>> annotationProcessor() {
+        return new DefaultAnnotationProcessor();
     }
 }

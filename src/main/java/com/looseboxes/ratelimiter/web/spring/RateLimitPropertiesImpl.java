@@ -11,8 +11,6 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
     private List<String> resourcePackages;
 
-    private Boolean auto = Boolean.TRUE;
-
     private Boolean disabled = Boolean.FALSE;
 
     private Map<String, RateLimitConfig> rateLimitConfigs;
@@ -24,15 +22,6 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
     public void setResourcePackages(List<String> resourcePackages) {
         this.resourcePackages = resourcePackages;
-    }
-
-    @Override
-    public Boolean getAuto() {
-        return auto;
-    }
-
-    public void setAuto(Boolean auto) {
-        this.auto = auto;
     }
 
     @Override
@@ -57,7 +46,6 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
     public String toString() {
         return "RateLimitPropertiesImpl{" +
                 "resourcePackages=" + resourcePackages +
-                ", auto=" + auto +
                 ", disabled=" + disabled +
                 ", rateLimitConfigs=" + rateLimitConfigs +
                 '}';

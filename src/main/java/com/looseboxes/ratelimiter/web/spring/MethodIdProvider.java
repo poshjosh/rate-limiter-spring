@@ -1,7 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.annotation.IdProvider;
-import com.looseboxes.ratelimiter.web.core.PathPatterns;
+import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -9,6 +9,10 @@ import java.util.*;
 public class MethodIdProvider implements IdProvider<Method, PathPatterns<String>> {
 
     private final IdProvider<Class<?>, PathPatterns<String>> classIdProvider;
+
+    public MethodIdProvider() {
+        this(new ClassIdProvider());
+    }
 
     public MethodIdProvider(IdProvider<Class<?>, PathPatterns<String>> classIdProvider) {
         this.classIdProvider = Objects.requireNonNull(classIdProvider);

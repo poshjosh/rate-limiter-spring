@@ -11,7 +11,7 @@ public class ResourceWithClassLimitsTest extends AbstractResourceTest {
     @Test
     public void shouldFailWhenClassLimitIsExceeded() throws Exception {
 
-        final String endpoint = ApiEndpoints.CLASS_LIMITS;
+        final String endpoint = ApiEndpoints.CLASS_LIMITS_HOME;
 
         shouldReturnDefaultResult(endpoint);
 

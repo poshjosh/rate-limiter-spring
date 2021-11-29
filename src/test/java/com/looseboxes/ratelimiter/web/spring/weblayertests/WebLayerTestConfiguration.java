@@ -1,5 +1,9 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
+import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
+import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
+import com.looseboxes.ratelimiter.annotation.DefaultAnnotationProcessor;
+import com.looseboxes.ratelimiter.annotation.MethodAnnotationProcessor;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
 import com.looseboxes.ratelimiter.util.RateLimitConfig;
@@ -7,7 +11,9 @@ import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,5 +44,15 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
         config.setDuration(Constants.OVERALL_DURATION_SECONDS);
         config.setTimeUnit(TimeUnit.SECONDS);
         return Collections.singletonList(config);
+    }
+
+    // For tests we override this to simplify logging
+    // This means that during tests we can't have 2 resource classes with the same name, as we use Class.getSimpleName
+    // Is this wise
+    @Bean
+    public AnnotationProcessor<Class<?>> annotationProcessor() {
+        return new DefaultAnnotationProcessor(
+                new ClassAnnotationProcessor(Class::getSimpleName),
+                new MethodAnnotationProcessor(Class::getSimpleName, Method::getName));
     }
 }

@@ -34,15 +34,15 @@ public class ResourceWithMethodLimits {
     @RequestMapping(Endpoints.LIMIT_1_OR_5)
     @RateLimit(limit = Constants.LIMIT_1, duration = Constants.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
     @RateLimit(limit = Constants.LIMIT_5, duration = Constants.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
-    public String limit_1_or_10(HttpServletRequest request) {
+    public String limit_1_or_5(HttpServletRequest request) {
         return request.getRequestURI();
     }
 
-    @RequestMapping(ApiEndpoints.LIMIT_1_AND_5)
+    @RequestMapping(Endpoints.LIMIT_1_AND_5)
     @RateLimitGroup(logic = Logic.AND)
     @RateLimit(limit = Constants.LIMIT_1, duration = Constants.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
     @RateLimit(limit = Constants.LIMIT_5, duration = Constants.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
-    public String limit_1_and_10(HttpServletRequest request) {
+    public String limit_1_and_5(HttpServletRequest request) {
         return request.getRequestURI();
     }
 }

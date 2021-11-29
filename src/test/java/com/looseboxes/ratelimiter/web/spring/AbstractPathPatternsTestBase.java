@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.web.core.PathPatterns;
+import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ abstract class AbstractPathPatternsTestBase {
         PathPatterns<String> pathPatterns = pathPatterns("/numbers");
         PathPatterns<String> result =  pathPatterns.combine(pathPatterns("/1/**", "/2/*"));
         PathPatterns<String> expected = pathPatterns("/numbers/1/**", "/numbers/2/*");
-        assertThat(result).isEqualTo(expected);
+        assertThat(result.getPatterns()).isEqualTo(expected.getPatterns());
     }
 
     @Test
