@@ -2,7 +2,6 @@ package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
-import com.looseboxes.ratelimiter.annotation.DefaultAnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.MethodAnnotationProcessor;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
@@ -51,8 +50,6 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
     // Is this wise
     @Bean
     public AnnotationProcessor<Class<?>> annotationProcessor() {
-        return new DefaultAnnotationProcessor(
-                new ClassAnnotationProcessor(Class::getSimpleName),
-                new MethodAnnotationProcessor(Class::getSimpleName, Method::getName));
+        return new ClassAnnotationProcessor(Class::getSimpleName, new MethodAnnotationProcessor(Method::getName));
     }
 }

@@ -26,8 +26,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
         assertThat(rateRepository.findAll()).isNotEmpty();
     }
 
-// @TODO Fix this
-//    @Test
+    @Test
     public void shouldPersistCorrectNumberOfRates() throws Exception {
 
         assertThat(rateRepository.findAll()).isEmpty();

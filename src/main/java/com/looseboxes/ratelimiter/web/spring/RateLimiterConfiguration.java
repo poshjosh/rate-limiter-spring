@@ -2,7 +2,7 @@ package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
-import com.looseboxes.ratelimiter.annotation.DefaultAnnotationProcessor;
+import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.cache.InMemoryRateCache;
 import com.looseboxes.ratelimiter.util.Experimental;
@@ -98,6 +98,6 @@ public class RateLimiterConfiguration {
 
     @Bean
     public AnnotationProcessor<Class<?>> annotationProcessor() {
-        return new DefaultAnnotationProcessor();
+        return new ClassAnnotationProcessor();
     }
 }
