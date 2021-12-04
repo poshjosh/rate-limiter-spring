@@ -16,7 +16,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
     @Autowired
     RateRepository<?, LimitWithinDurationDTO> rateRepository;
 
-    @Test
+//    @FindoutBestImplementionOfCompositeRate
     public void shouldPersistRateToRepository() throws Exception {
 
         assertThat(rateRepository.findAll()).isEmpty();
@@ -26,7 +26,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
         assertThat(rateRepository.findAll()).isNotEmpty();
     }
 
-    @Test
+//    @FindoutBestImplementionOfCompositeRate
     public void shouldPersistCorrectNumberOfRates() throws Exception {
 
         assertThat(rateRepository.findAll()).isEmpty();
