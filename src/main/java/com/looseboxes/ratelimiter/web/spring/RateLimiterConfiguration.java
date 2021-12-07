@@ -5,8 +5,12 @@ import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.cache.InMemoryRateCache;
+import com.looseboxes.ratelimiter.util.Experimental;
 import com.looseboxes.ratelimiter.web.core.*;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
+import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationDTO;
+import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationRepository;
+import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,5 +72,13 @@ public class RateLimiterConfiguration {
     @Bean
     public AnnotationProcessor<Class<?>> annotationProcessor() {
         return new ClassAnnotationProcessor();
+    }
+
+    @Bean
+    @Experimental
+    public RateRepository<Object, LimitWithinDurationDTO<Object>> rateRepository(RateCache<Object> rateCache) {
+        // @TODO This will not work if the user over rides the default case where we use only once cache
+        // This override could be done by registering one or more other caches
+        return new LimitWithinDurationRepository<>(rateCache);
     }
 }

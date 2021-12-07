@@ -14,9 +14,9 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class RateRepositoryTest extends AbstractResourceTest {
 
     @Autowired
-    RateRepository<?, LimitWithinDurationDTO> rateRepository;
+    RateRepository<Object, LimitWithinDurationDTO<Object>> rateRepository;
 
-//    @FindoutBestImplementionOfCompositeRate
+    @Test
     public void shouldPersistRateToRepository() throws Exception {
 
         assertThat(rateRepository.findAll()).isEmpty();
@@ -26,7 +26,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
         assertThat(rateRepository.findAll()).isNotEmpty();
     }
 
-//    @FindoutBestImplementionOfCompositeRate
+    @Test
     public void shouldPersistCorrectNumberOfRates() throws Exception {
 
         assertThat(rateRepository.findAll()).isEmpty();
@@ -37,8 +37,8 @@ public class RateRepositoryTest extends AbstractResourceTest {
             shouldReturnDefaultResult(ApiEndpoints.METHOD_LIMIT_1_AND_5);
         }
 
-        List<LimitWithinDurationDTO> rates = rateRepository.findAll();
-        for(LimitWithinDurationDTO rate : rates) {
+        List<LimitWithinDurationDTO<Object>> rates = rateRepository.findAll();
+        for(LimitWithinDurationDTO<Object> rate : rates) {
             assertThat(rate.getLimit()).isEqualTo(expectedAmount);
         }
     }
