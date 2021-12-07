@@ -11,14 +11,14 @@ __1. Annotate your spring application class as shown:__
 
 ```java
 
-import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
+import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
 
 @SpringBootApplication(scanBasePackageClasses = {
         RateLimiterWebMvcConfigurer.class
 })
 @EnableConfigurationProperties({
-        RateLimitPropertiesImpl.class
+        RateLimitPropertiesSpring.class
 })
 @ServletComponentScan // Required for scanning of components like @WebListener
 public class MySpringApplication {

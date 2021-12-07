@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
+import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ResourceWithMethodLimitsTest extends AbstractResourceTest {
 
     @Autowired
-    private RateLimitPropertiesImpl properties;
+    private RateLimitPropertiesSpring properties;
 
     @Test
     public void shouldSucceedWhenDisabled() throws Exception{

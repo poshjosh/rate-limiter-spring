@@ -6,7 +6,7 @@ import com.looseboxes.ratelimiter.annotation.MethodAnnotationProcessor;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
 import com.looseboxes.ratelimiter.util.RateLimitConfig;
-import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesImpl;
+import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
         ResourceWithMethodLimits.class,
         RateLimiterConfiguration.class
 })
-@EnableConfigurationProperties({ RateLimitPropertiesImpl.class })
+@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
 public class WebLayerTestConfiguration extends RateLimiterConfiguration{
 
-    public WebLayerTestConfiguration(RateLimitPropertiesImpl rateLimitProperties) {
+    public WebLayerTestConfiguration(RateLimitPropertiesSpring rateLimitProperties) {
         rateLimitProperties.setResourcePackages(Collections.singletonList(ResourceWithMethodLimits.class.getPackage().getName()));
         rateLimitProperties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));
     }

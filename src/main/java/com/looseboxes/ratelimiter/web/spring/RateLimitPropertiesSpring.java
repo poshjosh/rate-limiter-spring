@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.*;
 
 @ConfigurationProperties(prefix = "rate-limiter", ignoreUnknownFields = false)
-public class RateLimitPropertiesImpl implements RateLimitProperties {
+public class RateLimitPropertiesSpring implements RateLimitProperties {
 
     private List<String> resourcePackages;
 
@@ -44,7 +44,7 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
     @Override
     public String toString() {
-        return "RateLimitPropertiesImpl{" +
+        return "RateLimitPropertiesSpring{" +
                 "resourcePackages=" + resourcePackages +
                 ", disabled=" + disabled +
                 ", rateLimitConfigs=" + rateLimitConfigs +
