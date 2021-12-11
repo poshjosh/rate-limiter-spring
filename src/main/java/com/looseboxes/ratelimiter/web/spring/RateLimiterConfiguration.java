@@ -55,16 +55,22 @@ public class RateLimiterConfiguration {
             RateCache<Object> rateCache,
             RateFactory rateFactory,
             RateExceededListener rateExceededListener,
+            RateLimiterProvider rateLimiterProvider,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
 
         return new RateLimiterConfigurationSource<>(
-                requestToUriConverter, rateCache, rateFactory, rateExceededListener, rateLimiterConfigurer,
-                new ClassIdProvider(), new MethodIdProvider());
+                requestToUriConverter, rateCache, rateFactory, rateExceededListener, rateLimiterProvider,
+                rateLimiterConfigurer, new ClassIdProvider(), new MethodIdProvider());
+    }
+
+    @Bean
+    public RateLimiterProvider rateLimiterProvider() {
+        return new DefaultRateLimiterProvider();
     }
 
     @Bean
     public ResourceClassesSupplier resourceClassesSupplier(RateLimitProperties properties) {
-        return new ResourceClassesSupplierImpl(
+        return new DefaultResourceClassesSupplier(
                 new ClassesInPackageFinderSpring(), properties.getResourcePackages(),
                 Controller.class, RestController.class);
     }
