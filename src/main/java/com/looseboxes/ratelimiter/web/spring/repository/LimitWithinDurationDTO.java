@@ -11,7 +11,7 @@ public class LimitWithinDurationDTO<ID> implements Serializable {
 
     private ID id;
 
-    private int limit;
+    private long limit;
     private long duration;
     private long timeCreated;
 
@@ -34,7 +34,7 @@ public class LimitWithinDurationDTO<ID> implements Serializable {
         this.id = id;
     }
 
-    public int getLimit() {
+    public long getLimit() {
         return limit;
     }
 

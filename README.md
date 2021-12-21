@@ -111,7 +111,7 @@ public class DirectUsage {
     }
 
     public void rateLimit(HttpServletRequest request) throws RateLimitExceededException {
-        rateLimiter.record(request);
+        rateLimiter.increment(request);
     }
 }
 ```
