@@ -8,23 +8,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 
 @Experimental
-public class LimitWithinDurationRepository<ID> implements RateRepository<ID, LimitWithinDurationDTO<ID>> {
+public class LimitWithinDurationRepository<ID extends Serializable, V extends Serializable> implements RateRepository<ID, LimitWithinDurationDTO<ID>> {
 
     private final Logger log = LoggerFactory.getLogger(LimitWithinDurationRepository.class);
 
-    private final RateCache<ID> rateCache;
+    private final RateCache<ID, V> rateCache;
 
-    public LimitWithinDurationRepository(RateCache<ID> rateCache) {
+    public LimitWithinDurationRepository(RateCache<ID, V> rateCache) {
         this.rateCache = Objects.requireNonNull(rateCache);
     }
 
     @Override
     public Optional<LimitWithinDurationDTO<ID>> findById(ID id) {
-        Rate rate = this.rateCache.get(id);
+        V rate = this.rateCache.get(id);
         return rate == null ? Optional.empty() : Optional.of(toDto(id, rate));
     }
 
@@ -92,7 +93,9 @@ public class LimitWithinDurationRepository<ID> implements RateRepository<ID, Lim
         return rateList;
     }
 
-    private LimitWithinDurationDTO<ID> toDto(ID id, Rate rate) {
-        return new LimitWithinDurationDTO<>(id, (LimitWithinDuration) rate);
+    private LimitWithinDurationDTO<ID> toDto(ID id, V value) {
+        //TODO Avoid this cast as it may lead to ClassCastException.
+        //TODO Maybe explicitly specify that the value type is a LimitWithinDuration, in the class declaration
+        return new LimitWithinDurationDTO<>(id, (LimitWithinDuration) value);
     }
 }
