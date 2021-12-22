@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
 @Configuration
 public class RateLimiterConfiguration {
@@ -40,7 +41,7 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateCache<Object> rateCache() {
+    public RateCache<Serializable, Serializable> rateCache() {
         return new InMemoryRateCache<>();
     }
 
@@ -52,20 +53,20 @@ public class RateLimiterConfiguration {
     @Bean
     public RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource(
             RequestToIdConverter<HttpServletRequest, String> requestToUriConverter,
-            RateCache<Object> rateCache,
+            RateCache<Serializable, Serializable> rateCache,
             RateFactory rateFactory,
             RateExceededListener rateExceededListener,
-            RateLimiterProvider rateLimiterProvider,
+            RateLimiterFactory rateLimiterFactory,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
 
         return new RateLimiterConfigurationSource<>(
-                requestToUriConverter, rateCache, rateFactory, rateExceededListener, rateLimiterProvider,
+                requestToUriConverter, rateCache, rateFactory, rateExceededListener, rateLimiterFactory,
                 rateLimiterConfigurer, new ClassIdProvider(), new MethodIdProvider());
     }
 
     @Bean
-    public RateLimiterProvider rateLimiterProvider() {
-        return new DefaultRateLimiterProvider();
+    public RateLimiterFactory rateLimiterProvider() {
+        return new DefaultRateLimiterFactory();
     }
 
     @Bean
@@ -82,7 +83,7 @@ public class RateLimiterConfiguration {
 
     @Bean
     @Experimental
-    public RateRepository<Object, LimitWithinDurationDTO<Object>> rateRepository(RateCache<Object> rateCache) {
+    public RateRepository<Serializable, LimitWithinDurationDTO<Serializable>> rateRepository(RateCache<Serializable, Serializable> rateCache) {
         // @TODO This will not work if the user over rides the default case where we use only once cache
         // This override could be done by registering one or more other caches
         return new LimitWithinDurationRepository<>(rateCache);
