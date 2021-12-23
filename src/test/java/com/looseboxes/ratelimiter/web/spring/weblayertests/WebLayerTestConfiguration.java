@@ -5,7 +5,7 @@ import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.MethodAnnotationProcessor;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
-import com.looseboxes.ratelimiter.util.RateLimitConfig;
+import com.looseboxes.ratelimiter.util.RateConfigList;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,11 +30,11 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
         rateLimitProperties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));
     }
 
-    private RateLimitConfig getRateLimitConfigList() {
-        RateLimitConfig rateLimitConfig = new RateLimitConfig();
-        rateLimitConfig.setLimits(getRateLimits());
-        rateLimitConfig.setLogic(Logic.OR);
-        return rateLimitConfig;
+    private RateConfigList getRateLimitConfigList() {
+        RateConfigList rateConfigList = new RateConfigList();
+        rateConfigList.setLimits(getRateLimits());
+        rateConfigList.setLogic(Logic.OR);
+        return rateConfigList;
     }
 
     private List<RateConfig> getRateLimits() {

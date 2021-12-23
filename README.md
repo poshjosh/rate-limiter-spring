@@ -30,16 +30,16 @@ __2. Add some required properties__
 
 ```yaml
 rate-limiter:
-  disabled: false
-  # If using annotations, you have to specify one package where all the controllers should be scanned for
-  controller-package: com.myapplicatioon.web.rest
+  # If using annotations, you have to specify the list packages where resources 
+  # that may contain the rate-limit related annotations should be scanned for.
+  resource-packages: com.myapplicatioon.web.rest
 ```
 
-__3. Add an exception handler for RateLimitException.__ 
+__3. Add an exception handler for RateExceededException.__ 
 
 [Exception handling for rest with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
 
-__4. Annotate controller or separate methods.__
+__4. Annotate controller or separate methods. (Optional)__
 
 ```java
 import com.looseboxes.ratelimiter.annotation.RateLimit;
@@ -54,70 +54,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/my-resources")
 public class MyResource {
 
-    public MyResource() {
-    }
-
+    // Only 25 calls per second
     @RateLimit(limit = 25, duration = 1000)
     @GetMapping("/greet/{name}")
     public ResponseEntity<String> greet(@PathVariable String name) {
-        ResponseEntity.ok("Hello " + name);
+        return ResponseEntity.ok("Hello " + name);
     }
 }
 ```
 
-### Direct usage
+__5. Add some properties (Optional)__
 
-You could use a `RateLimiter` directly.
-
-The library provides a `RateLimiter<HttpServletRequest>` based on the limits specified in the properties file, for example: 
-
-__1. Add some properties__
+You can configure rate limiting from the properties file. 
 
 ```yaml
 rate-limiter:
-  disabled: false
-  rate-limits:
-    per-second:
-      # (Optional) A java.util.function.Function<HttpServletRequest, Object> 
-      request-to-id-converter-function: 
-      count: 90
-      duration: 1
-      time-unit: SECONDS
-    per-minute:
-      # (Optional) A java.util.function.Function<HttpServletRequest, Object> 
-      request-to-id-converter-function:
-      count: 300
-      duration: 1
-      time-unit: MINUTES
+  resource-packages: com.myapplicatioon.web.rest
+  rate-limit-configs:
+    com.myapplicatioon.web.rest.MyResource: # This is the group name
+      limits:
+        -
+          limit: 25
+          duration: 1
+          timeout: SECONDS
 ```
 
-__2. Create and use the RateLimiter manually__
+By using the fully qualified class name as the group name we can configure rate limiting 
+of specific resources from application configuration properties.
 
-```java
-import com.looseboxes.ratelimiter.RateLimitExceededException;
-import com.looseboxes.ratelimiter.RateLimiter;
-import com.looseboxes.ratelimiter.spring.util.RateLimitPropertiesSpring;
-import org.springframework.stereotype.Component;
+We could also narrow the specified properties to a specific method. For example, in this case,
+by using `com.myapplicatioon.web.rest.MyResource.greet(java.lang.String)` as the group name.
 
-import javax.servlet.http.HttpServletRequest;
+__6. Configure rate limiting__
 
-@Component
-public class DirectUsage {
+Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core). 
 
-    private final RateLimiter<HttpServletRequest> rateLimiter;
+Enjoy! :wink:
 
-    public DirectUsage(RateLimiter rateLimiter) {
-        this.rateLimiter = rateLimiter;
-    }
-
-    public void rateLimit(HttpServletRequest request) throws RateLimitExceededException {
-        rateLimiter.increment(request);
-    }
-}
-```
-
-# Build
-
-```sh
-mvn clean install
-```

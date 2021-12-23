@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
-import java.io.Serializable;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -15,7 +14,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class RateRepositoryTest extends AbstractResourceTest {
 
     @Autowired
-    RateRepository<Serializable, LimitWithinDurationDTO<Serializable>> rateRepository;
+    RateRepository<Object, LimitWithinDurationDTO<Object>> rateRepository;
 
     @Test
     public void shouldPersistRateToRepository() throws Exception {
@@ -38,8 +37,8 @@ public class RateRepositoryTest extends AbstractResourceTest {
             shouldReturnDefaultResult(ApiEndpoints.METHOD_LIMIT_1_AND_5);
         }
 
-        List<LimitWithinDurationDTO<Serializable>> rates = rateRepository.findAll();
-        for(LimitWithinDurationDTO<Serializable> rate : rates) {
+        List<LimitWithinDurationDTO<Object>> rates = rateRepository.findAll();
+        for(LimitWithinDurationDTO<Object> rate : rates) {
             assertThat(rate.getLimit()).isEqualTo(expectedAmount);
         }
     }

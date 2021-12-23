@@ -2,18 +2,16 @@ package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
-import com.looseboxes.ratelimiter.rates.Rate;
 import com.looseboxes.ratelimiter.util.Experimental;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 
 @Experimental
-public class LimitWithinDurationRepository<ID extends Serializable, V extends Serializable> implements RateRepository<ID, LimitWithinDurationDTO<ID>> {
+public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, LimitWithinDurationDTO<ID>> {
 
     private final Logger log = LoggerFactory.getLogger(LimitWithinDurationRepository.class);
 

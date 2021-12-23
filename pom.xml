@@ -19,6 +19,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.2.5.RELEASE</spring-boot.version>
         <rate-limiter.version>0.0.707-DRAFT</rate-limiter.version>
+        <bucket4j.version>6.4.1</bucket4j.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <it.skip>true</it.skip>
         <tests.skip>false</tests.skip>
@@ -43,6 +44,12 @@
             <groupId>com.looseboxes</groupId>
             <artifactId>rate-limiter-web-core</artifactId>
             <version>${rate-limiter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>${bucket4j.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

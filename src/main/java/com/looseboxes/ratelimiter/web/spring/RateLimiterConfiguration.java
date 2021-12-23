@@ -4,7 +4,7 @@ import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
 import com.looseboxes.ratelimiter.cache.RateCache;
-import com.looseboxes.ratelimiter.cache.InMemoryRateCache;
+import com.looseboxes.ratelimiter.cache.MapRateCache;
 import com.looseboxes.ratelimiter.util.Experimental;
 import com.looseboxes.ratelimiter.web.core.*;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 
 @Configuration
 public class RateLimiterConfiguration {
@@ -41,8 +40,8 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateCache<Serializable, Serializable> rateCache() {
-        return new InMemoryRateCache<>();
+    public RateCache<Object, Object> rateCache() {
+        return new MapRateCache<>();
     }
 
     @Bean
@@ -53,10 +52,10 @@ public class RateLimiterConfiguration {
     @Bean
     public RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource(
             RequestToIdConverter<HttpServletRequest, String> requestToUriConverter,
-            RateCache<Serializable, Serializable> rateCache,
+            RateCache<Object, Object> rateCache,
             RateFactory rateFactory,
             RateExceededListener rateExceededListener,
-            RateLimiterFactory rateLimiterFactory,
+            RateLimiterFactory<Object> rateLimiterFactory,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
 
         return new RateLimiterConfigurationSource<>(
@@ -65,8 +64,8 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateLimiterFactory rateLimiterProvider() {
-        return new DefaultRateLimiterFactory();
+    public RateLimiterFactory<Object> rateLimiterProvider() {
+        return new DefaultRateLimiterFactory<>();
     }
 
     @Bean
@@ -83,9 +82,8 @@ public class RateLimiterConfiguration {
 
     @Bean
     @Experimental
-    public RateRepository<Serializable, LimitWithinDurationDTO<Serializable>> rateRepository(RateCache<Serializable, Serializable> rateCache) {
-        // @TODO This will not work if the user over rides the default case where we use only once cache
-        // This override could be done by registering one or more other caches
+    public RateRepository<Object, LimitWithinDurationDTO<Object>> rateRepository(RateCache<Object, Object> rateCache) {
+        // @TODO This will not work if the user overrides the default case where we use only one cache
         return new LimitWithinDurationRepository<>(rateCache);
     }
 }
