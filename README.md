@@ -7,26 +7,43 @@ Please first read the [rate-limiter-web-core documentation](https://github.com/p
 
 ### Usage
 
-__1. Annotate your spring application class as shown:__
+__1. Extend RateLimiterWebMvcConfigurer__
+
+```java
+import com.looseboxes.ratelimiter.RateLimiter;
+import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
+import org.springframework.context.annotation.Configuration;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Configuration
+public class MyWebMvcConfigurer extends RateLimiterWebMvcConfigurer {
+
+    public MyWebMvcConfigurer(RateLimiter<HttpServletRequest> rateLimiter) {
+        super(rateLimiter);
+    }
+}
+```
+
+A `RateLimiter` bean is provided by default. Therefore, you could alternatively
+implement your own `WebMvcConfigurer` and use the `RateLimiter` bean as you see fit.
+
+__2. Annotate your spring application class as shown:__
 
 ```java
 
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
 
-@SpringBootApplication(scanBasePackageClasses = {
-        RateLimiterWebMvcConfigurer.class
-})
-@EnableConfigurationProperties({
-        RateLimitPropertiesSpring.class
-})
+@SpringBootApplication(scanBasePackageClasses = { MyWebMvcConfigurer.class })
+@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
 @ServletComponentScan // Required for scanning of components like @WebListener
 public class MySpringApplication {
 
 }
 ```
 
-__2. Add some required properties__
+__3. Add required rate-limiter properties__
 
 ```yaml
 rate-limiter:
@@ -35,11 +52,11 @@ rate-limiter:
   resource-packages: com.myapplicatioon.web.rest
 ```
 
-__3. Add an exception handler for RateExceededException.__ 
+__4. Add an exception handler for RateExceededException.__ 
 
 [Exception handling for rest with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
 
-__4. Annotate controller or separate methods. (Optional)__
+__5. Annotate classes and/or methods.__
 
 ```java
 import com.looseboxes.ratelimiter.annotation.RateLimit;
@@ -63,9 +80,13 @@ public class MyResource {
 }
 ```
 
-__5. Add some properties (Optional)__
+__6. Configure rate limiting__
 
-You can configure rate limiting from the properties file. 
+Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core). 
+
+__Notes:__
+
+You can configure rate limiting from the properties file.
 
 ```yaml
 rate-limiter:
@@ -79,15 +100,14 @@ rate-limiter:
           timeout: SECONDS
 ```
 
-By using the fully qualified class name as the group name we can configure rate limiting 
+  - By using the fully qualified class name as the group name we can configure rate limiting
 of specific resources from application configuration properties.
 
-We could also narrow the specified properties to a specific method. For example, in this case,
+  - You could also narrow the specified properties to a specific method. For example, in this case,
 by using `com.myapplicatioon.web.rest.MyResource.greet(java.lang.String)` as the group name.
 
-__6. Configure rate limiting__
-
-Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core). 
+If you create a `org.springframework.cache.Cache` named `com.looseboxes.ratelimiter.web.spring.cache` 
+(the default cache name), it will be used to create the default `RateCache`.
 
 Enjoy! :wink:
 
