@@ -17,8 +17,11 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
 
     private final RateCache<ID, V> rateCache;
 
-    public LimitWithinDurationRepository(RateCache<ID, V> rateCache) {
+    private final PageSupplier<ID> idsSupplier;
+
+    public LimitWithinDurationRepository(RateCache<ID, V> rateCache, PageSupplier<ID> idsSupplier) {
         this.rateCache = Objects.requireNonNull(rateCache);
+        this.idsSupplier = Objects.requireNonNull(idsSupplier);
     }
 
     @Override
@@ -34,7 +37,7 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
 
     @Override
     public Page<LimitWithinDurationDTO<ID>> findAll(Example<LimitWithinDurationDTO<ID>> example, Pageable pageable) {
-        log.debug("Request to get rate-limit data: {}", pageable);
+        log.debug("Request to getPage rate-limit data: {}", pageable);
 
         final Page<LimitWithinDurationDTO<ID>> result;
 
@@ -81,9 +84,11 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
     }
 
     private List<LimitWithinDurationDTO<ID>> findAll(Predicate<LimitWithinDurationDTO<ID>> filter) {
-        final List<LimitWithinDurationDTO<ID>> rateList = new ArrayList<>();
-        rateCache.forEach((id, rate) -> {
-            LimitWithinDurationDTO<ID> dto = toDto(id, rate);
+        final List<ID> ids = idsSupplier.getAll();
+        final List<LimitWithinDurationDTO<ID>> rateList = new ArrayList<>(ids.size());
+        ids.forEach(id -> {
+            V value = rateCache.get(id);
+            LimitWithinDurationDTO<ID> dto = toDto(id, value);
             if (filter.test(dto)) {
                 rateList.add(dto);
             }
