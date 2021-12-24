@@ -3,6 +3,7 @@ package com.looseboxes.ratelimiter.web.spring.weblayertests;
 import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.MethodAnnotationProcessor;
+import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
 import com.looseboxes.ratelimiter.util.RateConfigList;
@@ -10,6 +11,8 @@ import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import java.lang.reflect.Method;
@@ -18,16 +21,27 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication(scanBasePackageClasses = {
-        ResourceWithClassLimits.class,
-        ResourceWithMethodLimits.class,
-        RateLimiterConfiguration.class
+        RateLimiterConfiguration.class, TestWebMvcConfigurer.class,
+        ResourceWithClassLimits.class, ResourceWithMethodLimits.class,
 })
 @EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
 public class WebLayerTestConfiguration extends RateLimiterConfiguration{
 
+    private final ConcurrentMapCacheManager concurrentMapCacheManager = new ConcurrentMapCacheManager();
+
     public WebLayerTestConfiguration(RateLimitPropertiesSpring rateLimitProperties) {
+        concurrentMapCacheManager.setCacheNames(Collections.singletonList(DEFAULT_CACHE_NAME));
         rateLimitProperties.setResourcePackages(Collections.singletonList(ResourceWithMethodLimits.class.getPackage().getName()));
         rateLimitProperties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));
+    }
+
+    @Override
+    @Bean
+    public RateCache<Object, Object> rateCache(CacheManager cacheManager) {
+        if(cacheManager == null) {
+            cacheManager = concurrentMapCacheManager;
+        }
+        return super.rateCache(cacheManager);
     }
 
     private RateConfigList getRateLimitConfigList() {

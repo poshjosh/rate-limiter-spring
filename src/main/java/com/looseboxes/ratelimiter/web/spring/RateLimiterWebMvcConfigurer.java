@@ -1,9 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
-import com.looseboxes.ratelimiter.web.core.*;
-import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
-import org.springframework.context.annotation.Configuration;
+import com.looseboxes.ratelimiter.RateLimiter;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,25 +9,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Configuration
 public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
 
     private final HandlerInterceptor handlerInterceptor;
 
-    public RateLimiterWebMvcConfigurer(
-            RateLimitProperties properties,
-            RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource,
-            ResourceClassesSupplier resourceClassesSupplier,
-            AnnotationProcessor<Class<?>> annotationProcessor) {
-
-        RateLimitHandler<HttpServletRequest> rateLimitHandler = new RateLimitHandler<>(
-                properties, rateLimiterConfigurationSource, resourceClassesSupplier.get(), annotationProcessor
-        );
+    public RateLimiterWebMvcConfigurer(RateLimiter<HttpServletRequest> rateLimiter) {
 
         handlerInterceptor = new HandlerInterceptor() {
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-                rateLimitHandler.handleRequest(request);
+                rateLimiter.increment(request);
                 return true;
             }
         };
