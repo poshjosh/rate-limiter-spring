@@ -2,6 +2,7 @@ package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
+import com.looseboxes.ratelimiter.web.spring.uri.MethodLevelPathPatterns;
 import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.util.*;

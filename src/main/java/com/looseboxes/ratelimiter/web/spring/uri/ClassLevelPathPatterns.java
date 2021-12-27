@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring;
+package com.looseboxes.ratelimiter.web.spring.uri;
 
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import org.slf4j.Logger;
@@ -10,16 +10,16 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MethodLevelPathPatterns implements PathPatterns<String> {
+public class ClassLevelPathPatterns implements PathPatterns<String> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodLevelPathPatterns.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClassLevelPathPatterns.class);
 
     private final PathPattern [] pathPatterns;
     private final List<String> stringPatterns;
 
     private final PathPatternParser pathPatternParser;
 
-    public MethodLevelPathPatterns(String... pathPatterns) {
+    public ClassLevelPathPatterns(String... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = new PathPattern[pathPatterns.length];
         for(int i = 0; i<pathPatterns.length; i++) {
@@ -29,7 +29,7 @@ public class MethodLevelPathPatterns implements PathPatterns<String> {
         LOG.trace("Path patterns: {}", stringPatterns);
     }
 
-    MethodLevelPathPatterns(PathPattern... pathPatterns) {
+    ClassLevelPathPatterns(PathPattern... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = Objects.requireNonNull(pathPatterns);
         this.stringPatterns = Arrays.stream(pathPatterns)
@@ -43,23 +43,24 @@ public class MethodLevelPathPatterns implements PathPatterns<String> {
     }
 
     public PathPatterns<String> combine(PathPatterns<String> other) {
+        // issue #001 For now Parent patterns must always return a child type from the combine method
         return new MethodLevelPathPatterns(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
     }
 
     @Override
     public boolean matches(String uri) {
         if(LOG.isTraceEnabled()) {
-            LOG.trace("Checking if: {} matches any: {}", uri, Arrays.toString(pathPatterns));
+            LOG.trace("Checking if: {}, matches start of any: {}", uri, Arrays.toString(pathPatterns));
         }
         final PathContainer pathContainer = pathContainer(uri);
         for(PathPattern pathPattern : pathPatterns) {
-            if(pathPattern.matches(pathContainer)) {
-                LOG.trace("Matches: true, uri: {}, pathPattern: {}", uri, pathPattern);
+            if(pathPattern.matchStartOfPath(pathContainer) != null) {
+                LOG.trace("Matches start: true, uri: {}, path pattern: {}", uri, pathPattern);
                 return true;
             }
         }
-        if(LOG.isTraceEnabled()) {
-            LOG.trace("Matches: false, uri: {}, pathPatterns: {}", uri, Arrays.toString(pathPatterns));
+        if(LOG.isInfoEnabled()) {
+            LOG.trace("Matches start: false, uri: {}, path patterns:{} ", uri, Arrays.toString(pathPatterns));
         }
         return false;
     }
@@ -72,7 +73,7 @@ public class MethodLevelPathPatterns implements PathPatterns<String> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MethodLevelPathPatterns that = (MethodLevelPathPatterns) o;
+        ClassLevelPathPatterns that = (ClassLevelPathPatterns) o;
         return Arrays.equals(pathPatterns, that.pathPatterns);
     }
 
@@ -83,7 +84,7 @@ public class MethodLevelPathPatterns implements PathPatterns<String> {
 
     @Override
     public String toString() {
-        return "MethodLevelPathPatterns{" +
+        return "ClassLevelPathPatterns{" +
                 "pathPatterns=" + Arrays.toString(pathPatterns) +
                 '}';
     }

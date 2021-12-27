@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring;
+package com.looseboxes.ratelimiter.web.spring.uri;
 
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import org.junit.jupiter.api.Test;

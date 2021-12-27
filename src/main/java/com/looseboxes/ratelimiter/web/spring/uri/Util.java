@@ -1,4 +1,4 @@
-package com.looseboxes.ratelimiter.web.spring;
+package com.looseboxes.ratelimiter.web.spring.uri;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.pattern.PathPattern;
