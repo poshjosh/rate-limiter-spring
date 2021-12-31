@@ -56,19 +56,19 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
         return this::getKeys;
     }
 
-    public List<K> getKeys(int offset, int limit) {
+    public List<K> getKeys(long offset, long limit) {
         try {
             keysLock.readLock().lock();
             final int size = keys.size();
             if (offset >= size) {
                 return Collections.emptyList();
             } else {
-                final int n = offset + limit;
-                final int end = Math.min(n, size);
+                final long n = offset + limit;
+                final long end = Math.min(n, size);
                 if (end - offset <= 0) {
                     return Collections.emptyList();
                 } else {
-                    return keys.subList(offset, end);
+                    return keys.subList((int)offset, (int)end);
                 }
             }
         }finally {

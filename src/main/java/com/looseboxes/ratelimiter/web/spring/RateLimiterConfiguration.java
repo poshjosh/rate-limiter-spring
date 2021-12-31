@@ -87,7 +87,7 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public RateLimiterFactory<Object> rateLimiterProvider() {
+    public RateLimiterFactory<Object> rateLimiterFactory() {
         return new DefaultRateLimiterFactory<>();
     }
 

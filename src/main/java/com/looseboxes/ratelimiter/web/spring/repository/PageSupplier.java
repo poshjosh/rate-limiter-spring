@@ -6,8 +6,8 @@ import java.util.List;
 public interface PageSupplier<K> {
 
     default List<K> getAll() {
-        return getPage(0, Integer.MAX_VALUE);
+        return getPage(0, Long.MAX_VALUE);
     }
 
-    List<K> getPage(int offset, int limit);
+    List<K> getPage(long offset, long limit);
 }

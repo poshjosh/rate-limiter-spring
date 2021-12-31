@@ -47,6 +47,8 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
         if(pageSize < 1 || offset < 0) {
             result = Page.empty(pageable);
         }else{
+
+            // Though sub-optimal, we first find all then sort everything, before applying offset and pageSize
             final List<LimitWithinDurationDTO<ID>> rateList = example == null ? findAll() : findAll(example);
 
             log.debug("Found {} rates for {}", rateList.size(), example);
@@ -84,7 +86,11 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
     }
 
     private List<LimitWithinDurationDTO<ID>> findAll(Predicate<LimitWithinDurationDTO<ID>> filter) {
-        final List<ID> ids = idsSupplier.getAll();
+        return findAll(0, Long.MAX_VALUE, filter);
+    }
+
+    private List<LimitWithinDurationDTO<ID>> findAll(long offset, long limit, Predicate<LimitWithinDurationDTO<ID>> filter) {
+        final List<ID> ids = idsSupplier.getPage(offset, limit);
         final List<LimitWithinDurationDTO<ID>> rateList = new ArrayList<>(ids.size());
         ids.forEach(id -> {
             V value = rateCache.get(id);
