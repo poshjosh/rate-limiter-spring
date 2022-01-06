@@ -96,8 +96,7 @@ rate-limiter:
       limits:
         -
           limit: 25
-          duration: 1
-          timeout: SECONDS
+          duration: PT1S
 ```
 
   - By using the fully qualified class name as the group name we can configure rate limiting
