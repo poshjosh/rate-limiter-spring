@@ -16,9 +16,9 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication(scanBasePackageClasses = {
         RateLimiterConfiguration.class, TestWebMvcConfigurer.class,
@@ -54,8 +54,7 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
     private List<RateConfig> getRateLimits() {
         RateConfig config = new RateConfig();
         config.setLimit(Constants.OVERALL_LIMIT);
-        config.setDuration(Constants.OVERALL_DURATION_SECONDS);
-        config.setTimeUnit(TimeUnit.SECONDS);
+        config.setDuration(Duration.ofSeconds(Constants.OVERALL_DURATION_SECONDS));
         return Collections.singletonList(config);
     }
 
