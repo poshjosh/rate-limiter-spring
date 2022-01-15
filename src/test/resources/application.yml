@@ -1,0 +1,10 @@
+debug: true
+
+logging:
+  level:
+    ROOT: DEBUG
+    #com.looseboxes.ratelimiter.annotation.AbstractAnnotationProcessor: TRACE
+    com.looseboxes.ratelimiter: DEBUG
+    org.springframework: INFO
+    com.sun: DEBUG
+    com.sun.jmx: DEBUG
