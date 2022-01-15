@@ -2,11 +2,11 @@ package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.util.ClassFilter;
 import com.looseboxes.ratelimiter.util.ClassesInPackageFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +14,14 @@ import java.util.List;
 
 public class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ClassesInPackageFinderSpring.class);
+
     @Override
     public List<Class<?>> findClasses(String packageName, ClassFilter classFilter) {
         try{
-            return Collections.unmodifiableList(getClasses(packageName, classFilter));
+            List<Class<?>> classes = Collections.unmodifiableList(getClasses(packageName, classFilter));
+            LOG.debug("Package: {}, classes: {}", packageName, classes);
+            return classes;
         }catch(ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -32,7 +36,7 @@ public class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
             ClassPathScanningCandidateComponentProvider scanner =
                     new ClassPathScanningCandidateComponentProvider(true);
 
-            scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
+//            scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
 
             for (BeanDefinition beanDefinition : scanner.findCandidateComponents(controllerPackage)){
 
