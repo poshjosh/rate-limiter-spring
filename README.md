@@ -52,11 +52,7 @@ rate-limiter:
   resource-packages: com.myapplicatioon.web.rest
 ```
 
-__4. Add an exception handler for RateExceededException.__ 
-
-[Exception handling for rest with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
-
-__5. Annotate classes and/or methods.__
+__4. Annotate classes and/or methods.__
 
 ```java
 import com.looseboxes.ratelimiter.annotation.RateLimit;
@@ -80,9 +76,11 @@ public class MyResource {
 }
 ```
 
-__6. Configure rate limiting__
+__5. Configure rate limiting__
 
 Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core). 
+
+In addition, you could use spring specific features, like `com.looseboxes.ratelimiter.web.spring.SpringRateCache`
 
 __Notes:__
 
@@ -104,9 +102,6 @@ of specific resources from application configuration properties.
 
   - You could also narrow the specified properties to a specific method. For example, in this case,
 by using `com.myapplicatioon.web.rest.MyResource.greet(java.lang.String)` as the group name.
-
-If you create a `org.springframework.cache.Cache` named `com.looseboxes.ratelimiter.web.spring.cache` 
-(the default cache name), it will be used to create the default `RateCache`.
 
 Enjoy! :wink:
 
