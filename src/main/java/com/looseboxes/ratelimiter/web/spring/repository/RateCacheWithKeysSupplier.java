@@ -30,7 +30,9 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
     @Override
     public boolean putIfAbsent(K key, V value) {
         boolean result = delegate.putIfAbsent(key, value);
-        addKey(key);
+        if(result) {
+            addKey(key);
+        }
         return result;
     }
 
@@ -43,7 +45,9 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
     @Override
     public boolean remove(K key) {
         boolean result = delegate.remove(key);
-        removeKey(key);
+        if(result) {
+            removeKey(key);
+        }
         return result;
     }
 
