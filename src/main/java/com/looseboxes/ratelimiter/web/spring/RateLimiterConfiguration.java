@@ -51,7 +51,7 @@ public class RateLimiterConfiguration {
     @Bean
     public MatcherRegistry<HttpServletRequest> matcherRegistry(
             RequestToIdConverter<HttpServletRequest, String> requestToUriConverter) {
-        return new DefaultMatcherRegistry<>(requestToUriConverter, new ClassIdProvider(), new MethodIdProvider());
+        return new DefaultMatcherRegistry<>(requestToUriConverter, new ClassPathPatternsProvider(), new MethodPathPatternsProvider());
     }
 
     @Bean

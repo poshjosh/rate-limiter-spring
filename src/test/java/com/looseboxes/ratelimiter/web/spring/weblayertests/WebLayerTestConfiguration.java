@@ -17,6 +17,7 @@ import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
@@ -25,11 +26,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
-@SpringBootApplication(scanBasePackageClasses = {
-        RateLimiterConfiguration.class, TestWebMvcConfigurer.class,
-        ResourceWithClassLimits.class, ResourceWithMethodLimits.class,
-})
-@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
+@TestConfiguration
 public class WebLayerTestConfiguration extends RateLimiterConfiguration{
 
     private final String testCacheName = this.getClass().getPackage().getName() + ".cache";

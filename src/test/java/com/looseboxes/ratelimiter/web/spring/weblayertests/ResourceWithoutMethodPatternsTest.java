@@ -4,18 +4,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@WebMvcControllersTest(controllers = { ResourceWithoutClassPatterns.class })
-public class ResourceWithoutClassPatternsTest extends AbstractResourceTest {
+@WebMvcControllersTest(controllers = { ResourceWithoutMethodPatterns.class })
+public class ResourceWithoutMethodPatternsTest extends AbstractResourceTest {
 
     @Test
     public void shouldSucceedWhenWithinLimit() throws Exception {
-        shouldReturnDefaultResult(ApiEndpoints.NO_CLASS_PATTERNS_LIMIT_1);
+        shouldReturnDefaultResult(ApiEndpoints.NO_METHOD_PATTERNS_LIMIT_1);
     }
 
     @Test
     public void shouldFailWhenMethodLimitIsExceeded() throws Exception {
 
-        final String endpoint = ApiEndpoints.NO_CLASS_PATTERNS_LIMIT_1;
+        final String endpoint = ApiEndpoints.NO_METHOD_PATTERNS_LIMIT_1;
 
         shouldReturnDefaultResult(endpoint);
 

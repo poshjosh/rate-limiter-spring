@@ -1,8 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.annotation.RateLimit;
-import com.looseboxes.ratelimiter.annotation.RateLimitGroup;
-import com.looseboxes.ratelimiter.rates.Logic;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,11 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("")
-public class ResourceWithoutClassPatterns {
+@RequestMapping(ApiEndpoints.API)
+public class ResourceWithoutMethodPatterns {
 
     interface Endpoints{
-        String LIMIT_1 = "/limit_1";
+        String LIMIT_1 = ""; // No method patterns
     }
 
     @RequestMapping(Endpoints.LIMIT_1)

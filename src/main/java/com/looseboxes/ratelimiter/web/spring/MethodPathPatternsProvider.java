@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class MethodIdProvider implements IdProvider<Method, PathPatterns<String>> {
+public class MethodPathPatternsProvider implements IdProvider<Method, PathPatterns<String>> {
 
     private final IdProvider<Class<?>, PathPatterns<String>> classIdProvider;
 
-    public MethodIdProvider() {
-        this(new ClassIdProvider());
+    public MethodPathPatternsProvider() {
+        this(new ClassPathPatternsProvider());
     }
 
-    public MethodIdProvider(IdProvider<Class<?>, PathPatterns<String>> classIdProvider) {
+    public MethodPathPatternsProvider(IdProvider<Class<?>, PathPatterns<String>> classIdProvider) {
         this.classIdProvider = Objects.requireNonNull(classIdProvider);
     }
 

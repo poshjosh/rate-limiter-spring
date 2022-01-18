@@ -5,9 +5,9 @@ import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import com.looseboxes.ratelimiter.web.spring.uri.ClassLevelPathPatterns;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-public class ClassIdProvider implements IdProvider<Class<?>, PathPatterns<String>> {
+public class ClassPathPatternsProvider implements IdProvider<Class<?>, PathPatterns<String>> {
 
-    public ClassIdProvider() { }
+    public ClassPathPatternsProvider() { }
 
     @Override
     public PathPatterns<String> getId(Class<?> source) {

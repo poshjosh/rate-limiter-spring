@@ -3,13 +3,12 @@ package com.looseboxes.ratelimiter.web.spring.weblayertests;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@WebMvcTest(ResourceWithMethodLimits.class)
+@WebMvcControllersTest(controllers = { ResourceWithMethodLimits.class })
 public class ResourceWithMethodLimitsTest extends AbstractResourceTest {
 
     @Autowired

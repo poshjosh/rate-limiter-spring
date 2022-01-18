@@ -4,13 +4,12 @@ import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationDTO;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@WebMvcTest(ResourceWithMethodLimits.class)
+@WebMvcControllersTest(controllers = { ResourceWithMethodLimits.class })
 public class RateRepositoryTest extends AbstractResourceTest {
 
     @Autowired
