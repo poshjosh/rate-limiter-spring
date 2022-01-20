@@ -37,6 +37,8 @@ public class RateRepositoryTest extends AbstractResourceTest {
         }
 
         List<LimitWithinDurationDTO<Object>> rates = rateRepository.findAll();
+        assertThat(rates).isNotEmpty();
+
         for(LimitWithinDurationDTO<Object> rate : rates) {
             assertThat(rate.getLimit()).isEqualTo(expectedAmount);
         }

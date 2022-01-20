@@ -11,9 +11,7 @@ import com.looseboxes.ratelimiter.web.core.RateLimiterConfigurer;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.SpringRateCache;
-import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationDTO;
-import com.looseboxes.ratelimiter.web.spring.repository.LimitWithinDurationRepository;
-import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
+import com.looseboxes.ratelimiter.web.spring.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,17 +30,22 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
     private final String testCacheName = this.getClass().getPackage().getName() + ".cache";
     private final ConcurrentMapCacheManager concurrentMapCacheManager = new ConcurrentMapCacheManager();
     private final RateCache rateCache;
+    private final PageSupplier keysSupplier;
 
     public WebLayerTestConfiguration(RateLimitPropertiesSpring rateLimitProperties) {
         concurrentMapCacheManager.setCacheNames(Collections.singletonList(testCacheName));
         rateLimitProperties.setResourcePackages(Collections.singletonList(ResourceWithMethodLimits.class.getPackage().getName()));
         rateLimitProperties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));
-        rateCache = new SpringRateCache<>(concurrentMapCacheManager.getCache(testCacheName));
+        RateCacheWithKeysSupplier rateCacheWithKeysSupplier = new RateCacheWithKeysSupplier<>(
+                new SpringRateCache<>(concurrentMapCacheManager.getCache(testCacheName))
+        );
+        this.rateCache = rateCacheWithKeysSupplier;
+        this.keysSupplier = rateCacheWithKeysSupplier.getKeysSupplier();
     }
 
     @Bean
     public RateRepository<Object, LimitWithinDurationDTO<Object>> rateRepository() {
-        return new LimitWithinDurationRepository<>(rateCache);
+        return new LimitWithinDurationRepository<>(rateCache, keysSupplier);
     }
 
     @Bean

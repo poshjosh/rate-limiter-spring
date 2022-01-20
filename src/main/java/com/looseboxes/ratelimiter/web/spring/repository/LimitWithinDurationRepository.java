@@ -15,16 +15,12 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
 
     private final Logger log = LoggerFactory.getLogger(LimitWithinDurationRepository.class);
 
-    private final RateCacheWithKeysSupplier<ID, V> rateCache;
+    private final RateCache<ID, V> rateCache;
+    private final PageSupplier<ID> keysSupplier;
 
-    public LimitWithinDurationRepository(RateCache<ID, V> rateCache) {
-        this.rateCache = toRateCacheWithKeysSupplier(rateCache);
-    }
-
-    private RateCacheWithKeysSupplier<ID, V> toRateCacheWithKeysSupplier(RateCache<ID, V> rateCache) {
-        return rateCache instanceof RateCacheWithKeysSupplier ?
-                ((RateCacheWithKeysSupplier<ID, V>)rateCache) :
-                new RateCacheWithKeysSupplier<>(rateCache);
+    public LimitWithinDurationRepository(RateCache<ID, V> rateCache, PageSupplier<ID> keysSupplier) {
+        this.rateCache = Objects.requireNonNull(rateCache);
+        this.keysSupplier = Objects.requireNonNull(keysSupplier);
     }
 
     @Override
@@ -93,7 +89,10 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
     }
 
     private List<LimitWithinDurationDTO<ID>> findAll(long offset, long limit, Predicate<LimitWithinDurationDTO<ID>> filter) {
-        final List<ID> ids = rateCache.getKeysSupplier().getPage(offset, limit);
+        final List<ID> ids = keysSupplier.getPage(offset, limit);
+        if (log.isTraceEnabled()) {
+            log.trace("Offset: {}, limit: {}, IDs: {}", offset, limit, ids);
+        }
         final List<LimitWithinDurationDTO<ID>> rateList = new ArrayList<>(ids.size());
         ids.forEach(id -> {
             V value = rateCache.get(id);

@@ -4,6 +4,7 @@ import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import com.looseboxes.ratelimiter.web.spring.uri.MethodLevelPathPatterns;
 import org.springframework.web.bind.annotation.*;
+
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -24,64 +25,55 @@ public class MethodPathPatternsProvider implements IdProvider<Method, PathPatter
 
         final PathPatterns<String> classLevelPathPatterns = classIdProvider.getId(method.getDeclaringClass());
 
-        if (method.getAnnotation(GetMapping.class) != null) {
-            PathPatterns<String> mapping = buildPathPatterns(classLevelPathPatterns, method.getAnnotation(GetMapping.class).value());
-            if(isNone(mapping)) {
-                mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(GetMapping.class).path());
-            }
-            return mapping;
+        GetMapping getMapping = method.getAnnotation(GetMapping.class);
+        if (getMapping != null) {
+            String [] methodLevelPathPatterns = selectPatterns(getMapping.value(), getMapping.path());
+            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        if (method.getAnnotation(PostMapping.class) != null) {
-            PathPatterns<String> mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(PostMapping.class).value());
-            if(isNone(mapping)) {
-                mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(PostMapping.class).path());
-            }
-            return mapping;
+        PostMapping postMapping = method.getAnnotation(PostMapping.class);
+        if (postMapping != null) {
+            String [] methodLevelPathPatterns = selectPatterns(postMapping.value(), postMapping.path());
+            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        if (method.getAnnotation(PutMapping.class) != null) {
-            PathPatterns<String> mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(PutMapping.class).value());
-            if(isNone(mapping)) {
-                mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(PutMapping.class).path());
-            }
-            return mapping;
+        PutMapping putMapping = method.getAnnotation(PutMapping.class);
+        if (putMapping != null) {
+            String [] methodLevelPathPatterns = selectPatterns(putMapping.value(), putMapping.path());
+            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        if (method.getAnnotation(DeleteMapping.class) != null) {
-            PathPatterns<String> mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(DeleteMapping.class).value());
-            if(isNone(mapping)) {
-                mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(DeleteMapping.class).path());
-            }
-            return mapping;
+        DeleteMapping deleteMapping = method.getAnnotation(DeleteMapping.class);
+        if (deleteMapping != null) {
+            String [] methodLevelPathPatterns = selectPatterns(deleteMapping.value(), deleteMapping.path());
+            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        if (method.getAnnotation(PatchMapping.class) != null) {
-            PathPatterns<String> mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(PatchMapping.class).value());
-            if(isNone(mapping)) {
-                mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(PatchMapping.class).path());
-            }
-            return mapping;
+        PatchMapping patchMapping = method.getAnnotation(PatchMapping.class);
+        if (patchMapping != null) {
+            String [] methodLevelPathPatterns = selectPatterns(patchMapping.value(), patchMapping.path());
+            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        if (method.getAnnotation(RequestMapping.class) != null) {
-            PathPatterns<String> mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(RequestMapping.class).value());
-            if(isNone(mapping)) {
-                mapping =  buildPathPatterns(classLevelPathPatterns, method.getAnnotation(RequestMapping.class).path());
-            }
-            return mapping;
+        RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+        if (requestMapping != null) {
+            String [] methodLevelPathPatterns = selectPatterns(requestMapping.value(), requestMapping.path());
+            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
         return classLevelPathPatterns;
     }
 
-    private <K> boolean isNone(PathPatterns<K> pathPatterns) {
-        return PathPatterns.none().equals(pathPatterns);
+    private String [] selectPatterns(String [] subPathPatterns1, String [] subPathPatterns2) {
+        if(subPathPatterns1.length == 0) {
+            return subPathPatterns2;
+        }
+        return subPathPatterns1;
     }
 
     private PathPatterns<String> buildPathPatterns(PathPatterns<String> classLevelPathPatterns, String [] subPathPatterns) {
         if(subPathPatterns == null || subPathPatterns.length == 0) {
-            return PathPatterns.none();
+            return classLevelPathPatterns;
         }
         return classLevelPathPatterns.combine(new MethodLevelPathPatterns(subPathPatterns));
     }

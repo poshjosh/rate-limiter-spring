@@ -2,6 +2,8 @@ package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.util.Experimental;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +14,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Experimental
 public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
+
+    private static final Logger LOG = LoggerFactory.getLogger(RateCacheWithKeysSupplier.class);
 
     private final RateCache<K, V> delegate;
 
@@ -81,6 +85,7 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
     }
 
     private void addKey(K key) {
+        LOG.trace("Adding key: {}", key);
         try{
             keysLock.writeLock().lock();
             keys.add(key);
@@ -90,6 +95,7 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
     }
 
     private void removeKey(K key) {
+        LOG.trace("Removing key: {}", key);
         try{
             keysLock.writeLock().lock();
             keys.remove(key);
