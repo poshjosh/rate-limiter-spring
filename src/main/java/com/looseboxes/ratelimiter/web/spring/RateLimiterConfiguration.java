@@ -27,9 +27,17 @@ public class RateLimiterConfiguration {
     public RateLimiter<HttpServletRequest> rateLimiter(
             RateLimitProperties properties,
             RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource,
+            RateLimiterNodeContext<HttpServletRequest, ?> rateLimiterNodeContext) {
+        return new WebRequestRateLimiter<>(properties, rateLimiterConfigurationSource, rateLimiterNodeContext);
+    }
+
+    @Bean
+    public RateLimiterNodeContext<HttpServletRequest, ?> rateLimiterNodeContext(
+            RateLimitProperties properties,
+            RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource,
             ResourceClassesSupplier resourceClassesSupplier,
             AnnotationProcessor<Class<?>> annotationProcessor) {
-        return new WebRequestRateLimiter<>(
+        return new RateLimiterNodeContext<>(
                 properties, rateLimiterConfigurationSource, resourceClassesSupplier.get(), annotationProcessor);
     }
 
