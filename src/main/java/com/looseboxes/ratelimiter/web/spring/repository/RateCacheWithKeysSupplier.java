@@ -88,7 +88,9 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
         LOG.trace("Adding key: {}", key);
         try{
             keysLock.writeLock().lock();
-            keys.add(key);
+            if(!keys.contains(key)) {
+                keys.add(key);
+            }
         }finally {
             keysLock.writeLock().unlock();
         }
