@@ -3,7 +3,10 @@ package com.looseboxes.ratelimiter.web.spring;
 import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.annotation.AnnotationProcessor;
 import com.looseboxes.ratelimiter.annotation.ClassAnnotationProcessor;
+import com.looseboxes.ratelimiter.annotation.IdProvider;
+import com.looseboxes.ratelimiter.util.ClassesInPackageFinder;
 import com.looseboxes.ratelimiter.web.core.*;
+import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 
 @Configuration
 public class RateLimiterConfiguration {
@@ -53,13 +57,25 @@ public class RateLimiterConfiguration {
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
 
         return new RateLimiterConfigurationSource<>(
-                matcherRegistry, new DefaultRateLimiterConfig<>(), rateLimiterFactory, rateLimiterConfigurer);
+                matcherRegistry, newRateLimiterConfig(), rateLimiterFactory, rateLimiterConfigurer);
+    }
+
+    protected RateLimiterConfig<Object, Object> newRateLimiterConfig() {
+        return new DefaultRateLimiterConfig<>();
     }
 
     @Bean
     public MatcherRegistry<HttpServletRequest> matcherRegistry(
             RequestToIdConverter<HttpServletRequest, String> requestToUriConverter) {
-        return new DefaultMatcherRegistry<>(requestToUriConverter, new ClassPathPatternsProvider(), new MethodPathPatternsProvider());
+        return new DefaultMatcherRegistry<>(requestToUriConverter, newClassPathPatternsProvider(), newMethodPathPatternsProvider());
+    }
+
+    protected IdProvider<Class<?>, PathPatterns<String>> newClassPathPatternsProvider() {
+        return new ClassPathPatternsProvider();
+    }
+
+    protected IdProvider<Method, PathPatterns<String>> newMethodPathPatternsProvider() {
+        return new MethodPathPatternsProvider();
     }
 
     @Bean
@@ -70,8 +86,12 @@ public class RateLimiterConfiguration {
     @Bean
     public ResourceClassesSupplier resourceClassesSupplier(RateLimitProperties properties) {
         return new DefaultResourceClassesSupplier(
-                new ClassesInPackageFinderSpring(), properties.getResourcePackages(),
+                newClassesInPackageFinder(), properties.getResourcePackages(),
                 Controller.class, RestController.class);
+    }
+
+    protected ClassesInPackageFinder newClassesInPackageFinder() {
+        return new ClassesInPackageFinderSpring();
     }
 
     @Bean
