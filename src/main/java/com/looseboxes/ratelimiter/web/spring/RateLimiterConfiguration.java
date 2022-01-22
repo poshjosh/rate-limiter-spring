@@ -53,14 +53,16 @@ public class RateLimiterConfiguration {
     @Bean
     public RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource(
             MatcherRegistry<HttpServletRequest> matcherRegistry,
+            RateLimiterConfig<Object, Object> rateLimiterConfig,
             RateLimiterFactory<Object> rateLimiterFactory,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
 
         return new RateLimiterConfigurationSource<>(
-                matcherRegistry, newRateLimiterConfig(), rateLimiterFactory, rateLimiterConfigurer);
+                matcherRegistry, rateLimiterConfig, rateLimiterFactory, rateLimiterConfigurer);
     }
 
-    protected RateLimiterConfig<Object, Object> newRateLimiterConfig() {
+    @Bean
+    public RateLimiterConfig<Object, Object> rateLimiterConfig() {
         return new DefaultRateLimiterConfig<>();
     }
 
@@ -84,13 +86,14 @@ public class RateLimiterConfiguration {
     }
 
     @Bean
-    public ResourceClassesSupplier resourceClassesSupplier(RateLimitProperties properties) {
+    public ResourceClassesSupplier resourceClassesSupplier(RateLimitProperties properties, ClassesInPackageFinder classesInPackageFinder) {
         return new DefaultResourceClassesSupplier(
-                newClassesInPackageFinder(), properties.getResourcePackages(),
+                classesInPackageFinder, properties.getResourcePackages(),
                 Controller.class, RestController.class);
     }
 
-    protected ClassesInPackageFinder newClassesInPackageFinder() {
+    @Bean
+    public ClassesInPackageFinder classesInPackageFinder() {
         return new ClassesInPackageFinderSpring();
     }
 

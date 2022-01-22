@@ -1,5 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
+import com.looseboxes.ratelimiter.RateLimiterConfig;
 import com.looseboxes.ratelimiter.RateLimiterFactory;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.rates.Logic;
@@ -48,12 +49,8 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
 
     @Bean
     @Override
-    public RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource(
-            MatcherRegistry<HttpServletRequest> matcherRegistry,
-            RateLimiterFactory<Object> rateLimiterFactory,
-            @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
-        return super.rateLimiterConfigurationSource(matcherRegistry, rateLimiterFactory, rateLimiterConfigurer)
-                .registerRateCache(rateCache);
+    public RateLimiterConfig<Object, Object> rateLimiterConfig() {
+        return super.rateLimiterConfig().rateCache(rateCache);
     }
 
     private RateConfigList getRateLimitConfigList() {
