@@ -1,24 +1,18 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.RateLimiterConfig;
-import com.looseboxes.ratelimiter.RateLimiterFactory;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
 import com.looseboxes.ratelimiter.util.RateConfigList;
-import com.looseboxes.ratelimiter.web.core.MatcherRegistry;
-import com.looseboxes.ratelimiter.web.core.RateLimiterConfigurationSource;
-import com.looseboxes.ratelimiter.web.core.RateLimiterConfigurer;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.SpringRateCache;
 import com.looseboxes.ratelimiter.web.spring.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -47,10 +41,9 @@ public class WebLayerTestConfiguration extends RateLimiterConfiguration{
         return new LimitWithinDurationRepository<>(rateCache, keysSupplier);
     }
 
-    @Bean
     @Override
-    public RateLimiterConfig<Object, Object> rateLimiterConfig() {
-        return super.rateLimiterConfig().rateCache(rateCache);
+    protected RateLimiterConfig<Object, Object> newRateLimiterConfig() {
+        return super.newRateLimiterConfig().rateCache(rateCache);
     }
 
     private RateConfigList getRateLimitConfigList() {

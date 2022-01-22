@@ -53,16 +53,13 @@ public class RateLimiterConfiguration {
     @Bean
     public RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource(
             MatcherRegistry<HttpServletRequest> matcherRegistry,
-            RateLimiterConfig<Object, Object> rateLimiterConfig,
             RateLimiterFactory<Object> rateLimiterFactory,
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> rateLimiterConfigurer) {
-
         return new RateLimiterConfigurationSource<>(
-                matcherRegistry, rateLimiterConfig, rateLimiterFactory, rateLimiterConfigurer);
+                matcherRegistry, newRateLimiterConfig(), rateLimiterFactory, rateLimiterConfigurer);
     }
 
-    @Bean
-    public RateLimiterConfig<Object, Object> rateLimiterConfig() {
+    protected RateLimiterConfig<Object, Object> newRateLimiterConfig() {
         return new DefaultRateLimiterConfig<>();
     }
 
