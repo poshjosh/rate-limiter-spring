@@ -95,10 +95,13 @@ public class LimitWithinDurationRepository<ID, V> implements RateRepository<ID, 
         }
         final List<LimitWithinDurationDTO<ID>> rateList = new ArrayList<>(ids.size());
         ids.forEach(id -> {
+            Objects.requireNonNull(id);
             V value = rateCache.get(id);
-            LimitWithinDurationDTO<ID> dto = toDto(id, value);
-            if (filter.test(dto)) {
-                rateList.add(dto);
+            if(value != null) {
+                LimitWithinDurationDTO<ID> dto = toDto(id, value);
+                if (filter.test(dto)) {
+                    rateList.add(dto);
+                }
             }
         });
         return rateList;
