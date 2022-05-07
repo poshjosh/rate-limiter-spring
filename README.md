@@ -11,13 +11,14 @@ __1. Extend RateLimiterWebMvcConfigurer__
 
 ```java
 import com.looseboxes.ratelimiter.RateLimiter;
+import com.looseboxes.ratelimiter.web.spring.AbstractRateLimiterWebMvcConfigurer;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Configuration
-public class MyWebMvcConfigurer extends RateLimiterWebMvcConfigurer {
+public class MyWebMvcConfigurer extends AbstractRateLimiterWebMvcConfigurer {
 
     public MyWebMvcConfigurer(RateLimiter<HttpServletRequest> rateLimiter) {
         super(rateLimiter);
@@ -33,10 +34,9 @@ __2. Annotate your spring application class as shown:__
 ```java
 
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
-import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
 
-@SpringBootApplication(scanBasePackageClasses = { MyWebMvcConfigurer.class })
-@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
+@SpringBootApplication(scanBasePackageClasses = {MyWebMvcConfigurer.class})
+@EnableConfigurationProperties({RateLimitPropertiesSpring.class})
 @ServletComponentScan // Required for scanning of components like @WebListener
 public class MySpringApplication {
 
