@@ -7,7 +7,9 @@ Please first read the [rate-limiter-web-core documentation](https://github.com/p
 
 ### Usage
 
-__1. Extend RateLimiterWebMvcConfigurer__
+__1a. Extend `com.looseboxes.ratelimiter.web.spring.AbstractRateLimiterWebMvcConfigurer`__
+
+This way a rate limiter will be created an automatically applied based on rate limiter related properties and annotations.
 
 ```java
 import com.looseboxes.ratelimiter.RateLimiter;
@@ -18,16 +20,17 @@ import org.springframework.context.annotation.Configuration;
 import javax.servlet.http.HttpServletRequest;
 
 @Configuration
-public class MyWebMvcConfigurer extends AbstractRateLimiterWebMvcConfigurer {
+public class RateLimiterWebMvcConfigurer extends AbstractRateLimiterWebMvcConfigurer {
 
-    public MyWebMvcConfigurer(RateLimiter<HttpServletRequest> rateLimiter) {
+    public RateLimiterWebMvcConfigurer(RateLimiter<HttpServletRequest> rateLimiter) {
         super(rateLimiter);
     }
 }
 ```
 
-A `RateLimiter` bean is provided by default. Therefore, you could alternatively
-implement your own `WebMvcConfigurer` and use the `RateLimiter` bean as you see fit.
+__1a. Alternatively, autowire the provided `RateLimiter<HttpServletRequest>` bean__
+
+This way you use the `RateLimiter` as you see fit.
 
 __2. Annotate your spring application class as shown:__
 
@@ -35,7 +38,7 @@ __2. Annotate your spring application class as shown:__
 
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
-@SpringBootApplication(scanBasePackageClasses = {MyWebMvcConfigurer.class})
+@SpringBootApplication(scanBasePackageClasses = {RateLimiterWebMvcConfigurer.class})
 @EnableConfigurationProperties({RateLimitPropertiesSpring.class})
 @ServletComponentScan // Required for scanning of components like @WebListener
 public class MySpringApplication {
