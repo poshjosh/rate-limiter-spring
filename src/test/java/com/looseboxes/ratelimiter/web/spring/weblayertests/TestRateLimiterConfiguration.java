@@ -9,6 +9,7 @@ import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.SpringRateCache;
 import com.looseboxes.ratelimiter.web.spring.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -18,14 +19,14 @@ import java.util.Collections;
 import java.util.List;
 
 @TestConfiguration
-public class WebLayerTestConfiguration extends RateLimiterConfiguration{
+public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
 
     private final String testCacheName = this.getClass().getPackage().getName() + ".cache";
     private final ConcurrentMapCacheManager concurrentMapCacheManager = new ConcurrentMapCacheManager();
     private final RateCache rateCache;
     private final PageSupplier keysSupplier;
 
-    public WebLayerTestConfiguration(RateLimitPropertiesSpring rateLimitProperties) {
+    public TestRateLimiterConfiguration(RateLimitPropertiesSpring rateLimitProperties) {
         concurrentMapCacheManager.setCacheNames(Collections.singletonList(testCacheName));
         rateLimitProperties.setResourcePackages(Collections.singletonList(ResourceWithMethodLimits.class.getPackage().getName()));
         rateLimitProperties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));

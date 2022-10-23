@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@WebMvcControllersTest(controllers = { ResourceWithMethodLimits.class })
+@WebMvcControllersTest(classes = { ResourceWithMethodLimits.class })
 public class RateRepositoryTest extends AbstractResourceTest {
 
     @Autowired

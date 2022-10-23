@@ -19,8 +19,8 @@ import java.lang.annotation.*;
 public @interface WebMvcControllersTest {
 
     @AliasFor(annotation = ContextConfiguration.class, attribute = "classes")
-    Class<?>[] contextConfiguration() default { WebLayerTestConfiguration.class, TestWebMvcConfigurer.class };
+    Class<?>[] classes() default {  };
 
     @AliasFor(annotation = Import.class, attribute = "value")
-    Class<?>[] controllers() default { };
+    Class<?>[] imports() default { TestRateLimiterConfiguration.class, RequestRateLimitingFilter.class };
 }

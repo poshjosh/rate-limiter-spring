@@ -7,46 +7,7 @@ Please first read the [rate-limiter-web-core documentation](https://github.com/p
 
 ### Usage
 
-__1a. Extend `com.looseboxes.ratelimiter.web.spring.AbstractRateLimiterWebMvcConfigurer`__
-
-This way a rate limiter will be created an automatically applied based on rate limiter related properties and annotations.
-
-```java
-import com.looseboxes.ratelimiter.RateLimiter;
-import com.looseboxes.ratelimiter.web.spring.AbstractRateLimiterWebMvcConfigurer;
-import com.looseboxes.ratelimiter.web.spring.RateLimiterWebMvcConfigurer;
-import org.springframework.context.annotation.Configuration;
-
-import javax.servlet.http.HttpServletRequest;
-
-@Configuration
-public class RateLimiterWebMvcConfigurer extends AbstractRateLimiterWebMvcConfigurer {
-
-    public RateLimiterWebMvcConfigurer(RateLimiter<HttpServletRequest> rateLimiter) {
-        super(rateLimiter);
-    }
-}
-```
-
-__1a. Alternatively, autowire the provided `RateLimiter<HttpServletRequest>` bean__
-
-This way you use the `RateLimiter` as you see fit.
-
-__2. Annotate your spring application class as shown:__
-
-```java
-
-import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
-
-@SpringBootApplication(scanBasePackageClasses = {RateLimiterWebMvcConfigurer.class})
-@EnableConfigurationProperties({RateLimitPropertiesSpring.class})
-@ServletComponentScan // Required for scanning of components like @WebListener
-public class MySpringApplication {
-
-}
-```
-
-__3. Add required rate-limiter properties__
+__1. Add required rate-limiter properties__
 
 ```yaml
 rate-limiter:
@@ -55,9 +16,54 @@ rate-limiter:
   resource-packages: com.myapplicatioon.web.rest
 ```
 
-__4. Annotate classes and/or methods.__
+__2. Configure your spring application__
 
 ```java
+package com.myapplicatioon;
+
+import javax.servlet.*;
+import com.looseboxes.ratelimiter.RateExceededException;
+import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
+import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
+
+@SpringBootApplication(scanBasePackageClasses = { RateLimiterConfiguration.class, MySpringApplication.class })
+@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
+public class MySpringApplication {
+    
+    public static void main(String[] args) {
+        SpringApplication.run(MySpringApplication.class, args);
+    }
+
+    @Component
+    @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false")
+    public static class MySpringApplicationFilter implements Filter {
+        
+        @Autowired
+        private RateLimiter<HttpServletRequest> rateLimiter;
+        
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+                throws java.io.IOException, ServletException {
+
+            rateLimiter.increment((HttpServletRequest)request);
+            try {
+                rateLimiter.increment((HttpServletRequest)request);
+            }catch(RateExceededException e) {
+                throw new ServletException("Too many requests");
+            }
+
+            chain.doFilter(request, response);
+        }
+    }
+}
+```
+
+At this point your application is ready to enjoy the benefits of rate limiting
+
+__3. Annotate classes and/or methods.__
+
+```java
+package com.myapplicatioon.web.rest;
+
 import com.looseboxes.ratelimiter.annotation.RateLimit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,9 +85,9 @@ public class MyResource {
 }
 ```
 
-__5. Configure rate limiting__
+__4. Further configure rate limiting__
 
-Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core). 
+Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core).
 
 In addition, you could use spring specific features, like `com.looseboxes.ratelimiter.web.spring.SpringRateCache`
 
@@ -100,11 +106,10 @@ rate-limiter:
           duration: PT1S
 ```
 
-  - By using the fully qualified class name as the group name we can configure rate limiting
-of specific resources from application configuration properties.
+- By using the fully qualified class name as the group name we can configure rate limiting
+  of specific resources from application configuration properties.
 
-  - You could also narrow the specified properties to a specific method. For example, in this case,
-by using `com.myapplicatioon.web.rest.MyResource.greet(java.lang.String)` as the group name.
+- You could also narrow the specified properties to a specific method. For example, in this case,
+  by using `com.myapplicatioon.web.rest.MyResource.greet(java.lang.String)` as the group name.
 
 Enjoy! :wink:
-

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@WebMvcControllersTest(controllers = { ResourceWithClassLimits.class })
+@WebMvcControllersTest(classes = { ResourceWithClassLimits.class })
 public class ResourceWithClassLimitsTest extends AbstractResourceTest {
 
     @Test

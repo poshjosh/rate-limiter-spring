@@ -8,24 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@WebMvcControllersTest(controllers = { ResourceWithMethodLimits.class })
+@WebMvcControllersTest(classes = { ResourceWithMethodLimits.class })
 public class ResourceWithMethodLimitsTest extends AbstractResourceTest {
-
-    @Autowired
-    private RateLimitPropertiesSpring properties;
-
-    @Test
-    public void shouldSucceedWhenDisabled() throws Exception{
-        Boolean disabled = properties.getDisabled();
-        try {
-            properties.setDisabled(Boolean.TRUE);
-            final String endpoint = ApiEndpoints.METHOD_LIMIT_1;
-            shouldReturnDefaultResult(endpoint); // 1 of 1
-            shouldReturnDefaultResult(endpoint); // 2 of 1 - Should throw exception if rate limiting is disabled
-        }finally{
-            properties.setDisabled(disabled);
-        }
-    }
 
     @Test
     public void homePageShouldReturnDefaultResult() throws Exception {

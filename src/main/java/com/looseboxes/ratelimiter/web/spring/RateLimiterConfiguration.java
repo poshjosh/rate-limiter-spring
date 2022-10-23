@@ -9,6 +9,7 @@ import com.looseboxes.ratelimiter.web.core.*;
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 @Configuration
+@ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false", matchIfMissing = true)
 public class RateLimiterConfiguration {
 
     public static final class RequestToUriConverter implements RequestToIdConverter<HttpServletRequest, String>{
@@ -29,15 +31,14 @@ public class RateLimiterConfiguration {
 
     @Bean
     public RateLimiter<HttpServletRequest> rateLimiter(
-            RateLimitProperties properties,
             RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource,
             RateLimiterNodeContext<HttpServletRequest, ?> rateLimiterNodeContext) {
-        return new WebRequestRateLimiter<>(properties, rateLimiterConfigurationSource, rateLimiterNodeContext);
+        return new WebRequestRateLimiter<>(rateLimiterConfigurationSource, rateLimiterNodeContext);
     }
 
     @Bean
     public RateLimiterNodeContext<HttpServletRequest, ?> rateLimiterNodeContext(
-            RateLimitProperties properties,
+            RateLimitPropertiesSpring properties,
             RateLimiterConfigurationSource<HttpServletRequest> rateLimiterConfigurationSource,
             ResourceClassesSupplier resourceClassesSupplier,
             AnnotationProcessor<Class<?>> annotationProcessor) {

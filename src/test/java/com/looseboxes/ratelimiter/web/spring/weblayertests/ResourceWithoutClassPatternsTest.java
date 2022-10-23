@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@WebMvcControllersTest(controllers = { ResourceWithoutClassPatterns.class })
+@WebMvcControllersTest(classes = { ResourceWithoutClassPatterns.class })
 public class ResourceWithoutClassPatternsTest extends AbstractResourceTest {
 
     @Test
