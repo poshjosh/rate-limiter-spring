@@ -3,7 +3,7 @@ debug: true
 logging:
   level:
     ROOT: DEBUG
-    #com.looseboxes.ratelimiter.web.core.PatternMatchingRateLimiter: TRACE
+    #com.looseboxes.ratelimiter.web.core.impl.PatternMatchingRateLimiter: TRACE
     #com.looseboxes.ratelimiter.annotation.AbstractAnnotationProcessor: TRACE
     com.looseboxes.ratelimiter: DEBUG
     org.springframework: INFO
