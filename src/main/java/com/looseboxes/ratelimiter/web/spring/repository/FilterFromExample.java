@@ -6,6 +6,7 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Example;
 
 import java.beans.PropertyDescriptor;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Experimental
@@ -33,16 +34,14 @@ public class FilterFromExample<E> implements Predicate<E> {
         BeanWrapper beanWrapper2 = PropertyAccessorFactory.forBeanPropertyAccess(e);
 
         for(int i= 0; i < values.length; i++) {
+            String name = propertyDescriptors[i].getName();
+            if ("class".equals(name)) {
+                continue;
+            }
             Object val1 = values[i];
-            Object val2 = beanWrapper2.getPropertyValue(propertyDescriptors[i].getName());
-            if(val1 != null) {
-                if(val2 != null) {
-                    if(!val1.equals(val2)) {
-                        return false;
-                    }
-                }else{
-                    return false;
-                }
+            Object val2 = beanWrapper2.getPropertyValue(name);
+            if(!Objects.equals(val1, val2)) {
+                return false;
             }
         }
 
@@ -51,8 +50,6 @@ public class FilterFromExample<E> implements Predicate<E> {
 
     @Override
     public String toString() {
-        return "FilterFromExample{" +
-            "probeBeanWrapper=" + probeBeanWrapper +
-            '}';
+        return "FilterFromExample{" + "probeBeanWrapper=" + probeBeanWrapper.getWrappedInstance() + '}';
     }
 }

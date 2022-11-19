@@ -1,6 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.DefaultRateLimiterConfig;
+import com.looseboxes.ratelimiter.rates.AmountPerDuration;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
 import com.looseboxes.ratelimiter.util.RateConfigList;
@@ -36,8 +37,8 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     }
 
     @Bean
-    public RateRepository<AmountPerDurationEntity<Object>, Object> rateRepository() {
-        return new AmountPerDurationRepository<>(rateCache);
+    public RateRepository<AmountPerDuration, Object> rateRepository() {
+        return new RateRepositoryForCache<>(new RateCacheWithKeysImpl<>(rateCache));
     }
 
     @Bean

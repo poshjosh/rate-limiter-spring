@@ -67,6 +67,7 @@ public class ComparatorFromSort<E> implements Comparator<E> {
         }else{
             result = 0;
         }
+        //System.out.printf("result: %d, order: %s, lhs: %s, rhs: %s\n", result, order, val1, val2);
         return result;
     }
 
