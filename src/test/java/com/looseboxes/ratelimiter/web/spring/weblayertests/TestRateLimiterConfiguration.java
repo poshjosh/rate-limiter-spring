@@ -38,7 +38,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
 
     @Bean
     public RateRepository<AmountPerDuration, Object> rateRepository() {
-        return new RateRepositoryForCache<>(new RateCacheWithKeysImpl<>(rateCache));
+        return new RateRepositoryForCache<>(this.rateCache);
     }
 
     @Bean
@@ -46,7 +46,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     public WebRequestRateLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
             WebRequestRateLimiterConfigBuilder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
         return webRequestRateLimiterConfigBuilder
-                .rateLimiterConfig(new DefaultRateLimiterConfig<>().rateCache(rateCache))
+                .rateLimiterConfig(new DefaultRateLimiterConfig<>().rateCache(this.rateCache))
                 .build();
     }
 

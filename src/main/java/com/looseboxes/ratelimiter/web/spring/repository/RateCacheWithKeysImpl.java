@@ -59,6 +59,7 @@ public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
     @Override
     public void clear() {
         delegate.clear();
+        keys.clear();
     }
 
     @Override
