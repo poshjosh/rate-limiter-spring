@@ -15,7 +15,7 @@ public class ComparatorFromSort<E> implements Comparator<E> {
 
     private final Sort sort;
 
-    private Map<E, BeanWrapper> beanWrapperMap;
+    private final Map<E, BeanWrapper> beanWrapperMap;
 
     public ComparatorFromSort(Sort sort) {
         this(sort, 16, 0.75f);
@@ -56,12 +56,12 @@ public class ComparatorFromSort<E> implements Comparator<E> {
         final int result;
         if(val1 == null && val2 == null) {
             result = 0;
-        }else if(val1 == null && val2 != null) {
+        }else if(val1 == null) {
             result = order.getNullHandling() == Sort.NullHandling.NULLS_FIRST ? 1 : -1;
-        }else if(val1 != null && val2 == null) {
+        }else if(val2 == null) {
             result = order.getNullHandling() == Sort.NullHandling.NULLS_FIRST ? -1 : 1;
         }else if(order.isAscending() && val1 instanceof  Comparable) {
-            result = ((Comparable) val1).compareTo(val2);
+            result = ((Comparable)val1).compareTo(val2);
         }else if(order.isDescending() && val2 instanceof  Comparable) {
             result = ((Comparable)val2).compareTo(val1);
         }else{
@@ -72,8 +72,6 @@ public class ComparatorFromSort<E> implements Comparator<E> {
 
     @Override
     public String toString() {
-        return "ComparatorFromSort{" +
-            "sort=" + sort +
-            '}';
+        return "ComparatorFromSort{sort=" + sort + '}';
     }
 }

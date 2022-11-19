@@ -14,6 +14,16 @@ public class SpringRateCache<K, V> implements RateCache<K, V> {
     }
 
     @Override
+    public void clear() {
+        delegate.clear();
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        return get(key) != null;
+    }
+
+    @Override
     public V get(K key) {
         Cache.ValueWrapper valueWrapper = delegate.get(key);
         return valueWrapper == null ? null : (V)valueWrapper.get();

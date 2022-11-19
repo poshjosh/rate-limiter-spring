@@ -13,17 +13,57 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Experimental
-public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
+public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
 
-    private static final Logger LOG = LoggerFactory.getLogger(RateCacheWithKeysSupplier.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RateCacheWithKeysImpl.class);
 
     private final RateCache<K, V> delegate;
 
     private final List<K> keys = new ArrayList<>();
     private final ReadWriteLock keysLock = new ReentrantReadWriteLock();
 
-    public RateCacheWithKeysSupplier(RateCache<K, V> delegate) {
+    public RateCacheWithKeysImpl(RateCache<K, V> delegate) {
         this.delegate = Objects.requireNonNull(delegate);
+    }
+
+    @Override
+    public long size() {
+        return this.keys.size();
+    }
+
+    @Override
+    public Iterable<K> keys(long offset, long limit) {
+        return getKeys(offset, limit);
+    }
+
+    private List<K> getKeys(long offset, long limit) {
+        try {
+            keysLock.readLock().lock();
+            final int size = keys.size();
+            if (offset >= size) {
+                return Collections.emptyList();
+            } else {
+                final long n = offset + limit;
+                final long end = Math.min(n, size);
+                if (end - offset <= 0) {
+                    return Collections.emptyList();
+                } else {
+                    return keys.subList((int)offset, (int)end);
+                }
+            }
+        }finally {
+            keysLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public void clear() {
+        delegate.clear();
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        return delegate.containsKey(key);
     }
 
     @Override
@@ -58,30 +98,6 @@ public class RateCacheWithKeysSupplier<K, V> implements RateCache<K, V>{
     @Override
     public <T> T unwrap(Class<T> clazz) {
         return delegate.unwrap(clazz);
-    }
-
-    public PageSupplier<K> getKeysSupplier() {
-        return this::getKeys;
-    }
-
-    public List<K> getKeys(long offset, long limit) {
-        try {
-            keysLock.readLock().lock();
-            final int size = keys.size();
-            if (offset >= size) {
-                return Collections.emptyList();
-            } else {
-                final long n = offset + limit;
-                final long end = Math.min(n, size);
-                if (end - offset <= 0) {
-                    return Collections.emptyList();
-                } else {
-                    return keys.subList((int)offset, (int)end);
-                }
-            }
-        }finally {
-            keysLock.readLock().unlock();
-        }
     }
 
     private void addKey(K key) {

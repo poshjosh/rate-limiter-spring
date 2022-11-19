@@ -1,29 +1,29 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.rates.LimitWithinDuration;
+import com.looseboxes.ratelimiter.rates.AmountPerDuration;
 import com.looseboxes.ratelimiter.util.Experimental;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Experimental
-public class LimitWithinDurationDTO<ID> implements Serializable {
+public class AmountPerDurationEntity<ID> implements Serializable {
 
     private ID id;
 
-    private long limit;
+    private long amount;
     private long duration;
     private long timeCreated;
 
-    public LimitWithinDurationDTO() {
-        this(null, new LimitWithinDuration());
+    public AmountPerDurationEntity(ID id, AmountPerDuration value) {
+        this.id = id;
+        this.amount = value.getAmount();
+        this.duration = value.getDuration();
+        this.timeCreated = value.getTimeCreated();
     }
 
-    public LimitWithinDurationDTO(ID id, LimitWithinDuration delegate) {
-        this.id = id;
-        this.limit = delegate.getLimit();
-        this.duration = delegate.getDuration();
-        this.timeCreated = delegate.getTimeCreated();
+    public AmountPerDuration value() {
+        return new AmountPerDuration(this.amount, this.duration, this.timeCreated);
     }
 
     public ID getId() {
@@ -34,12 +34,12 @@ public class LimitWithinDurationDTO<ID> implements Serializable {
         this.id = id;
     }
 
-    public long getLimit() {
-        return limit;
+    public long getAmount() {
+        return amount;
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public long getDuration() {
@@ -62,7 +62,7 @@ public class LimitWithinDurationDTO<ID> implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LimitWithinDurationDTO that = (LimitWithinDurationDTO) o;
+        AmountPerDurationEntity that = (AmountPerDurationEntity) o;
         return Objects.equals(id, that.id);
     }
 
@@ -73,9 +73,9 @@ public class LimitWithinDurationDTO<ID> implements Serializable {
 
     @Override
     public String toString() {
-        return "LimitWithinDurationDTO{" +
+        return "AmountPerDurationEntity{" +
                 "id='" + id + '\'' +
-                ", limit=" + getLimit() +
+                ", limit=" + getAmount() +
                 ", duration=" + getDuration() +
                 ", timeCreated=" + getTimeCreated() +
                 '}';
