@@ -6,7 +6,6 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Example;
 
 import java.beans.PropertyDescriptor;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 @Experimental
@@ -20,7 +19,6 @@ public class FilterFromExample<E> implements Predicate<E> {
         this.propertyDescriptors = probeBeanWrapper.getPropertyDescriptors();
         this.values = new Object[propertyDescriptors.length];
         for(int i = 0; i < propertyDescriptors.length; i++) {
-            //System.out.println("Property descriptor: " + propertyDescriptors[i]);
             values[i] = probeBeanWrapper.getPropertyValue(propertyDescriptors[i].getName());
         }
     }
@@ -45,9 +43,14 @@ public class FilterFromExample<E> implements Predicate<E> {
             }
             Object val1 = values[i];
             Object val2 = beanWrapper2.getPropertyValue(name);
-            //System.out.println(Objects.equals(val1, val2) + ", " + name + " = " + val1 + " or " + val2);
-            if(!Objects.equals(val1, val2)) {
-                return false;
+            if(val1 != null) {
+                if(val2 != null) {
+                    if(!val1.equals(val2)) {
+                        return false;
+                    }
+                }else{
+                    return false;
+                }
             }
         }
 
@@ -56,6 +59,6 @@ public class FilterFromExample<E> implements Predicate<E> {
 
     @Override
     public String toString() {
-        return "FilterFromExample{" + "probeBeanWrapper=" + probeBeanWrapper.getWrappedInstance() + '}';
+        return "FilterFromExample{probeBeanWrapper=" + probeBeanWrapper.getWrappedInstance() + '}';
     }
 }
