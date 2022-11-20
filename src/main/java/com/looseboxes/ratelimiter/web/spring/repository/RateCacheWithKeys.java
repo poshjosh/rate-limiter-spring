@@ -6,7 +6,9 @@ import com.looseboxes.ratelimiter.util.Experimental;
 @Experimental
 public interface RateCacheWithKeys<K, V> extends RateCache<K, V> {
 
-    long size();
+    default Iterable<K> keys() {
+        return keys(0, Long.MAX_VALUE);
+    }
 
     Iterable<K> keys(long offset, long limit);
 }

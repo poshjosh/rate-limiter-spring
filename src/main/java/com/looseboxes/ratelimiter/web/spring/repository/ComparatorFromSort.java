@@ -34,7 +34,7 @@ public class ComparatorFromSort<E> implements Comparator<E> {
     @Override
     public int compare(E o1, E o2) {
         final int result;
-        if(sort == null || sort.isUnsorted()) {
+        if(sort == null || sort.isUnsorted() || sort.isEmpty()) {
             result = 0;
         }else{
             BeanWrapper accessor1 = getBeanWrapper(o1);

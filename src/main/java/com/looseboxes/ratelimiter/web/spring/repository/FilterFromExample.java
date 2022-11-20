@@ -45,7 +45,7 @@ public class FilterFromExample<E> implements Predicate<E> {
             }
             Object val1 = values[i];
             Object val2 = beanWrapper2.getPropertyValue(name);
-            System.out.println(Objects.equals(val1, val2) + ", " + name + " = " + val1 + " or " + val2);
+            //System.out.println(Objects.equals(val1, val2) + ", " + name + " = " + val1 + " or " + val2);
             if(!Objects.equals(val1, val2)) {
                 return false;
             }

@@ -48,21 +48,16 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
             result = Page.empty(pageable);
         }else{
 
-            // Though very sub-optimal, we first find all then sort everything,
-            // before applying offset and pageSize
-            Iterable<RateEntity<ID>> found = example == null ? findAll() : findAll(example);
+            final boolean all = example == null;
 
-            Stream<RateEntity<ID>> stream = StreamSupport.stream(found.spliterator(), false);
+            // Though quite sub-optimal, we first find all then sort everything, before applying offset and pageSize
+            final Iterable<RateEntity<ID>> found = all ? findAll() : findAll(example);
 
-            final Sort sort = pageable.getSort();
-            if(sort.isSorted() && !sort.isEmpty()) {
-                stream = stream.sorted(new ComparatorFromSort<>(sort));
-            }
-
-            stream = stream.skip(offset);
+            final Stream<RateEntity<ID>> stream = stream(found, pageable.getSort()).skip(offset);
 
             // Another round trip to get our count
-            long count = example == null ? this.count() : StreamSupport.stream(found.spliterator(), true).count();
+            final long count = all ? this.count() : this.count(found);
+
             result = new PageImpl<>(stream.limit(pageSize).collect(Collectors.toList()), pageable, count);
         }
 
@@ -76,17 +71,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Iterable<RateEntity<ID>> findAll(Sort sort) {
-        return new Iterable<RateEntity<ID>>() {
-            @Override
-            public Iterator<RateEntity<ID>> iterator() {
-                return StreamSupport.stream(findAll().spliterator(), false)
-                        .sorted(new ComparatorFromSort<>(sort)).iterator();
-            }
-            @Override
-            public Spliterator<RateEntity<ID>> spliterator() {
-                return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
-            }
-        };
+        return iterable(stream(findAll(), sort));
     }
 
     @Override
@@ -123,26 +108,16 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Iterable<RateEntity<ID>> findAllById(Iterable<ID> ids) {
-        return new Iterable<RateEntity<ID>>() {
-            @Override
-            public Iterator<RateEntity<ID>> iterator() {
-                return streamAllById(ids).iterator();
-            }
-            @Override
-            public Spliterator<RateEntity<ID>> spliterator() {
-                return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
-            }
-        };
+        return iterable(streamAllById(ids));
     }
 
     private Stream<RateEntity<ID>> streamAllById(Iterable<ID> iterable) {
-        return StreamSupport.stream(iterable.spliterator(), false)
-                .map(id -> id == null ? null : new RateEntity<>(id, rateCache.get(id)));
+        return stream(iterable).map(id -> id == null ? null : new RateEntity<>(id, rateCache.get(id)));
     }
 
     @Override
     public long count() {
-        return this.rateCache.size();
+        return count(this.rateCache.keys());
     }
 
     @Override
@@ -179,16 +154,31 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
         if (log.isTraceEnabled()) {
             log.trace("Offset: {}, limit: {}, IDs: {}", offset, limit, ids);
         }
+        return iterable(streamAllById(ids).filter(filter));
+    }
 
-        return new Iterable<RateEntity<ID>>() {
+    private <T> Iterable<T> iterable(Stream<T> stream) {
+        return new Iterable<T>() {
             @Override
-            public Iterator<RateEntity<ID>> iterator() {
-                return streamAllById(ids).filter(filter).iterator();
+            public Iterator<T> iterator() {
+                return stream.iterator();
             }
             @Override
-            public Spliterator<RateEntity<ID>> spliterator() {
+            public Spliterator<T> spliterator() {
                 return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
             }
         };
+    }
+
+    private <T> Stream<T> stream(Iterable<T> iterable, Sort sort) {
+        return sort.isUnsorted() ? stream(iterable) : stream(iterable).sorted(new ComparatorFromSort<>(sort));
+    }
+
+    private <T> Stream<T> stream(Iterable<T> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
+    private long count(Iterable<?> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), true).count();
     }
 }

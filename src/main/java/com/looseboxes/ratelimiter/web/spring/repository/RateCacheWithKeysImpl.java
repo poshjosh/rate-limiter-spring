@@ -27,11 +27,6 @@ public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
     }
 
     @Override
-    public long size() {
-        return this.keys.size();
-    }
-
-    @Override
     public Iterable<K> keys(long offset, long limit) {
         return getKeys(offset, limit);
     }
