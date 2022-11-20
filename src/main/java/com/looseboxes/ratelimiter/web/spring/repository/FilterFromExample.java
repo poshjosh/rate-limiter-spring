@@ -20,6 +20,7 @@ public class FilterFromExample<E> implements Predicate<E> {
         this.propertyDescriptors = probeBeanWrapper.getPropertyDescriptors();
         this.values = new Object[propertyDescriptors.length];
         for(int i = 0; i < propertyDescriptors.length; i++) {
+            //System.out.println("Property descriptor: " + propertyDescriptors[i]);
             values[i] = probeBeanWrapper.getPropertyValue(propertyDescriptors[i].getName());
         }
     }
@@ -27,9 +28,13 @@ public class FilterFromExample<E> implements Predicate<E> {
     @Override
     public boolean test(E e) {
 
-        if(probeBeanWrapper.getWrappedInstance().equals(e)) {
-            return true;
-        }
+        //While org.springframework.data.domain.Example requires all fields to be compared, the equals method
+        //defined by object subclasses may not require all fields to be equal (e.g where only id is checked)
+        //Therefore, this is not valid logic
+        //
+        //if(probeBeanWrapper.getWrappedInstance().equals(e)) {
+        //    return true;
+        //}
 
         BeanWrapper beanWrapper2 = PropertyAccessorFactory.forBeanPropertyAccess(e);
 
@@ -40,6 +45,7 @@ public class FilterFromExample<E> implements Predicate<E> {
             }
             Object val1 = values[i];
             Object val2 = beanWrapper2.getPropertyValue(name);
+            System.out.println(Objects.equals(val1, val2) + ", " + name + " = " + val1 + " or " + val2);
             if(!Objects.equals(val1, val2)) {
                 return false;
             }

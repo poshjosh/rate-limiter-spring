@@ -1,5 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
+import com.looseboxes.ratelimiter.rates.Rate;
 import com.looseboxes.ratelimiter.util.Experimental;
 import com.looseboxes.ratelimiter.util.Nullable;
 import org.slf4j.Logger;
@@ -16,42 +17,29 @@ import java.util.stream.StreamSupport;
  * An adapter to make a {@link com.looseboxes.ratelimiter.cache.RateCache} implement
  * a {@link RateRepository}, so we can access our rate cache with the fluidity provided
  * by spring data repositories.
- * <p>
- * Each save method depends on the value returned by {@link KeyAccessor}. If null is returned
- * for the entity to save, the save method throws {@link NullPointerException}
  */
 @Experimental
-public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
+public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>, ID> {
 
-    public interface KeyAccessor<V, K> {
-        K getKey(V value);
-    }
+    private static final Logger log = LoggerFactory.getLogger(RateRepositoryForCache.class);
 
-    private final Logger log = LoggerFactory.getLogger(RateRepositoryForCache.class);
+    private final RateCacheWithKeys<ID, Rate> rateCache;
 
-    private final RateCacheWithKeys<ID, V> rateCache;
-    private final KeyAccessor<V, ID> keyAccessor;
-
-    public RateRepositoryForCache(RateCacheWithKeys<ID, V> rateCache) {
-        this(rateCache, entity -> null);
-    }
-
-    public RateRepositoryForCache(RateCacheWithKeys<ID, V> rateCache, KeyAccessor<V, ID> keyAccessor) {
+    public RateRepositoryForCache(RateCacheWithKeys<ID, Rate> rateCache) {
         this.rateCache = Objects.requireNonNull(rateCache);
-        this.keyAccessor = Objects.requireNonNull(keyAccessor);
     }
 
     @Override
-    public Page<V> findAll(Pageable pageable) {
+    public Page<RateEntity<ID>> findAll(Pageable pageable) {
         return findAll(null, pageable);
     }
 
     @Override
-    public Page<V> findAll(
-            @Nullable Example<V> example, Pageable pageable) {
+    public Page<RateEntity<ID>> findAll(
+            @Nullable Example<RateEntity<ID>> example, Pageable pageable) {
         log.debug("Request to findAll by, example: {}, pageable: {}", example, pageable);
 
-        final Page<V> result;
+        final Page<RateEntity<ID>> result;
 
         final long offset = pageable.getOffset();
         final long pageSize = pageable.getPageSize();
@@ -62,9 +50,9 @@ public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
 
             // Though very sub-optimal, we first find all then sort everything,
             // before applying offset and pageSize
-            Iterable<V> found = example == null ? findAll() : findAll(example);
+            Iterable<RateEntity<ID>> found = example == null ? findAll() : findAll(example);
 
-            Stream<V> stream = StreamSupport.stream(found.spliterator(), false);
+            Stream<RateEntity<ID>> stream = StreamSupport.stream(found.spliterator(), false);
 
             final Sort sort = pageable.getSort();
             if(sort.isSorted() && !sort.isEmpty()) {
@@ -82,34 +70,33 @@ public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
     }
 
     @Override
-    public Iterable<V> findAll(Example<V> example) {
+    public Iterable<RateEntity<ID>> findAll(Example<RateEntity<ID>> example) {
         return findAll(new FilterFromExample<>(example));
     }
 
     @Override
-    public Iterable<V> findAll(Sort sort) {
-        return new Iterable<V>() {
+    public Iterable<RateEntity<ID>> findAll(Sort sort) {
+        return new Iterable<RateEntity<ID>>() {
             @Override
-            public Iterator<V> iterator() {
+            public Iterator<RateEntity<ID>> iterator() {
                 return StreamSupport.stream(findAll().spliterator(), false)
                         .sorted(new ComparatorFromSort<>(sort)).iterator();
             }
             @Override
-            public Spliterator<V> spliterator() {
+            public Spliterator<RateEntity<ID>> spliterator() {
                 return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
             }
         };
     }
 
     @Override
-    public <S extends V> S save(S s) {
-        ID key = keyAccessor.getKey(s);
-        rateCache.put(Objects.requireNonNull(key), s);
+    public <S extends RateEntity<ID>> S save(S s) {
+        rateCache.put(Objects.requireNonNull(s.getId()), s.getRate());
         return s;
     }
 
     @Override
-    public <S extends V> Iterable<S> saveAll(Iterable<S> iterable) {
+    public <S extends RateEntity<ID>> Iterable<S> saveAll(Iterable<S> iterable) {
         List<S> saved = new ArrayList<>();
         iterable.forEach(toSave -> {
             save(toSave);
@@ -119,8 +106,9 @@ public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
     }
 
     @Override
-    public Optional<V> findById(ID id) {
-        return Optional.ofNullable(this.rateCache.get(id));
+    public Optional<RateEntity<ID>> findById(ID id) {
+        Rate rate = this.rateCache.get(id);
+        return Optional.ofNullable(rate == null ? null : new RateEntity<>(id, rate));
     }
 
     @Override
@@ -129,27 +117,27 @@ public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
     }
 
     @Override
-    public Iterable<V> findAll() {
+    public Iterable<RateEntity<ID>> findAll() {
         return findAll((candidate) -> true);
     }
 
     @Override
-    public Iterable<V> findAllById(Iterable<ID> ids) {
-        return new Iterable<V>() {
+    public Iterable<RateEntity<ID>> findAllById(Iterable<ID> ids) {
+        return new Iterable<RateEntity<ID>>() {
             @Override
-            public Iterator<V> iterator() {
+            public Iterator<RateEntity<ID>> iterator() {
                 return streamAllById(ids).iterator();
             }
             @Override
-            public Spliterator<V> spliterator() {
+            public Spliterator<RateEntity<ID>> spliterator() {
                 return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
             }
         };
     }
 
-    private Stream<V> streamAllById(Iterable<ID> iterable) {
+    private Stream<RateEntity<ID>> streamAllById(Iterable<ID> iterable) {
         return StreamSupport.stream(iterable.spliterator(), false)
-                .map(id -> id == null ? null : rateCache.get(id));
+                .map(id -> id == null ? null : new RateEntity<>(id, rateCache.get(id)));
     }
 
     @Override
@@ -163,17 +151,17 @@ public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
     }
 
     @Override
-    public void delete(V toDelete) {
-        ID key = keyAccessor.getKey(toDelete);
-        if (key != null) {
-            deleteById(key);
+    public void delete(RateEntity<ID> toDelete) {
+        ID id = toDelete.getId();
+        if (id != null) {
+            deleteById(id);
             return;
         }
         findAll(toDelete::equals).forEach(this::delete);
     }
 
     @Override
-    public void deleteAll(Iterable<? extends V> iterable) {
+    public void deleteAll(Iterable<? extends RateEntity<ID>> iterable) {
         iterable.forEach(this::delete);
     }
 
@@ -182,23 +170,23 @@ public class RateRepositoryForCache<V, ID> implements RateRepository<V, ID> {
         this.rateCache.clear();
     }
 
-    private Iterable<V> findAll(Predicate<V> filter) {
+    private Iterable<RateEntity<ID>> findAll(Predicate<RateEntity<ID>> filter) {
         return findAll(0, Long.MAX_VALUE, filter);
     }
 
-    private Iterable<V> findAll(long offset, long limit, Predicate<V> filter) {
+    private Iterable<RateEntity<ID>> findAll(long offset, long limit, Predicate<RateEntity<ID>> filter) {
         final Iterable<ID> ids = this.rateCache.keys(offset, limit);
         if (log.isTraceEnabled()) {
             log.trace("Offset: {}, limit: {}, IDs: {}", offset, limit, ids);
         }
 
-        return new Iterable<V>() {
+        return new Iterable<RateEntity<ID>>() {
             @Override
-            public Iterator<V> iterator() {
+            public Iterator<RateEntity<ID>> iterator() {
                 return streamAllById(ids).filter(filter).iterator();
             }
             @Override
-            public Spliterator<V> spliterator() {
+            public Spliterator<RateEntity<ID>> spliterator() {
                 return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
             }
         };

@@ -37,7 +37,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     }
 
     @Bean
-    public RateRepository<AmountPerDuration, Object> rateRepository() {
+    public RateRepository<RateEntity<Object>, Object> rateRepository() {
         return new RateRepositoryForCache<>(this.rateCache);
     }
 

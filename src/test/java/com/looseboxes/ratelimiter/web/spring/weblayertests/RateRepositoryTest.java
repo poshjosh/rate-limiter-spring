@@ -1,6 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.rates.AmountPerDuration;
+import com.looseboxes.ratelimiter.web.spring.repository.RateEntity;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class RateRepositoryTest extends AbstractResourceTest {
 
     @Autowired
-    RateRepository<AmountPerDuration, Object> rateRepository;
+    RateRepository<RateEntity<Object>, Object> rateRepository;
 
     @Test
     public void shouldPersistRateToRepository() throws Exception {
@@ -34,11 +35,12 @@ public class RateRepositoryTest extends AbstractResourceTest {
             shouldReturnDefaultResult(ApiEndpoints.METHOD_LIMIT_1_AND_5);
         }
 
-        Iterable<AmountPerDuration> rates = rateRepository.findAll();
+        Iterable<RateEntity<Object>> entities = rateRepository.findAll();
 
-        assertThat(rates).isNotEmpty();
+        assertThat(entities).isNotEmpty();
 
-        for(AmountPerDuration rate : rates) {
+        for(RateEntity<Object> entity : entities) {
+            AmountPerDuration rate = (AmountPerDuration)entity.getRate();
             assertThat(rate.getAmount()).isEqualTo(expectedAmount);
         }
     }
