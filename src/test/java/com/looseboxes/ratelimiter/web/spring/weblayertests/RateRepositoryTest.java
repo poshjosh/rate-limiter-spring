@@ -37,8 +37,6 @@ public class RateRepositoryTest extends AbstractResourceTest {
 
         Iterable<RateEntity<Object>> entities = rateRepository.findAll();
 
-        assertThat(entities).isNotEmpty();
-
         for(RateEntity<Object> entity : entities) {
             AmountPerDuration rate = (AmountPerDuration)entity.getRate();
             assertThat(rate.getAmount()).isEqualTo(expectedAmount);

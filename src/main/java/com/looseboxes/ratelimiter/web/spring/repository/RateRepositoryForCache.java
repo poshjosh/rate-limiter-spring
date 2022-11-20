@@ -48,20 +48,19 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
             result = Page.empty(pageable);
         }else{
 
-            final boolean all = example == null;
-
             // Though quite sub-optimal, we first find all then sort everything, before applying offset and pageSize
-            final Iterable<RateEntity<ID>> found = all ? findAll() : findAll(example);
+            final Iterable<RateEntity<ID>> total = select(example);
 
-            final Stream<RateEntity<ID>> stream = stream(found, pageable.getSort()).skip(offset);
+            final Stream<RateEntity<ID>> selected = stream(total, pageable.getSort()).skip(offset).limit(pageSize);
 
-            // Another round trip to get our count
-            final long count = all ? this.count() : this.count(found);
-
-            result = new PageImpl<>(stream.limit(pageSize).collect(Collectors.toList()), pageable, count);
+            result = new PageImpl<>(selected.collect(Collectors.toList()), pageable, count(select(example)));
         }
 
         return result;
+    }
+
+    private Iterable<RateEntity<ID>> select(@Nullable Example<RateEntity<ID>> example) {
+        return example == null ? findAll() : findAll(example);
     }
 
     @Override
@@ -146,15 +145,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
     }
 
     private Iterable<RateEntity<ID>> findAll(Predicate<RateEntity<ID>> filter) {
-        return findAll(0, Long.MAX_VALUE, filter);
-    }
-
-    private Iterable<RateEntity<ID>> findAll(long offset, long limit, Predicate<RateEntity<ID>> filter) {
-        final Iterable<ID> ids = this.rateCache.keys(offset, limit);
-        if (log.isTraceEnabled()) {
-            log.trace("Offset: {}, limit: {}, IDs: {}", offset, limit, ids);
-        }
-        return iterable(streamAllById(ids).filter(filter));
+        return iterable(streamAllById(this.rateCache.keys()).filter(filter));
     }
 
     private <T> Iterable<T> iterable(Stream<T> stream) {
