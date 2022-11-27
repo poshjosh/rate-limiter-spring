@@ -1,7 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.DefaultRateLimiterConfig;
-import com.looseboxes.ratelimiter.rates.AmountPerDuration;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.util.RateConfig;
 import com.looseboxes.ratelimiter.util.RateConfigList;
@@ -58,9 +57,8 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     }
 
     private List<RateConfig> getRateLimits() {
-        RateConfig config = new RateConfig();
-        config.setLimit(Constants.OVERALL_LIMIT);
-        config.setDuration(Duration.ofSeconds(Constants.OVERALL_DURATION_SECONDS));
+        RateConfig config = RateConfig.of(
+                Constants.OVERALL_LIMIT, Duration.ofSeconds(Constants.OVERALL_DURATION_SECONDS));
         return Collections.singletonList(config);
     }
 }

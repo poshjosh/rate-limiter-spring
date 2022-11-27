@@ -72,8 +72,8 @@ public class RateRepositoryTest {
     @Test
     void findAll_givenExampleWithUnmatchedValueButSameId() {
         final Integer id = 1;
-        final AmountPerDuration lhs = new AmountPerDuration(1, 1);
-        final AmountPerDuration rhs = new AmountPerDuration(2, 2);
+        final Rate lhs = AmountPerDuration.of(1, 1);
+        final Rate rhs = AmountPerDuration.of(2, 2);
         rateRepository.save(new RateEntity<>(id, lhs));
         Iterable<RateEntity<Integer>> found = rateRepository.findAll(Example.of(new RateEntity<>(id, rhs)));
         assertThat(found.iterator().hasNext()).isFalse();
