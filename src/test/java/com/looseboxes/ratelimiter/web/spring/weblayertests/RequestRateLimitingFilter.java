@@ -20,7 +20,7 @@ public class RequestRateLimitingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        rateLimiter.increment((HttpServletRequest)request);
+        rateLimiter.consume((HttpServletRequest)request);
 
         chain.doFilter(request, response);
     }
