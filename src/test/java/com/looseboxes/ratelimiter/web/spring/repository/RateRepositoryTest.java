@@ -1,8 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.cache.MapRateCache;
 import com.looseboxes.ratelimiter.cache.RateCache;
-import com.looseboxes.ratelimiter.rates.AmountPerDuration;
 import com.looseboxes.ratelimiter.rates.Rate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,9 +12,9 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class RateRepositoryTest {
+class RateRepositoryTest {
 
-    private final RateCache<Integer, Rate> rateCache = new MapRateCache<>();
+    private final RateCache<Integer, Rate> rateCache = RateCache.ofMap();
     private final RateRepository<RateEntity<Integer>, Integer> rateRepository =
             new RateRepositoryForCache<>(new RateCacheWithKeysImpl<>(rateCache));
 
@@ -72,8 +70,8 @@ public class RateRepositoryTest {
     @Test
     void findAll_givenExampleWithUnmatchedValueButSameId() {
         final Integer id = 1;
-        final Rate lhs = AmountPerDuration.of(1, 1);
-        final Rate rhs = AmountPerDuration.of(2, 2);
+        final Rate lhs = Rate.of(1, 1);
+        final Rate rhs = Rate.of(2, 2);
         rateRepository.save(new RateEntity<>(id, lhs));
         Iterable<RateEntity<Integer>> found = rateRepository.findAll(Example.of(new RateEntity<>(id, rhs)));
         assertThat(found.iterator().hasNext()).isFalse();

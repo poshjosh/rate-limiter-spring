@@ -2,23 +2,21 @@ package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @WebMvcControllersTest(classes = { ResourceWithoutMethodPatterns.class })
-public class ResourceWithoutMethodPatternsTest extends AbstractResourceTest {
+class ResourceWithoutMethodPatternsTest extends AbstractResourceTest {
 
     @Test
-    public void shouldSucceedWhenWithinLimit() throws Exception {
+    void shouldSucceedWhenWithinLimit() throws Exception {
         shouldReturnDefaultResult(ApiEndpoints.NO_METHOD_PATTERNS_LIMIT_1);
     }
 
     @Test
-    public void shouldFailWhenMethodLimitIsExceeded() throws Exception {
+    void shouldFailWhenMethodLimitIsExceeded() throws Exception {
 
         final String endpoint = ApiEndpoints.NO_METHOD_PATTERNS_LIMIT_1;
 
         shouldReturnDefaultResult(endpoint);
 
-        assertThrows(Exception.class, () -> shouldReturnDefaultResult(endpoint));
+        shouldReturnStatusOfTooManyRequests(endpoint);
     }
 }

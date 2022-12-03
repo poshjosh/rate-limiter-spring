@@ -22,7 +22,6 @@ __2. Configure your spring application__
 package com.myapplicatioon;
 
 import javax.servlet.*;
-import com.looseboxes.ratelimiter.RateExceededException;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
@@ -44,14 +43,12 @@ public class MySpringApplication {
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
                 throws java.io.IOException, ServletException {
 
-            rateLimiter.increment((HttpServletRequest)request);
-            try {
-                rateLimiter.increment((HttpServletRequest)request);
-            }catch(RateExceededException e) {
-                throw new ServletException("Too many requests");
+            if (rateLimiter.consume((HttpServletRequest)request)) {
+                chain.doFilter(request, response);
+                return;
             }
 
-            chain.doFilter(request, response);
+            throw new ServletException("Too many requests");
         }
     }
 }

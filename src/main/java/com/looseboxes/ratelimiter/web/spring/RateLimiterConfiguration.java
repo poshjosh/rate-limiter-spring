@@ -39,7 +39,8 @@ public class RateLimiterConfiguration {
             RateLimitPropertiesSpring properties,
             RequestToIdConverter<HttpServletRequest, String> requestToUriConverter,
             ClassesInPackageFinder classesInPackageFinder) {
-        return new DefaultWebRequestRateLimiterConfigBuilder<HttpServletRequest>()
+
+        return WebRequestRateLimiterConfig.<HttpServletRequest>builder()
                 .configurer(configurer)
                 .properties(properties)
                 .requestToIdConverter(requestToUriConverter)

@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.DefaultRateLimiterConfig;
+import com.looseboxes.ratelimiter.RateLimiterConfig;
 import com.looseboxes.ratelimiter.rates.Logic;
 import com.looseboxes.ratelimiter.web.core.util.RateConfig;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitConfig;
@@ -45,8 +45,8 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     public WebRequestRateLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
             WebRequestRateLimiterConfigBuilder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
         return webRequestRateLimiterConfigBuilder
-                .rateLimiterConfig(new DefaultRateLimiterConfig<>().rateCache(this.rateCache))
-                .build();
+            .rateLimiterConfig(RateLimiterConfig.builder().rateCache(this.rateCache).build())
+            .build();
     }
 
     private RateLimitConfig getRateLimitConfigList() {
