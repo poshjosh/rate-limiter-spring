@@ -22,35 +22,27 @@ __2. Configure your spring application__
 package com.myapplicatioon;
 
 import javax.servlet.*;
+
+import com.looseboxes.ratelimiter.web.spring.AbstractRequestRateLimitingFilter;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
-@SpringBootApplication(scanBasePackageClasses = { RateLimiterConfiguration.class, MySpringApplication.class })
-@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
+@SpringBootApplication(scanBasePackageClasses = {RateLimiterConfiguration.class, MySpringApplication.class})
+@EnableConfigurationProperties({RateLimitPropertiesSpring.class})
 public class MySpringApplication {
-    
-    public static void main(String[] args) {
-        SpringApplication.run(MySpringApplication.class, args);
+
+  public static void main(String[] args) {
+    SpringApplication.run(MySpringApplication.class, args);
+  }
+
+  @Component
+  public static class MySpringApplicationFilter extends AbstractRequestRateLimitingFilter {
+    @Override
+    protected void onLimitExceeded(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws java.io.IOException {
+      response.sendError(429, "Too many requests");
     }
-
-    @Component
-    @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false")
-    public static class MySpringApplicationFilter implements Filter {
-        
-        @Autowired
-        private RateLimiter<HttpServletRequest> rateLimiter;
-        
-        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
-                throws java.io.IOException, ServletException {
-
-            if (rateLimiter.consume((HttpServletRequest)request)) {
-                chain.doFilter(request, response);
-                return;
-            }
-
-            throw new ServletException("Too many requests");
-        }
-    }
+  }
 }
 ```
 
