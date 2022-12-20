@@ -1,11 +1,10 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.RateLimiterConfig;
-import com.looseboxes.ratelimiter.rates.Logic;
+import com.looseboxes.ratelimiter.*;
+import com.looseboxes.ratelimiter.util.Operator;
 import com.looseboxes.ratelimiter.web.core.util.RateConfig;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitConfig;
 import com.looseboxes.ratelimiter.web.core.WebRequestRateLimiterConfig;
-import com.looseboxes.ratelimiter.web.core.WebRequestRateLimiterConfigBuilder;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.SpringRateCache;
@@ -43,7 +42,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     @Bean
     @Override
     public WebRequestRateLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
-            WebRequestRateLimiterConfigBuilder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
+            WebRequestRateLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
         return webRequestRateLimiterConfigBuilder
             .rateLimiterConfig(RateLimiterConfig.builder().rateCache(this.rateCache).build())
             .build();
@@ -52,7 +51,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     private RateLimitConfig getRateLimitConfigList() {
         RateLimitConfig rateLimitConfig = new RateLimitConfig();
         rateLimitConfig.setLimits(getRateLimits());
-        rateLimitConfig.setLogic(Logic.OR);
+        rateLimitConfig.setLogic(Operator.OR);
         return rateLimitConfig;
     }
 

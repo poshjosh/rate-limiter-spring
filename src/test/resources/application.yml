@@ -1,11 +1,15 @@
 debug: true
 
+spring:
+  main:
+    banner-mode: "off"
+
 logging:
   level:
-    ROOT: DEBUG
+    ROOT: ERROR
     #com.looseboxes.ratelimiter.PatternMatchingRateLimiter: TRACE
-    #com.looseboxes.ratelimiter.annotation.AbstractAnnotationProcessor: TRACE
+    #com.looseboxes.ratelimiter.annotation.RateLimitTreeBuilder: TRACE
     com.looseboxes.ratelimiter: DEBUG
-    org.springframework: INFO
+    org.springframework: ERROR
     com.sun: DEBUG
     com.sun.jmx: DEBUG

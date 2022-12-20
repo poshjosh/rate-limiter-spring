@@ -4,7 +4,6 @@ import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.annotation.IdProvider;
 import com.looseboxes.ratelimiter.util.ClassesInPackageFinder;
 import com.looseboxes.ratelimiter.web.core.*;
-import com.looseboxes.ratelimiter.web.core.impl.DefaultWebRequestRateLimiterConfigBuilder;
 import com.looseboxes.ratelimiter.web.core.impl.WebRequestRateLimiter;
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +28,12 @@ public class RateLimiterConfiguration {
 
     @Bean
     public WebRequestRateLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
-            WebRequestRateLimiterConfigBuilder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
+            WebRequestRateLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
         return webRequestRateLimiterConfigBuilder.build();
     }
 
     @Bean
-    public WebRequestRateLimiterConfigBuilder<HttpServletRequest> webRequestRateLimiterConfigBuilder(
+    public WebRequestRateLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder(
             @Autowired(required = false) RateLimiterConfigurer<HttpServletRequest> configurer,
             RateLimitPropertiesSpring properties,
             RequestToIdConverter<HttpServletRequest, String> requestToUriConverter,

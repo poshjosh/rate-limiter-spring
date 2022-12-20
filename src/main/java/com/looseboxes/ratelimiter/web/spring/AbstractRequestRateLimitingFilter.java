@@ -45,7 +45,7 @@ public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBea
 
             final HttpServletRequest httpRequest = (HttpServletRequest)request;
 
-            if (!rateLimiter.consume(httpRequest)) {
+            if (!rateLimiter.tryConsume(httpRequest)) {
                 onLimitExceeded(httpRequest, (HttpServletResponse)response, chain);
                 return;
             }

@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.rates.Rate;
+import com.looseboxes.ratelimiter.Rate;
 import com.looseboxes.ratelimiter.util.Experimental;
 import com.looseboxes.ratelimiter.util.Nullable;
 import org.slf4j.Logger;

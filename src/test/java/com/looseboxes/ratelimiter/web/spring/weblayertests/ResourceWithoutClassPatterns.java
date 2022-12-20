@@ -1,8 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.annotation.RateLimit;
-import com.looseboxes.ratelimiter.annotation.RateLimitGroup;
-import com.looseboxes.ratelimiter.rates.Logic;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.rates.AmountPerDuration;
+import com.looseboxes.ratelimiter.Rate;
 import com.looseboxes.ratelimiter.web.spring.repository.RateEntity;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
         Iterable<RateEntity<Object>> entities = rateRepository.findAll();
 
         for(RateEntity<Object> entity : entities) {
-            AmountPerDuration rate = (AmountPerDuration)entity.getRate();
+            Rate rate = entity.getRate();
             assertThat(rate.getAmount()).isEqualTo(expectedAmount);
         }
     }

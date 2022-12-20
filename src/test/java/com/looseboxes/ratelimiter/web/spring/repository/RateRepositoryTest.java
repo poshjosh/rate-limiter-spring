@@ -1,7 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.cache.RateCache;
-import com.looseboxes.ratelimiter.rates.Rate;
+import com.looseboxes.ratelimiter.Rate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
