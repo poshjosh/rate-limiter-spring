@@ -1,6 +1,5 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.Rate;
 import com.looseboxes.ratelimiter.util.Experimental;
 
 import java.util.Objects;
@@ -9,23 +8,17 @@ import java.util.Objects;
 public class RateEntity<ID> {
 
     private final ID id;
-    private final Rate rate;
+    private final Object data;
 
-    public RateEntity() {
-        this(null);
-    }
-    public RateEntity(ID id) {
-        this(id, Rate.NONE);
-    }
-    public RateEntity(ID id, Rate rate) {
+    public RateEntity(ID id, Object data) {
         this.id = id;
-        this.rate = rate;
+        this.data = data;
     }
 
     public ID getId() { return id; }
 
-    public Rate getRate() {
-        return rate;
+    public Object getData() {
+        return data;
     }
 
     @Override
@@ -43,6 +36,6 @@ public class RateEntity<ID> {
 
     @Override
     public String toString() {
-        return "RateEntity{id=" + id + ", rate=" + rate + '}';
+        return "RateEntity{id=" + id + ", data=" + data + '}';
     }
 }

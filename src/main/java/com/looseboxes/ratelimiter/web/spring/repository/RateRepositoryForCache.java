@@ -1,6 +1,5 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.Rate;
 import com.looseboxes.ratelimiter.util.Experimental;
 import com.looseboxes.ratelimiter.util.Nullable;
 import org.slf4j.Logger;
@@ -23,9 +22,9 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     private static final Logger log = LoggerFactory.getLogger(RateRepositoryForCache.class);
 
-    private final RateCacheWithKeys<ID, Rate> rateCache;
+    private final RateCacheWithKeys<ID, Object> rateCache;
 
-    public RateRepositoryForCache(RateCacheWithKeys<ID, Rate> rateCache) {
+    public RateRepositoryForCache(RateCacheWithKeys<ID, Object> rateCache) {
         this.rateCache = Objects.requireNonNull(rateCache);
     }
 
@@ -75,7 +74,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public <S extends RateEntity<ID>> S save(S s) {
-        rateCache.put(Objects.requireNonNull(s.getId()), s.getRate());
+        rateCache.put(Objects.requireNonNull(s.getId()), s.getData());
         return s;
     }
 
@@ -91,8 +90,8 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Optional<RateEntity<ID>> findById(ID id) {
-        Rate rate = this.rateCache.get(id);
-        return Optional.ofNullable(rate == null ? null : new RateEntity<>(id, rate));
+        Object data = this.rateCache.get(id);
+        return Optional.ofNullable(data == null ? null : new RateEntity<>(id, data));
     }
 
     @Override

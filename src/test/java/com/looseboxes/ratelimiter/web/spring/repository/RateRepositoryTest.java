@@ -14,27 +14,27 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RateRepositoryTest {
 
-    private final RateCache<Integer, Rate> rateCache = RateCache.ofMap();
+    private final RateCache<Integer, Object> rateCache = RateCache.ofMap();
     private final RateRepository<RateEntity<Integer>, Integer> rateRepository =
             new RateRepositoryForCache<>(new RateCacheWithKeysImpl<>(rateCache));
 
     @Test
     void save_returnsSavedEntity() {
-        RateEntity<Integer> toSave = new RateEntity<>(1);
+        RateEntity<Integer> toSave = new RateEntity<>(1, "one");
         assertThat(rateRepository.save(toSave)).isEqualTo(toSave);
     }
 
     @Test
     void savedEntityCanBeFound() {
         final Integer id = 1;
-        RateEntity<Integer> toSave = new RateEntity<>(id);
+        RateEntity<Integer> toSave = new RateEntity<>(id, "one");
         rateRepository.save(toSave);
         assertThat(rateRepository.findById(id).orElse(null)).isEqualTo(toSave);
     }
 
     @Test
     void findAll_givenPageable() {
-        List<RateEntity<Integer>> toSave = Arrays.asList(new RateEntity<>(1), new RateEntity<>(2));
+        List<RateEntity<Integer>> toSave = Arrays.asList(new RateEntity<>(1, "one"), new RateEntity<>(2, "two"));
         final int pageSize = toSave.size() / 2;
         rateRepository.saveAll(toSave);
         Page<RateEntity<Integer>> found = rateRepository.findAll(PageRequest.of(0, pageSize));
@@ -50,7 +50,7 @@ class RateRepositoryTest {
         final int mediumId = 2;
         final int largerId = 3;
         List<RateEntity<Integer>> toSave = Arrays.asList(
-                new RateEntity<>(mediumId), new RateEntity<>(largerId), new RateEntity<>(smallerId));
+                new RateEntity<>(mediumId, "two"), new RateEntity<>(largerId, "three"), new RateEntity<>(smallerId,"1"));
         final int pageSize = toSave.size();
         rateRepository.saveAll(toSave);
         Pageable pageable = PageRequest.of(0, pageSize, Sort.by(direction, "id"));
@@ -62,8 +62,8 @@ class RateRepositoryTest {
 
     @Test
     void findAll_givenExampleWithUnmatchedId() {
-        rateRepository.save(new RateEntity<>(1));
-        Iterable<RateEntity<Integer>> found = rateRepository.findAll(Example.of(new RateEntity<>(2)));
+        rateRepository.save(new RateEntity<>(1, "one"));
+        Iterable<RateEntity<Integer>> found = rateRepository.findAll(Example.of(new RateEntity<>(2, "two")));
         assertThat(found.iterator().hasNext()).isFalse();
     }
 
@@ -79,7 +79,7 @@ class RateRepositoryTest {
 
     @Test
     void findAll_givenMatchingExample() {
-        List<RateEntity<Integer>> toSave = Arrays.asList(new RateEntity<>(1), new RateEntity<>(2));
+        List<RateEntity<Integer>> toSave = Arrays.asList(new RateEntity<>(1, "one"), new RateEntity<>(2, "two"));
         rateRepository.saveAll(toSave);
         final RateEntity<Integer> expected = toSave.get(toSave.size() - 1);
         Iterable<RateEntity<Integer>> found = rateRepository.findAll(Example.of(expected));
