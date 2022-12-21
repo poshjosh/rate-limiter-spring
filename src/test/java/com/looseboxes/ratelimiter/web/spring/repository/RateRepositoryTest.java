@@ -1,7 +1,9 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
+import com.looseboxes.ratelimiter.BandwidthFactory;
+import com.looseboxes.ratelimiter.bandwidths.Bandwidth;
+import com.looseboxes.ratelimiter.bandwidths.SmoothBandwidth;
 import com.looseboxes.ratelimiter.cache.RateCache;
-import com.looseboxes.ratelimiter.Rate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -70,11 +72,16 @@ class RateRepositoryTest {
     @Test
     void findAll_givenExampleWithUnmatchedValueButSameId() {
         final Integer id = 1;
-        final Rate lhs = Rate.of(1, 1);
-        final Rate rhs = Rate.of(2, 2);
+        final Bandwidth lhs = createBandwidth(1);
+        final Bandwidth rhs = createBandwidth(2);
         rateRepository.save(new RateEntity<>(id, lhs));
         Iterable<RateEntity<Integer>> found = rateRepository.findAll(Example.of(new RateEntity<>(id, rhs)));
         assertThat(found.iterator().hasNext()).isFalse();
+    }
+
+    private final BandwidthFactory bandwidthFactory = BandwidthFactory.bursty();
+    private Bandwidth createBandwidth(double permitsPerSeconds) {
+        return bandwidthFactory.createNew(permitsPerSeconds);
     }
 
     @Test
