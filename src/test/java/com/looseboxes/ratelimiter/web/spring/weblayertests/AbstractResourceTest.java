@@ -19,7 +19,6 @@ public abstract class AbstractResourceTest {
     void shouldFailWhenMaxLimitIsExceeded(String endpoint, int maxLimit) throws Exception {
 
         for(int i=0; i<maxLimit + 1; i++) {
-            System.out.println("\n i: " + i);
             if(i == maxLimit) {
                 shouldReturnStatusOfTooManyRequests(endpoint);
             }else{

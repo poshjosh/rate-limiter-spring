@@ -19,12 +19,12 @@ public class RequestRateLimitingFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
 
-        if (rateLimiter.tryConsume((HttpServletRequest) request)) {
+        if (rateLimiter.tryConsume(filterChain, (HttpServletRequest)request)) {
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
 
             return;
         }
