@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.web.core.util.RateLimitConfig;
+import com.looseboxes.ratelimiter.util.Rates;
 import com.looseboxes.ratelimiter.web.core.util.RateLimitProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -13,7 +13,7 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
 
     private Boolean disabled = Boolean.FALSE;
 
-    private Map<String, RateLimitConfig> rateLimitConfigs;
+    private Map<String, Rates> rateLimitConfigs;
 
     @Override
     public List<String> getResourcePackages() {
@@ -34,11 +34,11 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
     }
 
     @Override
-    public Map<String, RateLimitConfig> getRateLimitConfigs() {
+    public Map<String, Rates> getRateLimitConfigs() {
         return rateLimitConfigs;
     }
 
-    public void setRateLimitConfigs(Map<String, RateLimitConfig> rateLimitConfigs) {
+    public void setRateLimitConfigs(Map<String, Rates> rateLimitConfigs) {
         this.rateLimitConfigs = rateLimitConfigs;
     }
 
