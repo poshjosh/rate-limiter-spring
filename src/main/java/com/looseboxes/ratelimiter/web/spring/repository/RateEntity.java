@@ -1,9 +1,10 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.util.Experimental;
+import com.looseboxes.ratelimiter.annotations.Experimental;
 
 import java.util.Objects;
 
+/** @Experimental */
 @Experimental
 public class RateEntity<ID> {
 

@@ -1,5 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
+import com.looseboxes.ratelimiter.BandwidthFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
@@ -12,6 +13,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class AbstractResourceTest {
+
+    static {
+        final String threadName = Thread.currentThread().getName();
+        final String bandwidthFactoryClass = BandwidthFactory.AllOrNothingBursty.class.getName();
+        System.out.printf("%s [%s] INFO  c.l.r.w.s.w.AbstractResourceTest - Using BandwidthFactory: %s\n",
+                java.time.LocalTime.now(), threadName, bandwidthFactoryClass);
+        System.setProperty("bandwidth-factory-class", bandwidthFactoryClass);
+    }
 
     @Autowired
     private MockMvc mockMvc;

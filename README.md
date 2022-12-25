@@ -53,7 +53,7 @@ __3. Annotate classes and/or methods.__
 ```java
 package com.myapplicatioon.web.rest;
 
-import com.looseboxes.ratelimiter.annotation.RateLimit;
+import com.looseboxes.ratelimiter.annotations.RateLimit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

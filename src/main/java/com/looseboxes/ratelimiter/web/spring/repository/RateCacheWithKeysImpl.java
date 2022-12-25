@@ -1,7 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.cache.RateCache;
-import com.looseboxes.ratelimiter.util.Experimental;
+import com.looseboxes.ratelimiter.annotations.Experimental;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/** @Experimental */
 @Experimental
 public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
 

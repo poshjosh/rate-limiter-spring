@@ -1,26 +1,81 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
+import com.looseboxes.ratelimiter.annotations.RateLimit;
+import com.looseboxes.ratelimiter.annotations.RateLimitGroup;
+import com.looseboxes.ratelimiter.util.Operator;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
-@WebMvcControllersTest(classes = { ResourceWithMethodLimits.class })
+@WebMvcControllersTest(classes = { ResourceWithMethodLimitsTest.Resource.class })
 class ResourceWithMethodLimitsTest extends AbstractResourceTest {
+
+    @RestController
+    @RequestMapping(ApiEndpoints.API)
+    static class Resource {
+
+        static final int DURATION_SECONDS = 3;
+
+        private static final String ROOT = "/resource-with-method-limits-test";
+
+        interface InternalEndpoints {
+            String HOME = ROOT + "/home";
+            String LIMIT_1 = ROOT + "/limit_1";
+            String LIMIT_1_OR_5 = ROOT + "/limit_1_or_5";
+            String LIMIT_1_AND_5 = ROOT + "/limit_1_and_5";
+        }
+
+        interface Endpoints {
+            String METHOD_LIMITS_HOME = ApiEndpoints.API + InternalEndpoints.HOME;
+            String METHOD_LIMIT_1 = ApiEndpoints.API + InternalEndpoints.LIMIT_1;
+            String METHOD_LIMIT_1_OR_5 = ApiEndpoints.API + InternalEndpoints.LIMIT_1_OR_5;
+            String METHOD_LIMIT_1_AND_5 = ApiEndpoints.API + InternalEndpoints.LIMIT_1_AND_5;
+        }
+
+        @RequestMapping(InternalEndpoints.HOME)
+        public String home(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping(InternalEndpoints.LIMIT_1)
+        @RateLimit(limit = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        public String limit_1(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping(InternalEndpoints.LIMIT_1_OR_5)
+        @RateLimit(limit = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @RateLimit(limit = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        public String limit_1_or_5(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping(InternalEndpoints.LIMIT_1_AND_5)
+        @RateLimitGroup(logic = Operator.AND)
+        @RateLimit(limit = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @RateLimit(limit = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        public String limit_1_and_5(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+    }
 
     @Test
     void homePageShouldReturnDefaultResult() throws Exception {
-        shouldReturnDefaultResult(ApiEndpoints.METHOD_LIMITS_HOME);
+        shouldReturnDefaultResult(Resource.Endpoints.METHOD_LIMITS_HOME);
     }
 
     @Test
     void shouldSucceedWhenWithinLimit() throws Exception {
-        shouldReturnDefaultResult(ApiEndpoints.METHOD_LIMIT_1);
+        shouldReturnDefaultResult(Resource.Endpoints.METHOD_LIMIT_1);
     }
 
     @Test
     void shouldFailWhenMethodLimitIsExceeded() throws Exception {
 
-        final String endpoint = ApiEndpoints.METHOD_LIMIT_1;
+        final String endpoint = Resource.Endpoints.METHOD_LIMIT_1;
 
         shouldReturnDefaultResult(endpoint);
 
@@ -30,7 +85,7 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
     @Test
     void orLimitGroupShouldFailWhenOneOfManyLimitsIsExceeded() throws Exception {
 
-        final String endpoint = ApiEndpoints.METHOD_LIMIT_1_OR_5;
+        final String endpoint = Resource.Endpoints.METHOD_LIMIT_1_OR_5;
 
         shouldReturnDefaultResult(endpoint);
 
@@ -40,11 +95,7 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
     @Test
     void orLimitGroupShouldFailWhenOneOfManyLimitsIsExceededAfterADelay() throws Exception {
 
-        final String endpoint = ApiEndpoints.METHOD_LIMIT_1_OR_5;
-
-        shouldReturnDefaultResult(endpoint);
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(Constants.DURATION_SECONDS + 1));
+        final String endpoint = Resource.Endpoints.METHOD_LIMIT_1_OR_5;
 
         shouldReturnDefaultResult(endpoint);
 
@@ -54,7 +105,7 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
     @Test
     void andLimitGroupShouldSucceedWhenOnlyOneLimitIsExceeded() throws Exception {
 
-        final String endpoint = ApiEndpoints.METHOD_LIMIT_1_AND_5;
+        final String endpoint = Resource.Endpoints.METHOD_LIMIT_1_AND_5;
 
         shouldReturnDefaultResult(endpoint);
 
@@ -64,6 +115,6 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
     @Test
     void andLimitGroupShouldFailWhenAllLimitsAreExceeded() throws Exception {
 
-        shouldFailWhenMaxLimitIsExceeded(ApiEndpoints.METHOD_LIMIT_1_AND_5, Constants.LIMIT_5);
+        shouldFailWhenMaxLimitIsExceeded(Resource.Endpoints.METHOD_LIMIT_1_AND_5, 5);
     }
 }

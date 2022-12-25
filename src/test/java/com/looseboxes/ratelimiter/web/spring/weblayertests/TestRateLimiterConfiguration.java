@@ -19,6 +19,8 @@ import java.util.Collections;
 
 @TestConfiguration
 public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
+    public static final int LIMIT = 100;
+    public static final long DURATION_SECONDS = 60;
 
     private final String testCacheName = this.getClass().getPackage().getName() + ".cache";
     private final ConcurrentMapCacheManager concurrentMapCacheManager = new ConcurrentMapCacheManager();
@@ -26,7 +28,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
 
     public TestRateLimiterConfiguration(RateLimitPropertiesSpring properties) {
         concurrentMapCacheManager.setCacheNames(Collections.singletonList(testCacheName));
-        properties.setResourcePackages(Collections.singletonList(ResourceWithMethodLimits.class.getPackage().getName()));
+        properties.setResourcePackages(Collections.singletonList(AbstractResourceTest.class.getPackage().getName()));
         properties.setRateLimitConfigs(Collections.singletonMap("default", getRateLimitConfigList()));
         this.rateCache = new RateCacheWithKeysImpl<>(
                 new SpringRateCache<>(concurrentMapCacheManager.getCache(testCacheName))
@@ -52,8 +54,7 @@ public class TestRateLimiterConfiguration extends RateLimiterConfiguration{
     }
 
     private Rate[] getRateLimits() {
-        Rate config = Rate.of(
-                Constants.OVERALL_LIMIT, Duration.ofSeconds(Constants.OVERALL_DURATION_SECONDS));
+        Rate config = Rate.of(LIMIT, Duration.ofSeconds(DURATION_SECONDS));
         return new Rate[]{config};
     }
 }

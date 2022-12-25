@@ -1,7 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.util.Experimental;
-import com.looseboxes.ratelimiter.util.Nullable;
+import com.looseboxes.ratelimiter.annotations.Experimental;
+import com.looseboxes.ratelimiter.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -16,6 +16,7 @@ import java.util.stream.StreamSupport;
  * An adapter to make a {@link com.looseboxes.ratelimiter.cache.RateCache} implement
  * a {@link RateRepository}, so we can access our rate cache with the fluidity provided
  * by spring data repositories.
+ * @Experimental
  */
 @Experimental
 public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>, ID> {

@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
-import com.looseboxes.ratelimiter.util.Experimental;
+import com.looseboxes.ratelimiter.annotations.Experimental;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
