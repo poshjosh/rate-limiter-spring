@@ -15,10 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class AbstractResourceTest {
 
     static {
-        final String threadName = Thread.currentThread().getName();
-        final String bandwidthFactoryClass = BandwidthFactory.AllOrNothingBursty.class.getName();
-        System.out.printf("%s [%s] INFO  c.l.r.w.s.w.AbstractResourceTest - Using BandwidthFactory: %s\n",
-                java.time.LocalTime.now(), threadName, bandwidthFactoryClass);
+        final String bandwidthFactoryClass = BandwidthFactory.AllOrNothing.class.getName();
+        System.out.printf("%s [%s] INFO  AbstractResourceTest - Using BandwidthFactory: %s\n",
+                java.time.LocalTime.now(), Thread.currentThread().getName(), bandwidthFactoryClass);
         System.setProperty("bandwidth-factory-class", bandwidthFactoryClass);
     }
 

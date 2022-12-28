@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/** @Experimental */
+/** Experimental */
 @Experimental
 public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
 

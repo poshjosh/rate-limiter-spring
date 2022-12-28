@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/** @Experimental */
+/** Experimental */
 @Experimental
 public class ComparatorFromSort<E> implements Comparator<E> {
 

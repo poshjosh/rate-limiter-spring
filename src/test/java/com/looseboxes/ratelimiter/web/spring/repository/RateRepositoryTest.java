@@ -2,13 +2,13 @@ package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.BandwidthFactory;
 import com.looseboxes.ratelimiter.bandwidths.Bandwidth;
-import com.looseboxes.ratelimiter.bandwidths.SmoothBandwidth;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.data.domain.*;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,8 +80,8 @@ class RateRepositoryTest {
     }
 
     private final BandwidthFactory bandwidthFactory = BandwidthFactory.bursty();
-    private Bandwidth createBandwidth(double permitsPerSeconds) {
-        return bandwidthFactory.createNew(permitsPerSeconds);
+    private Bandwidth createBandwidth(long permitsPerSeconds) {
+        return bandwidthFactory.createNew(permitsPerSeconds, Duration.ofSeconds(1));
     }
 
     @Test

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Example;
 import java.beans.PropertyDescriptor;
 import java.util.function.Predicate;
 
-/** @Experimental */
+/** Experimental */
 @Experimental
 public class FilterFromExample<E> implements Predicate<E> {
 

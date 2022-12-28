@@ -20,7 +20,6 @@ public class RateRepositoryTest extends AbstractResourceTest {
 
     @RestController
     @RequestMapping(ApiEndpoints.API)
-    @RateLimit(limit = LIMIT, duration = 1, timeUnit = TimeUnit.SECONDS)
     static class Resource {
 
         private static final String _HOME = "/rate-repository-test/home";
@@ -30,6 +29,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
         }
 
         @RequestMapping(Resource._HOME)
+        @RateLimit(limit = LIMIT, duration = 1, timeUnit = TimeUnit.SECONDS)
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }

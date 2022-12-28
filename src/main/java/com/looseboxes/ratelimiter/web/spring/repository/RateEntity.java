@@ -4,7 +4,7 @@ import com.looseboxes.ratelimiter.annotations.Experimental;
 
 import java.util.Objects;
 
-/** @Experimental */
+/** Experimental */
 @Experimental
 public class RateEntity<ID> {
 

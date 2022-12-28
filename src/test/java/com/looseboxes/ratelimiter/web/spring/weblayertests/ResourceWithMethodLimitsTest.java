@@ -54,7 +54,7 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
         }
 
         @RequestMapping(InternalEndpoints.LIMIT_1_AND_5)
-        @RateLimitGroup(logic = Operator.AND)
+        @RateLimitGroup(operator = Operator.AND)
         @RateLimit(limit = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         @RateLimit(limit = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         public String limit_1_and_5(HttpServletRequest request) {

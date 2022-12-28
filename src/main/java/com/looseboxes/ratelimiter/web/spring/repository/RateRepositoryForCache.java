@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
  * An adapter to make a {@link com.looseboxes.ratelimiter.cache.RateCache} implement
  * a {@link RateRepository}, so we can access our rate cache with the fluidity provided
  * by spring data repositories.
- * @Experimental
+ * Experimental
  */
 @Experimental
 public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>, ID> {

@@ -12,14 +12,16 @@ import java.util.concurrent.TimeUnit;
 public class ResourceWithClassLimitTest extends AbstractResourceTest{
 
     @RestController
-    @RequestMapping(ApiEndpoints.API)
+    @RequestMapping(ApiEndpoints.API + Resource.ROOT)
     @RateLimit(limit = 1, duration = 1, timeUnit = TimeUnit.SECONDS)
     static class Resource {
 
-        private static final String _HOME = "/resource-with-class-limit-test/home";
+        private static final String ROOT = "/resource-with-class-limit-test";
+
+        private static final String _HOME = "/home";
 
         interface Endpoints {
-            String HOME = ApiEndpoints.API + Resource._HOME;
+            String HOME = ApiEndpoints.API + ROOT + _HOME;
         }
 
         @RequestMapping(Resource._HOME)
@@ -33,10 +35,10 @@ public class ResourceWithClassLimitTest extends AbstractResourceTest{
 
         final String endpoint = Resource.Endpoints.HOME;
 
-        System.out.println();
+        //System.out.println();
         shouldReturnDefaultResult(endpoint);
 
-        System.out.println();
+        //System.out.println();
         shouldReturnStatusOfTooManyRequests(endpoint);
     }
 }

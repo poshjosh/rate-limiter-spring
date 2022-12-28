@@ -7,7 +7,8 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.ArrayList;
 import java.util.List;
 
-class Util {
+final class Util {
+    private Util() { }
     static PathPattern[] composePathPatterns(PathPatternParser pathPatternParser, PathPattern [] basePathPatterns, List<String> subPathPatterns) {
         if(subPathPatterns == null || subPathPatterns.isEmpty()) {
             PathPattern [] result = new PathPattern[basePathPatterns.length];

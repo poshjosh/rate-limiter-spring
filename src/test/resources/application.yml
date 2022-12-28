@@ -2,7 +2,7 @@ debug: true
 
 spring:
   main:
-    banner-mode: "off"
+    banner-mode: off
 
 logging:
   level:

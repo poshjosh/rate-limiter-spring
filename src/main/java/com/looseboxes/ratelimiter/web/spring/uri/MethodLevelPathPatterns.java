@@ -83,8 +83,6 @@ public class MethodLevelPathPatterns implements PathPatterns<String> {
 
     @Override
     public String toString() {
-        return "MethodLevelPathPatterns{" +
-                "pathPatterns=" + Arrays.toString(pathPatterns) +
-                '}';
+        return "MethodLevelPathPatterns{" + Arrays.toString(pathPatterns) + '}';
     }
 }

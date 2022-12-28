@@ -84,8 +84,6 @@ public class ClassLevelPathPatterns implements PathPatterns<String> {
 
     @Override
     public String toString() {
-        return "ClassLevelPathPatterns{" +
-                "pathPatterns=" + Arrays.toString(pathPatterns) +
-                '}';
+        return "ClassLevelPathPatterns{" + Arrays.toString(pathPatterns) + '}';
     }
 }

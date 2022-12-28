@@ -22,7 +22,6 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
 
     @RestController
     @RequestMapping(ApiEndpoints.API)
-    @RateLimit(limit = 1, duration = 1, timeUnit = TimeUnit.SECONDS)
     static class Resource {
 
         private static final String _HOME = "/diabled-rate-limiting-test/home";
@@ -32,6 +31,7 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
         }
 
         @RequestMapping(DisabledRateLimitingTest.Resource._HOME)
+        @RateLimit(limit = 1, duration = 1, timeUnit = TimeUnit.SECONDS)
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }
@@ -53,7 +53,7 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
         try {
             final String endpoint = Resource.Endpoints.HOME;
             shouldReturnDefaultResult(endpoint); // 1 of 1
-            shouldReturnDefaultResult(endpoint); // 2 of 1 - Should succeed if rate limiting is originallyDisabled
+            shouldReturnDefaultResult(endpoint); // 2 of 1 - Should succeed if rate limiting is disabled
         }finally{
             getProperties().setDisabled(originallyDisabled);
 
