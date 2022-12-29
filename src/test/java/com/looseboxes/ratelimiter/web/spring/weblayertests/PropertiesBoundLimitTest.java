@@ -1,8 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.BandwidthFactory;
-import com.looseboxes.ratelimiter.annotation.IdProvider;
-import com.looseboxes.ratelimiter.web.core.WebRequestRateLimiterConfig;
+import com.looseboxes.ratelimiter.web.core.WebResourceLimiterConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,19 +30,19 @@ public class PropertiesBoundLimitTest extends AbstractResourceTest{
     }
 
     @Autowired
-    WebRequestRateLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig;
+    WebResourceLimiterConfig<HttpServletRequest> webResourceLimiterConfig;
 
     @Test
     public void shouldHaveAMatcher() {
-        Object matcher = webRequestRateLimiterConfig.getRegistries().matchers().getOrDefault(
-                TestRateLimiterConfiguration.getMethodBoundToPropertyRates(), null);
+        Object matcher = webResourceLimiterConfig.getRegistries().matchers().getOrDefault(
+                TestResourceLimiterConfiguration.getMethodBoundToPropertyRates(), null);
         assertNotNull(matcher);
     }
 
     @Test
     public void shouldBeRateLimited() throws Exception{
         final String endpoint = Resource.Endpoints.HOME;
-        final int limit = TestRateLimiterConfiguration.LIMIT;
+        final int limit = TestResourceLimiterConfiguration.LIMIT;
         for (int i = 0; i < limit; i++) {
             shouldReturnDefaultResult(endpoint);
         }

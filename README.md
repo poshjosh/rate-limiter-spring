@@ -24,25 +24,25 @@ package com.myapplicatioon;
 import javax.servlet.*;
 
 import com.looseboxes.ratelimiter.web.spring.AbstractRequestRateLimitingFilter;
-import com.looseboxes.ratelimiter.web.spring.RateLimiterConfiguration;
+import com.looseboxes.ratelimiter.web.spring.ResourceLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
-@SpringBootApplication(scanBasePackageClasses = {RateLimiterConfiguration.class, MySpringApplication.class})
+@SpringBootApplication(scanBasePackageClasses = {ResourceLimiterConfiguration.class, MySpringApplication.class})
 @EnableConfigurationProperties({RateLimitPropertiesSpring.class})
 public class MySpringApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(MySpringApplication.class, args);
-  }
-
-  @Component
-  public static class MySpringApplicationFilter extends AbstractRequestRateLimitingFilter {
-    @Override
-    protected void onLimitExceeded(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws java.io.IOException {
-      response.sendError(429, "Too many requests");
+    public static void main(String[] args) {
+        SpringApplication.run(MySpringApplication.class, args);
     }
-  }
+
+    @Component
+    public static class MySpringApplicationFilter extends AbstractRequestRateLimitingFilter {
+        @Override
+        protected void onLimitExceeded(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+                throws java.io.IOException {
+            response.sendError(429, "Too many requests");
+        }
+    }
 }
 ```
 
@@ -53,24 +53,21 @@ __3. Annotate classes and/or methods.__
 ```java
 package com.myapplicatioon.web.rest;
 
-import com.looseboxes.ratelimiter.annotations.RateLimit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RateLimit(limit = 100, duration = 1000)
 @RestController
 @RequestMapping("/my-resources")
 public class MyResource {
 
-    // Only 25 calls per second
-    @RateLimit(limit = 25, duration = 1000)
-    @GetMapping("/greet/{name}")
-    public ResponseEntity<String> greet(@PathVariable String name) {
-        return ResponseEntity.ok("Hello " + name);
-    }
+  // Only 25 calls per second
+  @GetMapping("/greet/{name}")
+  public ResponseEntity<String> greet(@PathVariable String name) {
+    return ResponseEntity.ok("Hello " + name);
+  }
 }
 ```
 

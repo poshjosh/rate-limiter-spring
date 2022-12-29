@@ -7,7 +7,7 @@ spring:
 logging:
   level:
     ROOT: ERROR
-    #com.looseboxes.ratelimiter.PatternMatchingRateLimiter: TRACE
+    #com.looseboxes.ratelimiter.PatternMatchingResourceLimiter: TRACE
     #com.looseboxes.ratelimiter.annotation.RateLimitTreeBuilder: TRACE
     com.looseboxes.ratelimiter: DEBUG
     org.springframework: ERROR

@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.RateLimiter;
+import com.looseboxes.ratelimiter.ResourceLimiter;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpStatus;
 
@@ -12,17 +12,17 @@ import java.io.IOException;
 @TestComponent
 public class RequestRateLimitingFilter implements Filter {
 
-    private final RateLimiter<HttpServletRequest> rateLimiter;
+    private final ResourceLimiter<HttpServletRequest> resourceLimiter;
 
-    public RequestRateLimitingFilter(RateLimiter<HttpServletRequest> rateLimiter) {
-        this.rateLimiter = rateLimiter;
+    public RequestRateLimitingFilter(ResourceLimiter<HttpServletRequest> resourceLimiter) {
+        this.resourceLimiter = resourceLimiter;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
 
-        if (rateLimiter.tryConsume(filterChain, (HttpServletRequest)request)) {
+        if (resourceLimiter.tryConsume(filterChain, (HttpServletRequest)request)) {
 
             filterChain.doFilter(request, response);
 

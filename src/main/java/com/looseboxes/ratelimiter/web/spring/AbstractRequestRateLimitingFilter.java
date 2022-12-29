@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.RateLimiter;
+import com.looseboxes.ratelimiter.ResourceLimiter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -14,7 +14,7 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false")
 public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBean {
 
-    private RateLimiter<HttpServletRequest> rateLimiter;
+    private ResourceLimiter<HttpServletRequest> resourceLimiter;
 
     protected AbstractRequestRateLimitingFilter() { }
 
@@ -26,14 +26,14 @@ public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBea
         final WebApplicationContext webApplicationContext =
                 WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
-        rateLimiter = getRateLimiter(webApplicationContext);
+        resourceLimiter = getRateLimiter(webApplicationContext);
     }
 
-    private RateLimiter<HttpServletRequest> getRateLimiter(WebApplicationContext webApplicationContext) {
-        if (webApplicationContext.getBeanNamesForType(RateLimiter.class).length > 0) {
-            return webApplicationContext.getBean(RateLimiter.class);
+    private ResourceLimiter<HttpServletRequest> getRateLimiter(WebApplicationContext webApplicationContext) {
+        if (webApplicationContext.getBeanNamesForType(ResourceLimiter.class).length > 0) {
+            return webApplicationContext.getBean(ResourceLimiter.class);
         } else {
-            return RateLimiter.noop();
+            return ResourceLimiter.noop();
         }
     }
 
@@ -45,7 +45,7 @@ public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBea
 
             final HttpServletRequest httpRequest = (HttpServletRequest)request;
 
-            if (!rateLimiter.tryConsume(httpRequest)) {
+            if (!resourceLimiter.tryConsume(httpRequest)) {
                 onLimitExceeded(httpRequest, (HttpServletResponse)response, chain);
                 return;
             }
@@ -57,7 +57,7 @@ public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBea
     protected void onLimitExceeded(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException { }
 
-    public RateLimiter<HttpServletRequest> getRateLimiter() {
-        return rateLimiter;
+    public ResourceLimiter<HttpServletRequest> getRateLimiter() {
+        return resourceLimiter;
     }
 }
