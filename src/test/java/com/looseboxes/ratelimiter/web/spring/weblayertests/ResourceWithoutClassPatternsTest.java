@@ -23,7 +23,7 @@ class ResourceWithoutClassPatternsTest extends AbstractResourceTest {
         }
 
         @RequestMapping(Resource._LIMIT_1)
-        @RateLimit(limit = 1, duration = 3, timeUnit = TimeUnit.SECONDS)
+        @RateLimit(permits = 1, duration = 3, timeUnit = TimeUnit.SECONDS)
         public String limit_1(HttpServletRequest request) {
             return request.getRequestURI();
         }

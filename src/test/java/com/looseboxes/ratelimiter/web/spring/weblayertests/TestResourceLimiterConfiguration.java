@@ -14,7 +14,6 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.Duration;
 import java.util.Collections;
 
 @TestConfiguration
@@ -73,6 +72,6 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
     }
 
     private Rate[] getRateLimits() {
-        return new Rate[]{Rate.of(LIMIT, Duration.ofSeconds(DURATION_SECONDS))};
+        return new Rate[]{Rate.ofSeconds(LIMIT)};
     }
 }

@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false")
-public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBean {
+public class ResourceLimitingFilter extends GenericFilterBean {
 
     private ResourceLimiter<HttpServletRequest> resourceLimiter;
 
-    protected AbstractRequestRateLimitingFilter() { }
+    protected ResourceLimitingFilter() { }
 
     @Override
     protected void initFilterBean() throws ServletException {
@@ -26,10 +26,10 @@ public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBea
         final WebApplicationContext webApplicationContext =
                 WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
-        resourceLimiter = getRateLimiter(webApplicationContext);
+        resourceLimiter = getResourceLimiter(webApplicationContext);
     }
 
-    private ResourceLimiter<HttpServletRequest> getRateLimiter(WebApplicationContext webApplicationContext) {
+    private ResourceLimiter<HttpServletRequest> getResourceLimiter(WebApplicationContext webApplicationContext) {
         if (webApplicationContext.getBeanNamesForType(ResourceLimiter.class).length > 0) {
             return webApplicationContext.getBean(ResourceLimiter.class);
         } else {
@@ -54,10 +54,14 @@ public abstract class AbstractRequestRateLimitingFilter extends GenericFilterBea
         chain.doFilter(request, response);
     }
 
-    protected void onLimitExceeded(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    /**
+     * Called when a limit is exceeded.
+     */
+    protected void onLimitExceeded(
+            HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException { }
 
-    public ResourceLimiter<HttpServletRequest> getRateLimiter() {
+    public ResourceLimiter<HttpServletRequest> getResourceLimiter() {
         return resourceLimiter;
     }
 }

@@ -11,9 +11,17 @@ __1. Add required rate-limiter properties__
 
 ```yaml
 rate-limiter:
-  # If using annotations, you have to specify the list packages where resources 
-  # that may contain the rate-limit related annotations should be scanned for.
   resource-packages: com.myapplicatioon.web.rest
+  rate-limit-configs:
+    task_queue: # Accept only 2 tasks per second 
+      permits: 2
+      duration: PT1S
+    video_download: # Cap streaming of video to 5kb per second
+      permits: 5000
+      duration: PT1S
+    com.myapplicatioon.web.rest.MyResource: # Limit requests to this resource to 10 per minute
+      permits: 10
+      duration: PT1M 
 ```
 
 __2. Configure your spring application__
@@ -23,26 +31,24 @@ package com.myapplicatioon;
 
 import javax.servlet.*;
 
-import com.looseboxes.ratelimiter.web.spring.AbstractRequestRateLimitingFilter;
+import com.looseboxes.ratelimiter.web.spring.ResourceLimitingFilter;
 import com.looseboxes.ratelimiter.web.spring.ResourceLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
-@SpringBootApplication(scanBasePackageClasses = {ResourceLimiterConfiguration.class, MySpringApplication.class})
-@EnableConfigurationProperties({RateLimitPropertiesSpring.class})
-public class MySpringApplication {
+@SpringBootApplication(scanBasePackageClasses = { ResourceLimiterConfiguration.class,
+        MySpringApplication.class }) @EnableConfigurationProperties({
+        RateLimitPropertiesSpring.class }) public class MySpringApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(MySpringApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(MySpringApplication.class, args);
+  }
 
-    @Component
-    public static class MySpringApplicationFilter extends AbstractRequestRateLimitingFilter {
-        @Override
-        protected void onLimitExceeded(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-                throws java.io.IOException {
-            response.sendError(429, "Too many requests");
-        }
+  @Component public static class MySpringApplicationFilter extends ResourceLimitingFilter {
+    @Override protected void onLimitExceeded(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain) throws java.io.IOException {
+      response.sendError(429, "Too many requests");
     }
+  }
 }
 ```
 
@@ -71,31 +77,57 @@ public class MyResource {
 }
 ```
 
-__4. Further configure rate limiting__
+### Fine-grained configuration of rate limiting
 
 Configure rate limiting as described in the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core).
 
-In addition, you could use spring specific features, like `com.looseboxes.ratelimiter.web.spring.SpringRateCache`
+When you configure rate limiting using properties, you could:
 
-__Notes:__
+- Rate limit a class from properties by using the class ID.
 
-You can configure rate limiting from the properties file.
+- Rate limit a method from properties by using the method ID.
 
-```yaml
-rate-limiter:
-  resource-packages: com.myapplicatioon.web.rest
-  rate-limit-configs:
-    com.myapplicatioon.web.rest.MyResource: # This is the group name
-      limits:
-        -
-          limit: 25
-          duration: PT1S
+```java
+public class RateLimitPropertiesImpl implements RateLimitProperties {
+  
+  final String classId = IdProvider.ofClass().getId(MyResource.class);
+  final String methodId = IdProvider.ofClass().getId(MyResource.class.getMethod("greet", String.class));
+  
+  @Override
+  public Map<String, Rates> getRateLimitConfigs() {
+    
+    Map<String, Rates> ratesMap = new HashMap<>();
+    
+    // Rate limit a class
+    ratesMap.put(methodId, Rates.of(Rate.ofMinutes(10)));
+    
+    // Rate limit a method
+    ratesMap.put(classId, Rates.of(Rate.ofMinutes(10)));
+    
+    return ratesMap;
+  }
+}
 ```
 
-- By using the fully qualified class name as the group name we can configure rate limiting
-  of specific resources from application configuration properties.
+### Manually create and use a ResourceLimiter
 
-- You could also narrow the specified properties to a specific method. For example, in this case,
-  by using `com.myapplicatioon.web.rest.MyResource.greet(java.lang.String)` as the group name.
+```java
+
+import com.looseboxes.ratelimiter.web.core.impl.WebResourceLimiter;
+import com.looseboxes.ratelimiter.web.spring.WebResourceLimiterConfigSpring;
+
+public class ResourceLimiterProvider {
+
+  public RateLimiter<R> createResourceLimiter(RateLimiterProperties properties) {
+    return new WebResourceLimiter<>(
+            WebResourceLimiterConfigSpring.builder().properties(properties).build());
+  }
+}
+```
+This way you use the `ResourceLimiter` as you see fit.
+
+### Annotation Specifications
+
+Please read the [annotation specs](https://github.com/poshjosh/rate-limiter-annotation/blob/main/docs/ANNOTATION_SPECS.md). It is concise.
 
 Enjoy! :wink:
