@@ -39,12 +39,12 @@ class NamedLimitTest {
 
     @Test
     void shouldHaveAResourceLimiterRegisteredForCustomName() {
-        assertNotNull(registries.resourceLimiters().getOrDefault(NAME, null));
+        assertNotNull(registries.limiters().getOrDefault(NAME, null));
     }
 
     @Test
     void shouldNotHaveAResourceLimiterRegisteredForDefaultName() {
         String defaultName = ElementId.of(Resource.class);
-        assertNull(registries.resourceLimiters().getOrDefault(defaultName, null));
+        assertNull(registries.limiters().getOrDefault(defaultName, null));
     }
 }
