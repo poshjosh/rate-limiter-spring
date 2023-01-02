@@ -99,10 +99,10 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
     Map<String, Rates> ratesMap = new HashMap<>();
     
     // Rate limit a class
-    ratesMap.put(methodId, Rates.of(Rate.ofMinutes(10)));
-    
+    ratesMap.put(NodeId.of(MyResource.class), Rates.of(Rate.ofMinutes(10)));
+
     // Rate limit a method
-    ratesMap.put(classId, Rates.of(Rate.ofMinutes(10)));
+    ratesMap.put(NodeId.of(MyResource.class.getMethod("greet", String.class)), Rates.of(Rate.ofMinutes(10)));
     
     return ratesMap;
   }
@@ -113,15 +113,16 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
 ```java
 
-import com.looseboxes.ratelimiter.web.core.impl.WebResourceLimiter;
+import com.looseboxes.ratelimiter.web.core.AbstractResourceLimiterRegistry;
 import com.looseboxes.ratelimiter.web.spring.WebResourceLimiterConfigSpring;
 
 public class ResourceLimiterProvider {
 
-  public RateLimiter<R> createResourceLimiter(RateLimiterProperties properties) {
-    return new WebResourceLimiter<>(
-            WebResourceLimiterConfigSpring.builder().properties(properties).build());
-  }
+    public RateLimiter<R> createResourceLimiter(RateLimiterProperties properties) {
+        return AbstractResourceLimiterRegistry
+                .of(WebResourceLimiterConfigSpring.builder().properties(properties).build())
+                .createResourceLimiter();
+    }
 }
 ```
 This way you use the `ResourceLimiter` as you see fit.

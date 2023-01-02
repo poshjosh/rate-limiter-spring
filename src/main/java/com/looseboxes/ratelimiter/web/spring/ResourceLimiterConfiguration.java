@@ -2,7 +2,6 @@ package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.web.core.*;
-import com.looseboxes.ratelimiter.web.core.impl.WebResourceLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +16,7 @@ public class ResourceLimiterConfiguration {
     @Bean
     public ResourceLimiter<HttpServletRequest> resourceLimiter(
             WebResourceLimiterConfig<HttpServletRequest> webResourceLimiterConfig) {
-        return new WebResourceLimiter<>(webResourceLimiterConfig);
+        return ResourceLimiterRegistry.of(webResourceLimiterConfig).createResourceLimiter();
     }
 
     @Bean

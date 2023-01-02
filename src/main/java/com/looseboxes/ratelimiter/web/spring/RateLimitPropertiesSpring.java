@@ -9,11 +9,11 @@ import java.util.*;
 @ConfigurationProperties(prefix = "rate-limiter", ignoreUnknownFields = false)
 public class RateLimitPropertiesSpring implements RateLimitProperties {
 
-    private List<String> resourcePackages;
+    private List<String> resourcePackages = Collections.emptyList();
 
     private Boolean disabled = Boolean.FALSE;
 
-    private Map<String, Rates> rateLimitConfigs;
+    private Map<String, Rates> rateLimitConfigs = Collections.emptyMap();
 
     @Override
     public List<String> getResourcePackages() {

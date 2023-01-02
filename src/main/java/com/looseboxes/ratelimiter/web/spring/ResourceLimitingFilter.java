@@ -12,11 +12,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false")
-public class ResourceLimitingFilter extends GenericFilterBean {
+public abstract class ResourceLimitingFilter extends GenericFilterBean {
 
     private ResourceLimiter<HttpServletRequest> resourceLimiter;
 
     protected ResourceLimitingFilter() { }
+
+    /**
+     * Called when a limit is exceeded.
+     */
+    protected abstract void onLimitExceeded(
+            HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException;
 
     @Override
     protected void initFilterBean() throws ServletException {
@@ -53,13 +60,6 @@ public class ResourceLimitingFilter extends GenericFilterBean {
 
         chain.doFilter(request, response);
     }
-
-    /**
-     * Called when a limit is exceeded.
-     */
-    protected void onLimitExceeded(
-            HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException { }
 
     public ResourceLimiter<HttpServletRequest> getResourceLimiter() {
         return resourceLimiter;

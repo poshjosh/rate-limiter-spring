@@ -1,6 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.*;
+import com.looseboxes.ratelimiter.annotation.ElementId;
 import com.looseboxes.ratelimiter.util.Operator;
 import com.looseboxes.ratelimiter.util.Rate;
 import com.looseboxes.ratelimiter.util.Rates;
@@ -14,22 +15,22 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 import java.util.Collections;
 
 @TestConfiguration
 public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration {
 
     public static final int LIMIT = 3;
-    public static final long DURATION_SECONDS = 1;
 
     private final String testCacheName = this.getClass().getPackage().getName() + ".cache";
     private final ConcurrentMapCacheManager concurrentMapCacheManager = new ConcurrentMapCacheManager();
     private final RateCacheWithKeys rateCache;
 
-    private static String methodBoundToPropertyRates;
+    private static String methodNameBoundToPropertyRates;
 
-    public static String getMethodBoundToPropertyRates() {
-        return methodBoundToPropertyRates;
+    public static String getMethodNameBoundToPropertyRates() {
+        return methodNameBoundToPropertyRates;
     }
 
     public TestResourceLimiterConfiguration(RateLimitPropertiesSpring properties) {
@@ -50,18 +51,21 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
     public WebResourceLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
             WebResourceLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
         WebResourceLimiterConfig<HttpServletRequest> config = webRequestRateLimiterConfigBuilder
-            .rateLimiterConfig(ResourceLimiterConfig.builder().cache(this.rateCache).build())
+            .resourceLimiterConfig(ResourceLimiterConfig.builder().cache(this.rateCache).build())
             .build();
-        methodBoundToPropertyRates = initMethodBoundToPropertyRates(config);
+        methodNameBoundToPropertyRates = initMethodBoundToPropertyRates(config);
         ((RateLimitPropertiesSpring)config.getProperties()).setRateLimitConfigs(
-                Collections.singletonMap(methodBoundToPropertyRates, getRateLimitConfigList()));
+                Collections.singletonMap(methodNameBoundToPropertyRates, getRateLimitConfigList()));
         return config;
     }
 
-    private String initMethodBoundToPropertyRates(WebResourceLimiterConfig<HttpServletRequest> config) {
+    private String initMethodBoundToPropertyRates(
+            WebResourceLimiterConfig<HttpServletRequest> config) {
+        return ElementId.of(methodBoundToPropertyRates());
+    }
+    private Method methodBoundToPropertyRates() {
         try {
-            return config.getMethodIdProvider()
-                    .getId(PropertiesBoundLimitTest.Resource.class.getMethod("home", HttpServletRequest.class));
+            return PropertiesBoundLimitTest.Resource.class.getMethod("home", HttpServletRequest.class);
         } catch(NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

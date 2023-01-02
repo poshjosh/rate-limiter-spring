@@ -1,61 +1,81 @@
-package com.looseboxes.ratelimiter.web.spring;
+package com.looseboxes.ratelimiter.web.spring.uri;
 
-import com.looseboxes.ratelimiter.annotation.IdProvider;
+import com.looseboxes.ratelimiter.annotation.Element;
 import com.looseboxes.ratelimiter.web.core.util.PathPatterns;
-import com.looseboxes.ratelimiter.web.spring.uri.MethodLevelPathPatterns;
+import com.looseboxes.ratelimiter.web.core.util.PathPatternsProvider;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Optional;
 
-public class MethodPathPatternsProvider implements IdProvider<Method, PathPatterns<String>> {
-
-    private final IdProvider<Class<?>, PathPatterns<String>> classIdProvider;
-
-    public MethodPathPatternsProvider() {
-        this(new ClassPathPatternsProvider());
-    }
-
-    public MethodPathPatternsProvider(IdProvider<Class<?>, PathPatterns<String>> classIdProvider) {
-        this.classIdProvider = Objects.requireNonNull(classIdProvider);
-    }
+public class SpringPathPatternsProvider implements PathPatternsProvider {
 
     @Override
-    public PathPatterns<String> getId(Method method) {
+    public PathPatterns<String> get(Element source) {
+        if (source.isOwnDeclarer()) {
+            return getClassPatterns(source).orElse(PathPatterns.none());
+        }
+        return getMethodPatterns(source);
+    }
 
-        final PathPatterns<String> classLevelPathPatterns = classIdProvider.getId(method.getDeclaringClass());
+    private Optional<PathPatterns<String>> getClassPatterns(Element source) {
 
-        GetMapping getMapping = method.getAnnotation(GetMapping.class);
+        final RequestMapping requestAnnotation = source.getAnnotation(RequestMapping.class).orElse(null);
+
+        if(requestAnnotation == null) {
+            return Optional.empty();
+        }
+
+        String [] paths = requestAnnotation.value();
+
+        if(paths.length == 0) {
+
+            paths = requestAnnotation.path();
+        }
+
+        if(paths.length == 0) {
+
+            return Optional.of(PathPatterns.none());
+        }
+
+        return Optional.of(new ClassLevelPathPatterns(paths));
+    }
+
+    private PathPatterns<String> getMethodPatterns(Element source) {
+
+        final PathPatterns<String> classLevelPathPatterns =
+                getClassPatterns(source.getDeclarer()).orElse(PathPatterns.none());
+
+        GetMapping getMapping = source.getAnnotation(GetMapping.class).orElse(null);
         if (getMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(getMapping.value(), getMapping.path());
             return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        PostMapping postMapping = method.getAnnotation(PostMapping.class);
+        PostMapping postMapping = source.getAnnotation(PostMapping.class).orElse(null);
         if (postMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(postMapping.value(), postMapping.path());
             return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        PutMapping putMapping = method.getAnnotation(PutMapping.class);
+        PutMapping putMapping = source.getAnnotation(PutMapping.class).orElse(null);
         if (putMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(putMapping.value(), putMapping.path());
             return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        DeleteMapping deleteMapping = method.getAnnotation(DeleteMapping.class);
+        DeleteMapping deleteMapping = source.getAnnotation(DeleteMapping.class).orElse(null);
         if (deleteMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(deleteMapping.value(), deleteMapping.path());
             return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        PatchMapping patchMapping = method.getAnnotation(PatchMapping.class);
+        PatchMapping patchMapping = source.getAnnotation(PatchMapping.class).orElse(null);
         if (patchMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(patchMapping.value(), patchMapping.path());
             return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
         }
 
-        RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+        RequestMapping requestMapping = source.getAnnotation(RequestMapping.class).orElse(null);
         if (requestMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(requestMapping.value(), requestMapping.path());
             return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);

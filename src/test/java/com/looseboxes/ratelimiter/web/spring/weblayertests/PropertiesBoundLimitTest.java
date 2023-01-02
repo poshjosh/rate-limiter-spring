@@ -29,13 +29,12 @@ public class PropertiesBoundLimitTest extends AbstractResourceTest{
         }
     }
 
-    @Autowired
-    WebResourceLimiterConfig<HttpServletRequest> webResourceLimiterConfig;
+    @Autowired WebResourceLimiterConfig<HttpServletRequest> webResourceLimiterConfig;
 
     @Test
     public void shouldHaveAMatcher() {
         Object matcher = webResourceLimiterConfig.getRegistries().matchers().getOrDefault(
-                TestResourceLimiterConfiguration.getMethodBoundToPropertyRates(), null);
+                TestResourceLimiterConfiguration.getMethodNameBoundToPropertyRates(), null);
         assertNotNull(matcher);
     }
 

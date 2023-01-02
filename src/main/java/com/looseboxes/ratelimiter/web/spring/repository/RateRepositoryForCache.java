@@ -1,7 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.annotations.Experimental;
-import com.looseboxes.ratelimiter.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -35,8 +34,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
     }
 
     @Override
-    public Page<RateEntity<ID>> findAll(
-            @Nullable Example<RateEntity<ID>> example, Pageable pageable) {
+    public Page<RateEntity<ID>> findAll(Example<RateEntity<ID>> example, Pageable pageable) {
         log.debug("Request to findAll by, example: {}, pageable: {}", example, pageable);
 
         final Page<RateEntity<ID>> result;
@@ -59,7 +57,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
         return result;
     }
 
-    private Iterable<RateEntity<ID>> select(@Nullable Example<RateEntity<ID>> example) {
+    private Iterable<RateEntity<ID>> select(Example<RateEntity<ID>> example) {
         return example == null ? findAll() : findAll(example);
     }
 

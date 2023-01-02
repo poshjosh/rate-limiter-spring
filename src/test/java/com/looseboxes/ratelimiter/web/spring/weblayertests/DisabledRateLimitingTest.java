@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @WebMvcControllersTest(classes = { DisabledRateLimitingTest.Resource.class })
 class DisabledRateLimitingTest extends AbstractResourceTest{
 
-    @Autowired
-    RateLimitPropertiesSpring rateLimitProperties;
+    @Autowired RateLimitPropertiesSpring rateLimitProperties;
 
     @RestController
     @RequestMapping(ApiEndpoints.API)
