@@ -89,20 +89,16 @@ When you configure rate limiting using properties, you could:
 
 ```java
 public class RateLimitPropertiesImpl implements RateLimitProperties {
-  
-  final String classId = IdProvider.ofClass().getId(MyResource.class);
-  final String methodId = IdProvider.ofClass().getId(MyResource.class.getMethod("greet", String.class));
-  
   @Override
   public Map<String, Rates> getRateLimitConfigs() {
     
     Map<String, Rates> ratesMap = new HashMap<>();
     
     // Rate limit a class
-    ratesMap.put(NodeId.of(MyResource.class), Rates.of(Rate.ofMinutes(10)));
+    ratesMap.put(ElementId.of(MyResource.class), Rates.of(Rate.ofMinutes(10)));
 
     // Rate limit a method
-    ratesMap.put(NodeId.of(MyResource.class.getMethod("greet", String.class)), Rates.of(Rate.ofMinutes(10)));
+    ratesMap.put(ElementId.of(MyResource.class.getMethod("greet", String.class)), Rates.of(Rate.ofMinutes(10)));
     
     return ratesMap;
   }
@@ -112,16 +108,12 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 ### Manually create and use a ResourceLimiter
 
 ```java
-
-import com.looseboxes.ratelimiter.web.core.AbstractResourceLimiterRegistry;
-import com.looseboxes.ratelimiter.web.spring.WebResourceLimiterConfigSpring;
+import com.looseboxes.ratelimiter.web.spring.ResourceLimiterRegistry;
 
 public class ResourceLimiterProvider {
 
-    public RateLimiter<R> createResourceLimiter(RateLimiterProperties properties) {
-        return AbstractResourceLimiterRegistry
-                .of(WebResourceLimiterConfigSpring.builder().properties(properties).build())
-                .createResourceLimiter();
+    public ResourceLimiter createResourceLimiter() {
+        return ResourceLimiterRegistry.ofDefaults().createResourceLimiter();
     }
 }
 ```
