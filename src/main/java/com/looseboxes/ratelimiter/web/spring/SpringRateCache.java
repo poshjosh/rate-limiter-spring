@@ -1,11 +1,12 @@
 package com.looseboxes.ratelimiter.web.spring;
 
+import com.looseboxes.ratelimiter.bandwidths.Bandwidths;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import org.springframework.cache.Cache;
 
 import java.util.Objects;
 
-public class SpringRateCache<K, V> implements RateCache<K, V> {
+public class SpringRateCache<K> implements RateCache<K> {
 
     private final Cache delegate;
 
@@ -24,19 +25,19 @@ public class SpringRateCache<K, V> implements RateCache<K, V> {
     }
 
     @Override
-    public V get(K key) {
+    public Bandwidths get(K key) {
         Cache.ValueWrapper valueWrapper = delegate.get(key);
-        return valueWrapper == null ? null : (V)valueWrapper.get();
+        return valueWrapper == null ? null : (Bandwidths) valueWrapper.get();
     }
 
     @Override
-    public boolean putIfAbsent(K key, V value) {
+    public boolean putIfAbsent(K key, Bandwidths value) {
         Cache.ValueWrapper valueWrapper = delegate.putIfAbsent(key, value);
         return valueWrapper == null || valueWrapper.get() == null;
     }
 
     @Override
-    public void put(K key, V value) {
+    public void put(K key, Bandwidths value) {
         delegate.put(key, value);
     }
 

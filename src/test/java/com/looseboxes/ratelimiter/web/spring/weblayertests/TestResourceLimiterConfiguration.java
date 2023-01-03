@@ -1,12 +1,11 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.annotation.ElementId;
-import com.looseboxes.ratelimiter.bandwidths.Bandwidths;
 import com.looseboxes.ratelimiter.util.Operator;
 import com.looseboxes.ratelimiter.util.Rate;
 import com.looseboxes.ratelimiter.util.Rates;
-import com.looseboxes.ratelimiter.web.core.ResourceLimiterFactory;
+import com.looseboxes.ratelimiter.web.core.Registries;
+import com.looseboxes.ratelimiter.web.core.ResourceLimiterConfigurer;
 import com.looseboxes.ratelimiter.web.core.WebResourceLimiterConfig;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.ResourceLimiterConfiguration;
@@ -21,7 +20,8 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 @TestConfiguration
-public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration {
+public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration
+        implements ResourceLimiterConfigurer<HttpServletRequest> {
 
     public static final int LIMIT = 3;
 
@@ -43,6 +43,11 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
         );
     }
 
+    @Override
+    public void configure(Registries<HttpServletRequest> registries) {
+        registries.caches().register(rateCache);
+    }
+
     @Bean
     public RateRepository<RateEntity<Object>, Object> rateRepository() {
         return new RateRepositoryForCache<>(this.rateCache);
@@ -53,7 +58,8 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
     public WebResourceLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
             WebResourceLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
         WebResourceLimiterConfig<HttpServletRequest> config = webRequestRateLimiterConfigBuilder
-            .resourceLimiterFactory(rates -> ResourceLimiter.of(rates).cache(rateCache))
+            // TODO - Find a way to support caches,listeners etc set via this factory
+            //.resourceLimiterFactory(rates -> ResourceLimiter.of(rates).cache(rateCache))
             .build();
         methodNameBoundToPropertyRates = initMethodBoundToPropertyRates(config);
         ((RateLimitPropertiesSpring)config.getProperties()).setRateLimitConfigs(

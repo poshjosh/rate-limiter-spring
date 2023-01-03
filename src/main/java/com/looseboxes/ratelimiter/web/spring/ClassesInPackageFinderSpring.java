@@ -1,6 +1,5 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.util.ClassFilter;
 import com.looseboxes.ratelimiter.util.ClassesInPackageFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

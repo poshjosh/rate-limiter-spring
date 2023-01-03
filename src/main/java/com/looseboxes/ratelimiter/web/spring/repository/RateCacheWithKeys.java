@@ -4,7 +4,7 @@ import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.annotations.Experimental;
 
 @Experimental
-public interface RateCacheWithKeys<K, V> extends RateCache<K, V> {
+public interface RateCacheWithKeys<K> extends RateCache<K> {
 
     default Iterable<K> keys() {
         return keys(0, Long.MAX_VALUE);

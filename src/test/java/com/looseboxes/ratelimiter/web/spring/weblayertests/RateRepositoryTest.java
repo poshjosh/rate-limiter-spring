@@ -1,8 +1,10 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
 import com.looseboxes.ratelimiter.annotations.RateLimit;
+import com.looseboxes.ratelimiter.web.spring.repository.RateCacheWithKeys;
 import com.looseboxes.ratelimiter.web.spring.repository.RateEntity;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
+import com.looseboxes.ratelimiter.web.spring.repository.RateRepositoryForCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @WebMvcControllersTest(classes = { RateRepositoryTest.Resource.class })
-public class RateRepositoryTest extends AbstractResourceTest {
+class RateRepositoryTest extends AbstractResourceTest {
 
     private static final int LIMIT = 3;
 
@@ -39,7 +41,7 @@ public class RateRepositoryTest extends AbstractResourceTest {
     RateRepository<RateEntity<Object>, Object> rateRepository;
 
     @Test
-    public void shouldPersistCorrectNumberOfRates() throws Exception {
+    void shouldPersistCorrectNumberOfRates() throws Exception {
 
         assertThat(rateRepository.findAll()).isEmpty();
 

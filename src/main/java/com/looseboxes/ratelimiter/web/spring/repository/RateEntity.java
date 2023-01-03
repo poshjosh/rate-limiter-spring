@@ -1,6 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.annotations.Experimental;
+import com.looseboxes.ratelimiter.bandwidths.Bandwidths;
 
 import java.util.Objects;
 
@@ -9,9 +10,9 @@ import java.util.Objects;
 public class RateEntity<ID> {
 
     private final ID id;
-    private final Object data;
+    private final Bandwidths data;
 
-    public RateEntity(ID id, Object data) {
+    public RateEntity(ID id, Bandwidths data) {
         this.id = id;
         this.data = data;
     }

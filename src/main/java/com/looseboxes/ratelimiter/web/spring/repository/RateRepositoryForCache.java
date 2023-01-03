@@ -1,6 +1,8 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
 import com.looseboxes.ratelimiter.annotations.Experimental;
+import com.looseboxes.ratelimiter.annotations.VisibleForTesting;
+import com.looseboxes.ratelimiter.bandwidths.Bandwidths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -22,9 +24,9 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     private static final Logger log = LoggerFactory.getLogger(RateRepositoryForCache.class);
 
-    private final RateCacheWithKeys<ID, Object> rateCache;
+    private final RateCacheWithKeys<ID> rateCache;
 
-    public RateRepositoryForCache(RateCacheWithKeys<ID, Object> rateCache) {
+    public RateRepositoryForCache(RateCacheWithKeys<ID> rateCache) {
         this.rateCache = Objects.requireNonNull(rateCache);
     }
 
@@ -73,7 +75,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public <S extends RateEntity<ID>> S save(S s) {
-        rateCache.put(Objects.requireNonNull(s.getId()), s.getData());
+        rateCache.put(Objects.requireNonNull(s.getId()), (Bandwidths) s.getData());
         return s;
     }
 
@@ -89,7 +91,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Optional<RateEntity<ID>> findById(ID id) {
-        Object data = this.rateCache.get(id);
+        Bandwidths data = this.rateCache.get(id);
         return Optional.ofNullable(data == null ? null : new RateEntity<>(id, data));
     }
 
@@ -169,5 +171,10 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     private long count(Iterable<?> iterable) {
         return StreamSupport.stream(iterable.spliterator(), true).count();
+    }
+
+    @VisibleForTesting
+    public RateCacheWithKeys<ID> getCache() {
+        return rateCache;
     }
 }

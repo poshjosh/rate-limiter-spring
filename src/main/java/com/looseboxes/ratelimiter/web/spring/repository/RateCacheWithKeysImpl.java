@@ -1,5 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.repository;
 
+import com.looseboxes.ratelimiter.bandwidths.Bandwidths;
 import com.looseboxes.ratelimiter.cache.RateCache;
 import com.looseboxes.ratelimiter.annotations.Experimental;
 import org.slf4j.Logger;
@@ -14,16 +15,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** Experimental */
 @Experimental
-public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
+public class RateCacheWithKeysImpl<K> implements RateCacheWithKeys<K>{
 
     private static final Logger LOG = LoggerFactory.getLogger(RateCacheWithKeysImpl.class);
 
-    private final RateCache<K, V> delegate;
+    private final RateCache<K> delegate;
 
     private final List<K> keys = new ArrayList<>();
     private final ReadWriteLock keysLock = new ReentrantReadWriteLock();
 
-    public RateCacheWithKeysImpl(RateCache<K, V> delegate) {
+    public RateCacheWithKeysImpl(RateCache<K> delegate) {
         this.delegate = Objects.requireNonNull(delegate);
     }
 
@@ -64,12 +65,12 @@ public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
     }
 
     @Override
-    public V get(K key) {
+    public Bandwidths get(K key) {
         return delegate.get(key);
     }
 
     @Override
-    public boolean putIfAbsent(K key, V value) {
+    public boolean putIfAbsent(K key, Bandwidths value) {
         boolean result = delegate.putIfAbsent(key, value);
         if(result) {
             addKey(key);
@@ -78,7 +79,7 @@ public class RateCacheWithKeysImpl<K, V> implements RateCacheWithKeys<K, V>{
     }
 
     @Override
-    public void put(K key, V value) {
+    public void put(K key, Bandwidths value) {
         delegate.put(key, value);
         addKey(key);
     }
