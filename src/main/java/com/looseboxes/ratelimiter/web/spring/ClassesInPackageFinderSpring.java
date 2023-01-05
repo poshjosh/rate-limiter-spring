@@ -48,7 +48,8 @@ final class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
                 }
             }
 
-            return controllerClasses.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(controllerClasses);
+            return controllerClasses.isEmpty() ? Collections.emptyList() :
+                    Collections.unmodifiableList(controllerClasses);
 
         }else{
 

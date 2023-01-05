@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-public class SpringPathPatternsProvider implements PathPatternsProvider {
+public class PathPatternsProviderSpring implements PathPatternsProvider {
 
     @Override
     public PathPatterns<String> get(Element source) {
