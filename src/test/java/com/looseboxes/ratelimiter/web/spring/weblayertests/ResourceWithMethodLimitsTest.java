@@ -1,7 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.annotations.RateLimit;
-import com.looseboxes.ratelimiter.annotations.RateLimitGroup;
+import com.looseboxes.ratelimiter.annotations.Rate;
+import com.looseboxes.ratelimiter.annotations.RateGroup;
 import com.looseboxes.ratelimiter.util.Operator;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,22 +41,22 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
         }
 
         @RequestMapping(InternalEndpoints.LIMIT_1)
-        @RateLimit(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         public String limit_1(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping(InternalEndpoints.LIMIT_1_OR_5)
-        @RateLimit(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
-        @RateLimit(permits = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         public String limit_1_or_5(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping(InternalEndpoints.LIMIT_1_AND_5)
-        @RateLimitGroup(operator = Operator.AND)
-        @RateLimit(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
-        @RateLimit(permits = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @RateGroup(operator = Operator.AND)
+        @Rate(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         public String limit_1_and_5(HttpServletRequest request) {
             return request.getRequestURI();
         }

@@ -7,24 +7,7 @@ Please first read the [rate-limiter-web-core documentation](https://github.com/p
 
 ### Usage
 
-__1. Add required rate-limiter properties__
-
-```yaml
-rate-limiter:
-  resource-packages: com.myapplicatioon.web.rest
-  rate-limit-configs:
-    task_queue: # Accept only 2 tasks per second 
-      permits: 2
-      duration: PT1S
-    video_download: # Cap streaming of video to 5kb per second
-      permits: 5000
-      duration: PT1S
-    com.myapplicatioon.web.rest.MyResource: # Limit requests to this resource to 10 per minute
-      permits: 10
-      duration: PT1M 
-```
-
-__2. Configure your spring application__
+__1. Configure your spring application__
 
 ```java
 package com.myapplicatioon;
@@ -35,17 +18,20 @@ import com.looseboxes.ratelimiter.web.spring.ResourceLimitingFilter;
 import com.looseboxes.ratelimiter.web.spring.ResourceLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
-@SpringBootApplication(scanBasePackageClasses = { ResourceLimiterConfiguration.class,
-        MySpringApplication.class }) @EnableConfigurationProperties({
-        RateLimitPropertiesSpring.class }) public class MySpringApplication {
+@SpringBootApplication(scanBasePackageClasses = { 
+        ResourceLimiterConfiguration.class, MySpringApplication.class }) 
+@EnableConfigurationProperties({ RateLimitPropertiesSpring.class }) 
+public class MySpringApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(MySpringApplication.class, args);
   }
 
-  @Component public static class MySpringApplicationFilter extends ResourceLimitingFilter {
-    @Override protected void onLimitExceeded(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain) throws java.io.IOException {
+  @Component 
+  public static class MySpringApplicationFilter extends ResourceLimitingFilter {
+    @Override 
+    protected void onLimitExceeded(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain) {
       response.sendError(429, "Too many requests");
     }
   }
@@ -54,7 +40,7 @@ import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
 At this point your application is ready to enjoy the benefits of rate limiting
 
-__3. Annotate classes and/or methods.__
+__2. Annotate classes and/or methods.__
 
 ```java
 package com.myapplicatioon.web.rest;
@@ -75,6 +61,23 @@ public class MyResource {
     return ResponseEntity.ok("Hello " + name);
   }
 }
+```
+
+__3. (Optional) Add rate-limiter properties__
+
+```yaml
+rate-limiter:
+  resource-packages: com.myapplicatioon.web.rest
+  rate-limit-configs:
+    task_queue: # Accept only 2 tasks per second 
+      permits: 2
+      duration: PT1S
+    video_download: # Cap streaming of video to 5kb per second
+      permits: 5000
+      duration: PT1S
+    com.myapplicatioon.web.rest.MyResource: # Limit requests to this resource to 10 per minute
+      permits: 10
+      duration: PT1M 
 ```
 
 ### Fine-grained configuration of rate limiting

@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.annotations.RateLimit;
+import com.looseboxes.ratelimiter.annotations.Rate;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ class ResourceWithoutClassPatternsTest extends AbstractResourceTest {
         }
 
         @RequestMapping(Resource._LIMIT_1)
-        @RateLimit(permits = 1, duration = 3, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = 1, duration = 3, timeUnit = TimeUnit.SECONDS)
         public String limit_1(HttpServletRequest request) {
             return request.getRequestURI();
         }

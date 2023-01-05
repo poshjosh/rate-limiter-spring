@@ -1,9 +1,7 @@
 package com.looseboxes.ratelimiter.web.spring;
 
-import com.looseboxes.ratelimiter.annotation.ElementId;
-import com.looseboxes.ratelimiter.annotations.RateLimit;
-import com.looseboxes.ratelimiter.web.core.Registries;
-import com.looseboxes.ratelimiter.web.core.WebResourceLimiterConfig;
+import com.looseboxes.ratelimiter.annotations.Rate;
+import com.looseboxes.ratelimiter.web.core.ResourceLimiterConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,29 +10,28 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class NamedLimitTest {
 
     final static String NAME = "rate-limiter-name";
 
-    @RateLimit(name = NAME) // Co-locate with a path related annotation
+    @Rate(name = NAME) // Co-locate with a path related annotation
     @RequestMapping("/named-resource-limiter-test")
     @RestController
     static class Resource{ }
 
-    Registries<HttpServletRequest> registries;
+    ResourceLimiterRegistry registries;
 
     @BeforeEach
     void setupRateLimiting() {
         RateLimitPropertiesSpring props = new RateLimitPropertiesSpring();
         props.setResourcePackages(Collections.singletonList(this.getClass().getPackage().getName()));
-        WebResourceLimiterConfig<HttpServletRequest> config =
-                WebResourceLimiterConfigSpring.builder()
+        ResourceLimiterConfig<HttpServletRequest> config =
+                ResourceLimiterConfigSpring.builder()
                 .properties(props)
                 .build();
-        registries = ResourceLimiterRegistry.of(config).init();
+        registries = ResourceLimiterRegistry.of(config);
     }
 
     @Test
@@ -43,8 +40,7 @@ class NamedLimitTest {
     }
 
     @Test
-    void shouldNotHaveAResourceLimiterRegisteredForDefaultName() {
-        String defaultName = ElementId.of(Resource.class);
-        assertNull(registries.limiters().getOrDefault(defaultName, null));
+    void shouldBeRateLimited() {
+        assertTrue(registries.isRateLimited(NAME));
     }
 }

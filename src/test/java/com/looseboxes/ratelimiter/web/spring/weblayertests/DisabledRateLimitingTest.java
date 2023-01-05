@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.annotations.RateLimit;
+import com.looseboxes.ratelimiter.annotations.Rate;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
         }
 
         @RequestMapping(DisabledRateLimitingTest.Resource._HOME)
-        @RateLimit(permits = 1, duration = 1, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = 1, duration = 1, timeUnit = TimeUnit.SECONDS)
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }

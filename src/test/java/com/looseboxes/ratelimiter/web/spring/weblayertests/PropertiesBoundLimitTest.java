@@ -1,6 +1,6 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.web.core.WebResourceLimiterConfig;
+import com.looseboxes.ratelimiter.web.spring.ResourceLimiterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +29,11 @@ public class PropertiesBoundLimitTest extends AbstractResourceTest{
         }
     }
 
-    @Autowired WebResourceLimiterConfig<HttpServletRequest> webResourceLimiterConfig;
+    @Autowired ResourceLimiterRegistry resourceLimiterRegistry;
 
     @Test
     public void shouldHaveAMatcher() {
-        Object matcher = webResourceLimiterConfig.getRegistries().matchers().getOrDefault(
+        Object matcher = resourceLimiterRegistry.matchers().getOrDefault(
                 TestResourceLimiterConfiguration.getMethodNameBoundToPropertyRates(), null);
         assertNotNull(matcher);
     }

@@ -2,35 +2,36 @@ package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.web.core.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 @Configuration
 @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false", matchIfMissing = true)
-public class ResourceLimiterConfiguration {
+public abstract class ResourceLimiterConfiguration implements ResourceLimiterConfigurer<HttpServletRequest> {
 
-    @Bean
-    public ResourceLimiter<HttpServletRequest> resourceLimiter(
-            WebResourceLimiterConfig<HttpServletRequest> webResourceLimiterConfig) {
-        return ResourceLimiterRegistry.of(webResourceLimiterConfig).createResourceLimiter();
+    private final RateLimitPropertiesSpring properties;
+
+    protected ResourceLimiterConfiguration(RateLimitPropertiesSpring properties) {
+        this.properties = Objects.requireNonNull(properties);
     }
 
     @Bean
-    public WebResourceLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
-            WebResourceLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
-        return webRequestRateLimiterConfigBuilder.build();
+    public ResourceLimiter<HttpServletRequest> resourceLimiter(ResourceLimiterRegistry registry) {
+        return registry.createResourceLimiter();
     }
 
     @Bean
-    public WebResourceLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder(
-            @Autowired(required = false) ResourceLimiterConfigurer<HttpServletRequest> configurer,
-            RateLimitPropertiesSpring properties) {
-        return WebResourceLimiterConfigSpring.builder()
-                .configurer(configurer)
+    public ResourceLimiterRegistry resourceLimiterRegistry() {
+        return ResourceLimiterRegistry.of(resourceLimiterConfigBuilder().build());
+    }
+
+    protected ResourceLimiterConfig.Builder<HttpServletRequest> resourceLimiterConfigBuilder() {
+        return ResourceLimiterConfigSpring.builder()
+                .configurer(this)
                 .properties(properties);
     }
 }

@@ -11,22 +11,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
+final class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassesInPackageFinderSpring.class);
+
+    ClassesInPackageFinderSpring() { }
 
     @Override
     public List<Class<?>> findClasses(String packageName, ClassFilter classFilter) {
         try{
-            List<Class<?>> classes = Collections.unmodifiableList(getClasses(packageName, classFilter));
-            LOG.debug("Package: {}, classes: {}", packageName, classes);
+            List<Class<?>> classes = Collections.unmodifiableList(
+                    doFindClasses(packageName, classFilter));
+            LOG.trace("In package: {}, found classes: {}", packageName, classes);
             return classes;
         }catch(ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private  List<Class<?>> getClasses(String controllerPackage, ClassFilter classFilter) throws ClassNotFoundException{
+    private  List<Class<?>> doFindClasses(String controllerPackage, ClassFilter classFilter) throws ClassNotFoundException{
 
         if(StringUtils.hasText(controllerPackage)) {
 
@@ -34,8 +37,6 @@ public class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
 
             ClassPathScanningCandidateComponentProvider scanner =
                     new ClassPathScanningCandidateComponentProvider(true);
-
-//            scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
 
             for (BeanDefinition beanDefinition : scanner.findCandidateComponents(controllerPackage)){
 

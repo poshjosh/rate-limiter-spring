@@ -1,10 +1,8 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.annotations.RateLimit;
-import com.looseboxes.ratelimiter.web.spring.repository.RateCacheWithKeys;
+import com.looseboxes.ratelimiter.annotations.Rate;
 import com.looseboxes.ratelimiter.web.spring.repository.RateEntity;
 import com.looseboxes.ratelimiter.web.spring.repository.RateRepository;
-import com.looseboxes.ratelimiter.web.spring.repository.RateRepositoryForCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +29,7 @@ class RateRepositoryTest extends AbstractResourceTest {
         }
 
         @RequestMapping(Resource._HOME)
-        @RateLimit(permits = LIMIT, duration = 1, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = LIMIT, duration = 1, timeUnit = TimeUnit.SECONDS)
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }

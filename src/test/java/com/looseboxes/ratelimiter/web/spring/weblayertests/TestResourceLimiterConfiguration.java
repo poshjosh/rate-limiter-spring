@@ -5,8 +5,7 @@ import com.looseboxes.ratelimiter.util.Operator;
 import com.looseboxes.ratelimiter.util.Rate;
 import com.looseboxes.ratelimiter.util.Rates;
 import com.looseboxes.ratelimiter.web.core.Registries;
-import com.looseboxes.ratelimiter.web.core.ResourceLimiterConfigurer;
-import com.looseboxes.ratelimiter.web.core.WebResourceLimiterConfig;
+import com.looseboxes.ratelimiter.web.core.ResourceLimiterConfig;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import com.looseboxes.ratelimiter.web.spring.ResourceLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.SpringRateCache;
@@ -20,8 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 @TestConfiguration
-public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration
-        implements ResourceLimiterConfigurer<HttpServletRequest> {
+public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration {
 
     public static final int LIMIT = 3;
 
@@ -29,15 +27,23 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
     private final ConcurrentMapCacheManager concurrentMapCacheManager = new ConcurrentMapCacheManager();
     private final RateCacheWithKeys rateCache;
 
-    private static String methodNameBoundToPropertyRates;
-
     public static String getMethodNameBoundToPropertyRates() {
-        return methodNameBoundToPropertyRates;
+        return ElementId.of(methodBoundToPropertyRates());
+    }
+    private static Method methodBoundToPropertyRates() {
+        try {
+            return PropertiesBoundLimitTest.Resource.class.getMethod("home", HttpServletRequest.class);
+        } catch(NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public TestResourceLimiterConfiguration(RateLimitPropertiesSpring properties) {
-        concurrentMapCacheManager.setCacheNames(Collections.singletonList(testCacheName));
+        super(properties);
         properties.setResourcePackages(Collections.singletonList(AbstractResourceTest.class.getPackage().getName()));
+        properties.setRateLimitConfigs(
+                Collections.singletonMap(getMethodNameBoundToPropertyRates(), getRateLimitConfigList()));
+        concurrentMapCacheManager.setCacheNames(Collections.singletonList(testCacheName));
         this.rateCache = new RateCacheWithKeysImpl<>(
                 new SpringRateCache<>(concurrentMapCacheManager.getCache(testCacheName))
         );
@@ -53,30 +59,13 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
         return new RateRepositoryForCache<>(this.rateCache);
     }
 
-    @Bean
     @Override
-    public WebResourceLimiterConfig<HttpServletRequest> webRequestRateLimiterConfig(
-            WebResourceLimiterConfig.Builder<HttpServletRequest> webRequestRateLimiterConfigBuilder) {
-        WebResourceLimiterConfig<HttpServletRequest> config = webRequestRateLimiterConfigBuilder
+    protected ResourceLimiterConfig.Builder<HttpServletRequest> resourceLimiterConfigBuilder() {
+        ResourceLimiterConfig.Builder<HttpServletRequest> r = super.resourceLimiterConfigBuilder();
             // TODO - Find a way to support caches,listeners etc set via this factory
-            //.resourceLimiterFactory(rates -> ResourceLimiter.of(rates).cache(rateCache))
-            .build();
-        methodNameBoundToPropertyRates = initMethodBoundToPropertyRates(config);
-        ((RateLimitPropertiesSpring)config.getProperties()).setRateLimitConfigs(
-                Collections.singletonMap(methodNameBoundToPropertyRates, getRateLimitConfigList()));
-        return config;
-    }
-
-    private String initMethodBoundToPropertyRates(
-            WebResourceLimiterConfig<HttpServletRequest> config) {
-        return ElementId.of(methodBoundToPropertyRates());
-    }
-    private Method methodBoundToPropertyRates() {
-        try {
-            return PropertiesBoundLimitTest.Resource.class.getMethod("home", HttpServletRequest.class);
-        } catch(NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+            //r.resourceLimiterFactory(rates -> ResourceLimiter.of(rates).cache(rateCache))
+            //.build();
+        return r;
     }
 
     private Rates getRateLimitConfigList() {
