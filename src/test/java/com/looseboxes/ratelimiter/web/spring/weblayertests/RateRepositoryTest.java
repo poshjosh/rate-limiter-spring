@@ -29,7 +29,7 @@ class RateRepositoryTest extends AbstractResourceTest {
         }
 
         @RequestMapping(Resource._HOME)
-        @Rate(permits = LIMIT, duration = 1, timeUnit = TimeUnit.SECONDS)
+        @Rate(permits = LIMIT, timeUnit = TimeUnit.SECONDS)
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }

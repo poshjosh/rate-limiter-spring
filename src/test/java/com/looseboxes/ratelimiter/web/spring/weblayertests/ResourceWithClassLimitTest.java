@@ -13,7 +13,7 @@ public class ResourceWithClassLimitTest extends AbstractResourceTest{
 
     @RestController
     @RequestMapping(ApiEndpoints.API + Resource.ROOT)
-    @Rate(permits = 1, duration = 1, timeUnit = TimeUnit.SECONDS)
+    @Rate(permits = 1, timeUnit = TimeUnit.SECONDS)
     static class Resource {
 
         private static final String ROOT = "/resource-with-class-limit-test";
