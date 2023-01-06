@@ -2,22 +2,20 @@ package com.looseboxes.ratelimiter.web.spring;
 
 import com.looseboxes.ratelimiter.*;
 import com.looseboxes.ratelimiter.web.core.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 
 @Configuration
 @ConditionalOnProperty(prefix = "rate-limiter", name = "disabled", havingValue = "false", matchIfMissing = true)
-public abstract class ResourceLimiterConfiguration implements ResourceLimiterConfigurer<HttpServletRequest> {
+@EnableConfigurationProperties(RateLimitPropertiesSpring.class)
+public class ResourceLimiterConfiguration {
 
-    private final RateLimitPropertiesSpring properties;
-
-    protected ResourceLimiterConfiguration(RateLimitPropertiesSpring properties) {
-        this.properties = Objects.requireNonNull(properties);
-    }
+    public ResourceLimiterConfiguration() {}
 
     @Bean
     public ResourceLimiter<HttpServletRequest> resourceLimiter(ResourceLimiterRegistry registry) {
@@ -25,13 +23,14 @@ public abstract class ResourceLimiterConfiguration implements ResourceLimiterCon
     }
 
     @Bean
-    public ResourceLimiterRegistry resourceLimiterRegistry() {
-        return ResourceLimiterRegistry.of(resourceLimiterConfigBuilder().build());
+    public ResourceLimiterRegistry resourceLimiterRegistry(
+            RateLimitPropertiesSpring properties,
+            @Autowired(required = false) ResourceLimiterConfigurer<HttpServletRequest> configurer) {
+        return ResourceLimiterRegistry
+                .of(resourceLimiterConfigBuilder().properties(properties).configurer(configurer).build());
     }
 
     protected ResourceLimiterConfig.Builder<HttpServletRequest> resourceLimiterConfigBuilder() {
-        return ResourceLimiterConfigSpring.builder()
-                .configurer(this)
-                .properties(properties);
+        return ResourceLimiterConfigSpring.builder();
     }
 }

@@ -1,7 +1,5 @@
 package com.looseboxes.ratelimiter.web.spring.weblayertests;
 
-import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
@@ -15,7 +13,6 @@ import java.lang.annotation.*;
 @Inherited
 @WebMvcTest
 @ContextConfiguration
-@EnableConfigurationProperties({ RateLimitPropertiesSpring.class })
 public @interface WebMvcControllersTest {
 
     @AliasFor(annotation = ContextConfiguration.class, attribute = "classes")

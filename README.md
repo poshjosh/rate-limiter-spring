@@ -18,9 +18,9 @@ import com.looseboxes.ratelimiter.web.spring.ResourceLimitingFilter;
 import com.looseboxes.ratelimiter.web.spring.ResourceLimiterConfiguration;
 import com.looseboxes.ratelimiter.web.spring.RateLimitPropertiesSpring;
 
-@SpringBootApplication(scanBasePackageClasses = { 
-        ResourceLimiterConfiguration.class, MySpringApplication.class }) 
-@EnableConfigurationProperties({ RateLimitPropertiesSpring.class }) 
+@SpringBootApplication(scanBasePackageClasses = 
+        { ResourceLimiterConfiguration.class, MySpringApplication.class }
+) 
 public class MySpringApplication {
 
   public static void main(String[] args) {
