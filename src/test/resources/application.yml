@@ -7,8 +7,8 @@ spring:
 logging:
   level:
     ROOT: ERROR
-    #com.looseboxes.ratelimiter.MatchedResourceLimiter: TRACE
-    #com.looseboxes.ratelimiter.annotation.RateLimitTreeBuilder: TRACE
+    #MatchedResourceLimiter: TRACE
+    #io.github.poshjosh.annotation.RateLimitTreeBuilder: TRACE
     com.looseboxes.ratelimiter: DEBUG
     org.springframework: ERROR
     com.sun: DEBUG
