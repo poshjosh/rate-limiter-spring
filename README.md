@@ -45,6 +45,7 @@ __2. Annotate classes and/or methods.__
 ```java
 package com.myapplicatioon.web.rest;
 
+import com.looseboxes.ratelimiter.annotations.Rate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyResource {
 
   // Only 25 calls per second
+  @Rate(25)  
   @GetMapping("/greet/{name}")
   public ResponseEntity<String> greet(@PathVariable String name) {
     return ResponseEntity.ok("Hello " + name);
@@ -110,13 +112,16 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
 ### Manually create and use a ResourceLimiter
 
+Usually, you are provided with appropriate `ResourceLimiter`s based on the annotations 
+and properties you specify. However, you could manually create and use `ResourceLimiters`.
+
 ```java
-import com.looseboxes.ratelimiter.web.spring.ResourceLimiterRegistry;
+import com.looseboxes.ratelimiter.web.spring.ResourceLimiterRegistrySpring;import com.looseboxes.ratelimiter.web.spring.ResourceLimiterRegistrySpring;
 
 public class ResourceLimiterProvider {
 
     public ResourceLimiter createResourceLimiter() {
-        return ResourceLimiterRegistry.ofDefaults().createResourceLimiter();
+        return ResourceLimiterRegistrySpring.ofDefaults().createResourceLimiter();
     }
 }
 ```
