@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.annotations.Rate;
+import io.github.poshjosh.ratelimiter.annotation.Rate;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateRepository;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateEntity;
 import org.junit.jupiter.api.Test;

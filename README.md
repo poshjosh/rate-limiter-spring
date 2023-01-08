@@ -17,15 +17,18 @@ import javax.servlet.*;
 import ResourceLimitingFilter;
 import ResourceLimiterConfiguration;
 
-@SpringBootApplication(scanBasePackageClasses = { ResourceLimiterConfiguration.class,
-        MySpringApplication.class }) public class MySpringApplication {
+@SpringBootApplication(scanBasePackageClasses = { 
+        ResourceLimiterConfiguration.class, MySpringApplication.class }) 
+public class MySpringApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MySpringApplication.class, args);
     }
 
-    @Component public static class MySpringApplicationFilter extends ResourceLimitingFilter {
-        @Override protected void onLimitExceeded(HttpServletRequest request,
+    @Component 
+    public static class MySpringApplicationFilter extends ResourceLimitingFilter {
+        @Override 
+        protected void onLimitExceeded(HttpServletRequest request,
                 HttpServletResponse response, FilterChain chain) {
             response.sendError(429, "Too many requests");
         }
@@ -40,17 +43,24 @@ __2. Annotate classes and/or methods.__
 ```java
 package com.myapplicatioon.web.rest;
 
-import Rate;
+import io.github.poshjosh.ratelimiter.util.Rate;
+import io.github.poshjosh.ratelimiter.web.core.annotation.RateRequestIf;
+import io.github.poshjosh.ratelimiter.web.core.util.MatchType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController @RequestMapping("/my-resources") public class MyResource {
+@RestController 
+@RequestMapping("/my-resources") 
+public class MyResource {
 
-    // Only 25 calls per second
-    @Rate(25) @GetMapping("/greet/{name}") public ResponseEntity<String> greet(
+    // Only 25 calls per second for users in role GUEST
+    @Rate(25)
+    @RateRequestIf(matchType = MatchType.USER_ROLE, values = "GUEST")
+    @GetMapping("/greet/{name}") 
+    public ResponseEntity<String> greet(
             @PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
     }

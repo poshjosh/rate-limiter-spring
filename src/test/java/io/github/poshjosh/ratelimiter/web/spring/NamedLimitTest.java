@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
-import io.github.poshjosh.ratelimiter.annotations.Rate;
+import io.github.poshjosh.ratelimiter.annotation.Rate;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
 import org.junit.jupiter.api.BeforeEach;

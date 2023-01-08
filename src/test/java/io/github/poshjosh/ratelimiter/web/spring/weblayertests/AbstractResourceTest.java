@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,7 +38,7 @@ public abstract class AbstractResourceTest {
 
     void shouldReturnDefaultResult(String endpoint) throws Exception {
         final String result = endpoint;
-        this.mockMvc.perform(get(endpoint)).andExpect(status().isOk())
+        this.mockMvc.perform(doGet(endpoint)).andExpect(status().isOk())
                 .andExpect(content().string(containsString(result)));
     }
 
@@ -46,6 +47,11 @@ public abstract class AbstractResourceTest {
     }
 
     void shouldReturnStatus(String endpoint, int expectedStatus) throws Exception {
-        this.mockMvc.perform(get(endpoint)).andExpect(status().is(expectedStatus));
+        this.mockMvc.perform(doGet(endpoint)).andExpect(status().is(expectedStatus));
+    }
+
+    protected MockHttpServletRequestBuilder doGet(String endpoint) {
+        MockHttpServletRequestBuilder builder = get(endpoint);
+        return builder;
     }
 }

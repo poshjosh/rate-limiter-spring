@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [ [0.1.0](https://github.com/poshjosh/rate-limiter-spring/tree/v0.2.0) ] - 2023-01-08
+
+### Added
+
 ## [ [0.1.0](https://github.com/poshjosh/rate-limiter-spring/tree/v0.1.0) ] - 2023-01-07
 
 ### Added
