@@ -5,6 +5,16 @@ Light-weight rate limiting library for spring controllers, based on
 
 Please first read the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core).
 
+To add a dependency on `rate-limiter-spring` using Maven, use the following:
+
+```xml
+        <dependency>
+            <groupId>io.github.poshjosh</groupId>
+            <artifactId>rate-limiter-spring</artifactId>
+            <version>0.2.0</version> 
+        </dependency>
+```
+
 ### Usage
 
 __1. Configure your spring application__
