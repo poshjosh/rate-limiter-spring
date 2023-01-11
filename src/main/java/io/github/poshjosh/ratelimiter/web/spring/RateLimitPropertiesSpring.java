@@ -11,6 +11,8 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
 
     private List<String> resourcePackages = Collections.emptyList();
 
+    private List<Class<?>> resourceClasses = Collections.emptyList();
+
     private Boolean disabled = Boolean.FALSE;
 
     private Map<String, Rates> rateLimitConfigs = Collections.emptyMap();
@@ -22,6 +24,15 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
 
     public void setResourcePackages(List<String> resourcePackages) {
         this.resourcePackages = resourcePackages;
+    }
+
+    @Override
+    public List<Class<?>> getResourceClasses() {
+        return resourceClasses;
+    }
+
+    public void setResourceClasses(List<Class<?>> resourceClasses) {
+        this.resourceClasses = resourceClasses;
     }
 
     @Override
@@ -46,6 +57,7 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
     public String toString() {
         return "RateLimitPropertiesSpring{" +
                 "resourcePackages=" + resourcePackages +
+                ", resourceClasses=" + resourceClasses +
                 ", disabled=" + disabled +
                 ", rateLimitConfigs=" + rateLimitConfigs +
                 '}';
