@@ -3,6 +3,33 @@
 Light-weight rate limiting library for spring controllers, based on 
 [rate-limiter-web-core](https://github.com/poshjosh/rate-limiter-web-core).
 
+We believe that rate limiting should be a simple as:
+
+```java
+@Rate(10) // 10 permits per second for all methods collectively
+@Controller
+@RequestMapping("/api")
+class GreetingResource {
+
+  // 2 calls per second for users in role GUEST
+  @Rate(2)
+  @RateCondition("web.session.user.role=GUEST")
+  @GetMapping("/smile")
+  String smile() {
+    return ":)";
+  }
+
+  // We can collectively configure RateLimiters by adding them to a group  
+  @RateGroup("limitBySession")
+  // Only 99 calls to this path is allowed per minute
+  @Rate(permits = 99, timeUnit = TimeUnit.MINUTES)
+  @GetMapping("/greet")
+  String greet(String name) {
+    return "Hello " + name;
+  }
+}
+```
+
 Please first read the [rate-limiter-web-core documentation](https://github.com/poshjosh/rate-limiter-web-core).
 
 To add a dependency on `rate-limiter-spring` using Maven, use the following:
@@ -53,9 +80,8 @@ __2. Annotate classes and/or methods.__
 ```java
 package com.myapplicatioon.web.rest;
 
+import io.github.poshjosh.ratelimiter.annotations.RateCondition;
 import io.github.poshjosh.ratelimiter.util.Rate;
-import io.github.poshjosh.ratelimiter.web.core.annotation.RateRequestIf;
-import io.github.poshjosh.ratelimiter.web.core.util.MatchType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,7 +94,7 @@ public class MyResource {
 
     // Only 25 calls per second for users in role GUEST
     @Rate(25)
-    @RateRequestIf(matchType = MatchType.USER_ROLE, values = "GUEST")
+    @RateCondition("web.session.user.role=GUEST")
     @GetMapping("/greet/{name}") 
     public ResponseEntity<String> greet(
             @PathVariable String name) {
@@ -121,6 +147,28 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
   }
 }
 ```
+
+### Expression Language
+
+The expression language allows us to write expressive rate conditions, e.g:
+
+`@RateCondition("web.session.user.role=GUEST")`
+
+`@RateCondition("sys.memory.free<1GB")`
+
+format          | example                                  | description
+----------------|------------------------------------------|------------
+LHS=RHS         | web.request.header=X-RateLimit-Limit     | true, when the X-RateLimit-Limit header exists
+LHS={key=val}   | web.request.parameter={limited=true}     | true, when request parameter limited equals true
+LHS=[A!B]       | web.session.user.role=[GUEST!RESTRICTED] | true, when the user role is either GUEST or RESTRICTED
+LHS=[A&B]       | web.session.user.role=[GUEST&RESTRICTED] | true, when the user role is either GUEST and RESTRICTED
+LHS={key=[A!B]} | web.request.header={name=[val_0!val_1]}  | true, when either val_0 or val_1 is set a header
+LHS={key=[A&B]} | web.request.header={name=[val_0&val_1]}  | true, when both val_0 and val_1 are set as headers
+
+__Note:__ `|` equals OR. `!` is used above for OR because markdown does not support `|` in tables
+
+A rich set of conditions may be expressed as detailed in the
+[web specification](https://github.com/poshjosh/rate-limiter-web-core/blob/main/docs/RATE-CONDITION-EXPRESSION-LANGUAGE.md).
 
 ### Manually create and use a ResourceLimiter
 

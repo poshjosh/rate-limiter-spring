@@ -1,7 +1,9 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
-import io.github.poshjosh.ratelimiter.web.core.RequestMatcherFactory;
+import io.github.poshjosh.ratelimiter.web.core.RequestInfo;
+import io.github.poshjosh.ratelimiter.web.core.RequestToIdConverter;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
+import io.github.poshjosh.ratelimiter.web.core.WebExpressionMatcher;
 import io.github.poshjosh.ratelimiter.web.spring.uri.PathPatternsProviderSpring;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +14,7 @@ import java.util.stream.Collectors;
 public abstract class ResourceLimiterConfigSpring
         extends ResourceLimiterConfig<HttpServletRequest> {
 
-    private static class RequestInfoSpring implements RequestMatcherFactory.RequestInfo {
+    private static class RequestInfoSpring implements RequestInfo {
         private final HttpServletRequest request;
         private RequestInfoSpring(HttpServletRequest request) {
             this.request = Objects.requireNonNull(request);
@@ -65,21 +67,26 @@ public abstract class ResourceLimiterConfigSpring
         }
     }
 
-    private static class RequestMatcherFactorySpring
-            implements RequestMatcherFactory<HttpServletRequest> {
-        private RequestMatcherFactorySpring() { }
-        @Override public RequestInfo info(HttpServletRequest request) {
-            return new RequestInfoSpring(request);
-        }
+    private static class RequestToIdConverterSpring
+            implements RequestToIdConverter<HttpServletRequest, String>{
         @Override public String toId(HttpServletRequest request) {
             return request.getRequestURI();
+        }
+    }
+
+    private static class WebExpressionMatcherSpring
+            extends WebExpressionMatcher<HttpServletRequest> {
+        private WebExpressionMatcherSpring() { }
+        @Override protected RequestInfo info(HttpServletRequest request) {
+            return new RequestInfoSpring(request);
         }
     }
 
     public static Builder<HttpServletRequest> builder() {
         return ResourceLimiterConfig.<HttpServletRequest>builder()
             .pathPatternsProvider(new PathPatternsProviderSpring())
-            .requestMatcherFactory(new RequestMatcherFactorySpring())
+            .requestToIdConverter(new RequestToIdConverterSpring())
+            .expressionMatcher(new WebExpressionMatcherSpring())
             .classesInPackageFinder(new ClassesInPackageFinderSpring());
 
     }

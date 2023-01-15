@@ -1,46 +1,47 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.annotation.Rate;
-import io.github.poshjosh.ratelimiter.util.Operator;
-import io.github.poshjosh.ratelimiter.web.core.annotation.RateRequestIf;
-import io.github.poshjosh.ratelimiter.web.core.util.MatchType;
+import io.github.poshjosh.ratelimiter.annotations.Rate;
+import io.github.poshjosh.ratelimiter.annotations.RateCondition;
+import io.github.poshjosh.ratelimiter.web.core.WebExpressionKey;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import java.nio.file.attribute.UserPrincipal;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcControllersTest(classes = {
-        RequestRateTest.Resource.class, RequestRateTest.TestConfig.class })
-class RequestRateTest extends AbstractResourceTest{
+        RateConditionTest.Resource.class, RateConditionTest.TestConfig.class })
+class RateConditionTest extends AbstractResourceTest{
 
     @Configuration
     static class TestConfig {
         public TestConfig(RateLimitPropertiesSpring properties) {
             properties.setResourcePackages(Collections.emptyList());
-            properties.setResourceClasses(Arrays.asList(RequestRateTest.Resource.class));
+            properties.setResourceClasses(Arrays.asList(RateConditionTest.Resource.class));
         }
     }
 
-    private static final String ROOT = "/request-rate-test";
+    private static final String ROOT = "/rate-condition-test";
 
-    private static final String invalidUserRole = TestWebSecurityConfigurer.TEST_USER_ROLE + "-INVALIDATED";
+    private static final String validUserRole = TestWebSecurityConfigurer.TEST_USER_ROLE;
+    private static final String invalidUserRole = "invalid-" + validUserRole;
+    private static final String invalidUserRole2 = invalidUserRole + "2";
 
     private static final String headerName = "test-header-name";
     private static final String headerValue = "test-header-value";
+
+    private static final String cookieName = "text-cookie-name";
+    private static final String cookieValue = "text-cookie-value";
 
     private static final String acceptLang1 = "en-US";
     private static final String acceptLang2 = "en-UK";
@@ -54,6 +55,10 @@ class RequestRateTest extends AbstractResourceTest{
         interface Endpoints{
             String ROLE_NO_MATCH = ApiEndpoints.API + ROOT + "/role-no-match";
             String ROLE_MATCH = ApiEndpoints.API + ROOT + "/role-match";
+            String COOKIE_NO_MATCH = ApiEndpoints.API + ROOT + "/cookie-no-match";
+            String COOKIE_MATCH = ApiEndpoints.API + ROOT + "/cookie-match";
+            String COOKIE_MATCH_NAME_ONLY = ApiEndpoints.API + ROOT + "/cookie-match-name-only";
+            String COOKIE_NEGATE_MATCH_NAME_ONLY = ApiEndpoints.API + ROOT + "/cookie-negate-match-name-only";
             String HEADER_NO_MATCH = ApiEndpoints.API + ROOT + "/header-no-match";
             String HEADER_MATCH = ApiEndpoints.API + ROOT + "/header-match";
             String HEADER_MATCH_NAME_ONLY = ApiEndpoints.API + ROOT + "/header-match-name-only";
@@ -65,78 +70,105 @@ class RequestRateTest extends AbstractResourceTest{
 
         @RequestMapping("/role-no-match")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.USER_ROLE, values = invalidUserRole)
+        @RateCondition(WebExpressionKey.USER_ROLE + "=" + invalidUserRole)
         public String roleNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/role-no-match-or")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.USER_ROLE, operator = Operator.OR,
-                values = {invalidUserRole, invalidUserRole + "2"})
+        @RateCondition(WebExpressionKey.USER_ROLE + "=[" + invalidUserRole + "|" + invalidUserRole2+"]")
         public String roleNoMatch_or(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/role-match")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.USER_ROLE, values = TestWebSecurityConfigurer.TEST_USER_ROLE)
+        @RateCondition(WebExpressionKey.USER_ROLE + "=" + validUserRole)
         public String roleMatch(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping("/cookie-no-match")
+        @Rate(1)
+        @RateCondition(WebExpressionKey.COOKIE + "={"+cookieName+"=invalid-value}")
+        public String cookieNoMatch(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping("/cookie-match")
+        @Rate(1)
+        @RateCondition(WebExpressionKey.COOKIE + "={"+cookieName+"="+cookieValue+"}")
+        public String cookieMatch(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping("/cookie-match-name-only")
+        @Rate(1)
+        @RateCondition(WebExpressionKey.COOKIE + "=" + cookieName)
+        public String cookieMatchNameOnly(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        @RequestMapping("/cookie-negate-match-name-only")
+        @Rate(1)
+        @RateCondition(WebExpressionKey.COOKIE + "!=" + cookieName)
+        public String cookieNegateMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-no-match")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.HEADER, name = "invalid-header-name", values = "invalid-header-value")
+        @RateCondition(WebExpressionKey.HEADER + "={invalid-header-name=invalid-header-value}")
         public String headerNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.HEADER, name = headerName, values = headerValue)
+        @RateCondition(WebExpressionKey.HEADER + "={"+headerName+"="+headerValue+"}")
         public String headerMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match-name-only")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.HEADER, name = headerName)
+        @RateCondition(WebExpressionKey.HEADER + "=" + headerName)
         public String headerMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-no-match-or")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.LOCALE, values = {noAcceptLang1, noAcceptLang2}, operator = Operator.OR)
+        @RateCondition(WebExpressionKey.LOCALE + "=[" + noAcceptLang1 + "|" + noAcceptLang2 + "]")
         public String langNoMatch_or(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-match-or")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.LOCALE, values = {acceptLang1, noAcceptLang1}, operator = Operator.OR)
+        @RateCondition(WebExpressionKey.LOCALE + "=[" + acceptLang1 + "|" + noAcceptLang1 + "]")
         public String langMatch_or(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-no-match-and")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.LOCALE, values = {acceptLang1, noAcceptLang1})
+        @RateCondition(WebExpressionKey.LOCALE + "=[" + acceptLang1 + "&" + noAcceptLang1 + "]")
         public String langNoMatch_and(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-match-and")
         @Rate(1)
-        @RateRequestIf(matchType = MatchType.LOCALE, values = {acceptLang1, acceptLang2})
+        @RateCondition(WebExpressionKey.LOCALE + "=[" + acceptLang1 + "&" + acceptLang1 + "]")
         public String langMatch_and(HttpServletRequest request) {
             return request.getRequestURI();
         }
     }
 
     @Test
-    @WithMockUser(roles = TestWebSecurityConfigurer.TEST_USER_ROLE)
+    @WithMockUser(roles = validUserRole)
     void shouldNotBeRateLimitedWhenRoleNoMatch() throws Exception{
         final String endpoint = Resource.Endpoints.ROLE_NO_MATCH;
         shouldReturnDefaultResult(endpoint);
@@ -144,11 +176,39 @@ class RequestRateTest extends AbstractResourceTest{
     }
 
     @Test
-    @WithMockUser(roles = TestWebSecurityConfigurer.TEST_USER_ROLE)
+    @WithMockUser(roles = validUserRole)
     void shouldBeRateLimitedWhenRoleMatch() throws Exception{
         final String endpoint = Resource.Endpoints.ROLE_MATCH;
         shouldReturnDefaultResult(endpoint);
         shouldReturnStatusOfTooManyRequests(endpoint);
+    }
+
+    @Test
+    void shouldNotBeRateLimitedWhenCookieNoMatch() throws Exception{
+        final String endpoint = Resource.Endpoints.COOKIE_NO_MATCH;
+        shouldReturnDefaultResult(endpoint);
+        shouldReturnStatusOfTooManyRequests(endpoint);
+    }
+
+    @Test
+    void shouldBeRateLimitedWhenCookieMatch() throws Exception{
+        final String endpoint = Resource.Endpoints.COOKIE_MATCH;
+        shouldReturnDefaultResult(endpoint);
+        shouldReturnStatusOfTooManyRequests(endpoint);
+    }
+
+    @Test
+    void shouldBeRateLimitedWhenCookieMatchNameOnly() throws Exception{
+        final String endpoint = Resource.Endpoints.COOKIE_MATCH_NAME_ONLY;
+        shouldReturnDefaultResult(endpoint);
+        shouldReturnStatusOfTooManyRequests(endpoint);
+    }
+
+    @Test
+    void shouldNotBeRateLimitedWhenCookieNegateMatchNameOnly() throws Exception{
+        final String endpoint = Resource.Endpoints.COOKIE_NEGATE_MATCH_NAME_ONLY;
+        shouldReturnDefaultResult(endpoint);
+        shouldReturnDefaultResult(endpoint);
     }
 
     @Test
@@ -207,7 +267,8 @@ class RequestRateTest extends AbstractResourceTest{
         builder.header(headerName, headerValue);
         builder.with(request -> {
             request.setUserPrincipal((UserPrincipal)() -> TestWebSecurityConfigurer.TEST_USER_NAME);
-            request.addUserRole(TestWebSecurityConfigurer.TEST_USER_ROLE);
+            request.addUserRole(validUserRole);
+            request.setCookies(new Cookie(cookieName, cookieValue));
             return request;
         });
         return builder;
