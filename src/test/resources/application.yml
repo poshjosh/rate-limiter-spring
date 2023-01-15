@@ -1,4 +1,4 @@
-debug: true
+debug: false
 
 spring:
   main:
@@ -7,8 +7,10 @@ spring:
 logging:
   level:
     ROOT: ERROR
-    #ResourceLimiterComposition: TRACE
-    com.looseboxes.ratelimiter: DEBUG
+    io.github.poshjosh.ratelimiter: DEBUG
+    #io.github.poshjosh.ratelimiter.ResourceLimiterComposition: TRACE
+    #io.github.poshjosh.ratelimiter.annotation: TRACE
     org.springframework: ERROR
-    com.sun: DEBUG
-    com.sun.jmx: DEBUG
+    org.springframework.boot.autoconfigure: ERROR
+    com.sun: ERROR
+    com.sun.jmx: ERROR

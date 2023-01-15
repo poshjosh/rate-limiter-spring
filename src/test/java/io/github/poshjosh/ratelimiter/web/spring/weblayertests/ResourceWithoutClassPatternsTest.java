@@ -1,15 +1,30 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
 import io.github.poshjosh.ratelimiter.annotation.Rate;
+import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-@WebMvcControllersTest(classes = { ResourceWithoutClassPatternsTest.Resource.class })
+@WebMvcControllersTest(classes = {
+        ResourceWithoutClassPatternsTest.Resource.class, ResourceWithoutClassPatternsTest.TestConfig.class })
 class ResourceWithoutClassPatternsTest extends AbstractResourceTest {
+
+    @Configuration
+    static class TestConfig {
+        public TestConfig(RateLimitPropertiesSpring properties) {
+            properties.setResourcePackages(Collections.emptyList());
+            properties.setResourceClasses(Arrays.asList(ResourceWithoutClassPatternsTest.Resource.class));
+        }
+    }
 
     @RestController
     @RequestMapping("")

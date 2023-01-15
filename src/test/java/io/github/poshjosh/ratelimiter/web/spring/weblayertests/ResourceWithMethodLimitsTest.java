@@ -3,15 +3,30 @@ package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 import io.github.poshjosh.ratelimiter.annotation.Rate;
 import io.github.poshjosh.ratelimiter.annotation.RateGroup;
 import io.github.poshjosh.ratelimiter.util.Operator;
+import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-@WebMvcControllersTest(classes = { ResourceWithMethodLimitsTest.Resource.class })
+@WebMvcControllersTest(classes = {
+        ResourceWithMethodLimitsTest.Resource.class, ResourceWithMethodLimitsTest.TestConfig.class })
 class ResourceWithMethodLimitsTest extends AbstractResourceTest {
+
+    @Configuration
+    static class TestConfig {
+        public TestConfig(RateLimitPropertiesSpring properties) {
+            properties.setResourcePackages(Collections.emptyList());
+            properties.setResourceClasses(Arrays.asList(ResourceWithMethodLimitsTest.Resource.class));
+        }
+    }
 
     @RestController
     @RequestMapping(ApiEndpoints.API)
@@ -54,7 +69,7 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
         }
 
         @RequestMapping(InternalEndpoints.LIMIT_1_AND_5)
-        @RateGroup(operator = Operator.AND)
+        @RateGroup(name = "resource-with-method-limit-group", operator = Operator.AND)
         @Rate(permits = 1, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         @Rate(permits = 5, duration = Resource.DURATION_SECONDS, timeUnit = TimeUnit.SECONDS)
         public String limit_1_and_5(HttpServletRequest request) {

@@ -4,7 +4,11 @@ import io.github.poshjosh.ratelimiter.annotation.Rate;
 import io.github.poshjosh.ratelimiter.util.Operator;
 import io.github.poshjosh.ratelimiter.web.core.annotation.RateRequestIf;
 import io.github.poshjosh.ratelimiter.web.core.util.MatchType;
+import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 import java.nio.file.attribute.UserPrincipal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@WebMvcControllersTest(classes = { RequestRateTest.Resource.class })
+@WebMvcControllersTest(classes = {
+        RequestRateTest.Resource.class, RequestRateTest.TestConfig.class })
 class RequestRateTest extends AbstractResourceTest{
+
+    @Configuration
+    static class TestConfig {
+        public TestConfig(RateLimitPropertiesSpring properties) {
+            properties.setResourcePackages(Collections.emptyList());
+            properties.setResourceClasses(Arrays.asList(RequestRateTest.Resource.class));
+        }
+    }
 
     private static final String ROOT = "/request-rate-test";
 

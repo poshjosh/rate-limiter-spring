@@ -4,6 +4,8 @@ import io.github.poshjosh.ratelimiter.ResourceLimiter;
 import io.github.poshjosh.ratelimiter.web.core.*;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,12 +19,16 @@ import javax.servlet.http.HttpServletRequest;
 @EnableConfigurationProperties(RateLimitPropertiesSpring.class)
 public class ResourceLimiterConfiguration {
 
+    private final Logger LOG = LoggerFactory.getLogger(ResourceLimiterConfiguration.class);
+
     public ResourceLimiterConfiguration() {}
 
     @Bean
     public ResourceLimiter<HttpServletRequest> resourceLimiter(
-            ResourceLimiterRegistry<HttpServletRequest> registry) {
-        return registry.createResourceLimiter();
+            ResourceLimiterRegistry<HttpServletRequest> resourceLimiterRegistry) {
+        LOG.info(resourceLimiterRegistry.isRateLimitingEnabled()
+                ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
+        return resourceLimiterRegistry.createResourceLimiter();
     }
 
     @Bean

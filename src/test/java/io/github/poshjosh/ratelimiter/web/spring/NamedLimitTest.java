@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +28,8 @@ class NamedLimitTest {
     @BeforeEach
     void setupRateLimiting() {
         RateLimitPropertiesSpring props = new RateLimitPropertiesSpring();
-        props.setResourcePackages(Collections.singletonList(this.getClass().getPackage().getName()));
+        props.setResourcePackages(Collections.emptyList());
+        props.setResourceClasses(Arrays.asList(Resource.class));
         ResourceLimiterConfig<HttpServletRequest> config =
                 ResourceLimiterConfigSpring.builder()
                 .properties(props)
