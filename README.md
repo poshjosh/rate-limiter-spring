@@ -167,7 +167,7 @@ LHS={key=[A&B]} | web.request.header={name=[val_0&val_1]}  | true, when both val
 __Note:__ `|` equals OR. `!` is used above for OR because markdown does not support `|` in tables
 
 A rich set of conditions may be expressed as detailed in the
-[web specification](https://github.com/poshjosh/rate-limiter-web-core/blob/main/docs/RATE-CONDITION-EXPRESSION-LANGUAGE.md).
+[web specification](https://github.com/poshjosh/rate-limiter-web-core/blob/master/docs/RATE-CONDITION-EXPRESSION-LANGUAGE.md).
 
 ### Manually create and use a ResourceLimiter
 
