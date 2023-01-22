@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -28,10 +32,16 @@ class RateGroupTest extends AbstractResourceTest{
 
     private static final String GROUP_NAME = "test-group";
 
-    @RestController
-    @RequestMapping(ApiEndpoints.API + Resource1._BASE)
     @Rate(1)
     @RateGroup(GROUP_NAME)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    private @interface MyRateGroup{ }
+
+
+    @MyRateGroup
+    @RestController
+    @RequestMapping(ApiEndpoints.API + Resource1._BASE)
     static class Resource1 {
 
         private static final String _BASE = "/rate-group-test/resource1";
@@ -54,8 +64,8 @@ class RateGroupTest extends AbstractResourceTest{
             String HOME = ApiEndpoints.API + _BASE + _HOME;
         }
 
+        @MyRateGroup
         @RequestMapping(_HOME)
-        @RateGroup(GROUP_NAME)
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }

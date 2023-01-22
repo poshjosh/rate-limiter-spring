@@ -10,7 +10,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ClassLevelPathPatterns implements PathPatterns<String> {
+final class ClassLevelPathPatterns implements PathPatterns<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassLevelPathPatterns.class);
 
@@ -19,7 +19,7 @@ public class ClassLevelPathPatterns implements PathPatterns<String> {
 
     private final PathPatternParser pathPatternParser;
 
-    public ClassLevelPathPatterns(String... pathPatterns) {
+    ClassLevelPathPatterns(String... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = new PathPattern[pathPatterns.length];
         for(int i = 0; i<pathPatterns.length; i++) {

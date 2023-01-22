@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class ClassLevelPathPatternsTest extends AbstractPathPatternsTestBase {
+class ClassLevelPathPatternsTest extends AbstractPathPatternsTestBase {
 
     @Test
-    public void shouldMatchStartOf() {
+    void shouldMatchStartOf() {
         PathPatterns<String> pathPatterns = pathPatterns("/numbers");
         assertThat( pathPatterns.matches("/numbers")).isTrue();
         assertThat( pathPatterns.matches("/numbers/1")).isTrue();

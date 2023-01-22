@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public class PathPatternsProviderSpring implements PathPatternsProvider {
 
+    public PathPatternsProviderSpring() { }
+
     @Override
     public PathPatterns<String> get(Element source) {
         if (source.isOwnDeclarer()) {

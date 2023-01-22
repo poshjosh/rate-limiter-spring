@@ -30,8 +30,8 @@ public class TestWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(
-                        RateConditionTest.Resource.Endpoints.ROLE_MATCH,
-                        RateConditionTest.Resource.Endpoints.ROLE_NO_MATCH)
+                        RateConditionRoleTest.Resource.Endpoints.ROLE_MATCH,
+                        RateConditionRoleTest.Resource.Endpoints.ROLE_NO_MATCH)
                 .hasRole(TEST_USER_ROLE)
                 .antMatchers("/**")
                 .permitAll()
