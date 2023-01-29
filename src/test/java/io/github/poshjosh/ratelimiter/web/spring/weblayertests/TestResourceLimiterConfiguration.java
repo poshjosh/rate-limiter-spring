@@ -1,10 +1,10 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.cache.RateCache;
 import io.github.poshjosh.ratelimiter.web.core.Registries;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
+import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
-import io.github.poshjosh.ratelimiter.web.spring.SpringRateCache;
+import io.github.poshjosh.ratelimiter.web.spring.repository.RateCacheSpring;
 import io.github.poshjosh.ratelimiter.web.spring.repository.*;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfigurer;
 import io.github.poshjosh.ratelimiter.web.spring.ResourceLimiterConfiguration;
@@ -20,19 +20,17 @@ import java.util.Collections;
 public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration
         implements ResourceLimiterConfigurer<HttpServletRequest> {
 
-    private final RateCacheWithKeys<Object> rateCache;
+    private final RateCache<Object> rateCache;
 
     public TestResourceLimiterConfiguration() {
         String testCacheName = this.getClass().getPackage().getName() + ".cache";
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager(testCacheName);
-        this.rateCache = new RateCacheWithKeysImpl<>(
-                new SpringRateCache<>(cacheManager.getCache(testCacheName))
-        );
+        this.rateCache = new RateCacheSpring<>(cacheManager.getCache(testCacheName));
     }
 
     @Override
     public void configure(Registries<HttpServletRequest> registries) {
-        registries.caches().register(rateCache);
+        registries.registerStore(rateCache);
     }
 
     @Bean

@@ -1,9 +1,7 @@
 package io.github.poshjosh.ratelimiter.web.spring.repository;
 
 import io.github.poshjosh.ratelimiter.annotations.Experimental;
-import io.github.poshjosh.ratelimiter.annotations.VisibleForTesting;
 import io.github.poshjosh.ratelimiter.bandwidths.Bandwidths;
-import io.github.poshjosh.ratelimiter.cache.RateCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -25,9 +23,9 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     private static final Logger log = LoggerFactory.getLogger(RateRepositoryForCache.class);
 
-    private final RateCacheWithKeys<ID> rateCache;
+    private final RateCache<ID> rateCache;
 
-    public RateRepositoryForCache(RateCacheWithKeys<ID> rateCache) {
+    public RateRepositoryForCache(RateCache<ID> rateCache) {
         this.rateCache = Objects.requireNonNull(rateCache);
     }
 
@@ -172,10 +170,5 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     private long count(Iterable<?> iterable) {
         return StreamSupport.stream(iterable.spliterator(), true).count();
-    }
-
-    @VisibleForTesting
-    public RateCacheWithKeys<ID> getCache() {
-        return rateCache;
     }
 }

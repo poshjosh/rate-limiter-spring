@@ -3,7 +3,7 @@
 Light-weight rate limiting library for spring controllers, based on 
 [rate-limiter-web-core](https://github.com/poshjosh/rate-limiter-web-core).
 
-We believe that rate limiting should be a simple as:
+We believe that rate limiting should be as simple as:
 
 ```java
 @Rate(10) // 10 permits per second for all methods collectively
@@ -12,16 +12,14 @@ We believe that rate limiting should be a simple as:
 class GreetingResource {
 
   // Only 2 calls per second to this path, for users in role GUEST
-  @Rate(2)
-  @RateCondition("web.session.user.role=GUEST")
+  @Rate(permits=2, when="web.session.user.role=GUEST")
   @GetMapping("/smile")
   String smile() {
     return ":)";
   }
 
   // Only 10 calls per minute to this path, when system available memory < 1GB 
-  @Rate(permits = 10, timeUnit = TimeUnit.MINUTES)
-  @RateCondition("sys.memory.available<1gb")
+  @Rate(permits=10, timeUnit=TimeUnit.MINUTES, when="sys.memory.available<1gb")
   @GetMapping("/greet")
   String greet(String name) {
     return "Hello " + name;

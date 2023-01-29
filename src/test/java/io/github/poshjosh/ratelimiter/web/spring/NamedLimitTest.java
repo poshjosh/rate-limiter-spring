@@ -38,8 +38,8 @@ class NamedLimitTest {
     }
 
     @Test
-    void shouldHaveAResourceLimiterRegisteredForCustomName() {
-        assertNotNull(registries.limiters().getOrDefault(NAME, null));
+    void shouldHaveAMatcherRegisteredForCustomName() {
+        assertNotNull(registries.matchers().getOrDefault(NAME, null));
     }
 
     @Test

@@ -2,10 +2,11 @@ package io.github.poshjosh.ratelimiter.web.spring.repository;
 
 import io.github.poshjosh.ratelimiter.bandwidths.Bandwidth;
 import io.github.poshjosh.ratelimiter.bandwidths.Bandwidths;
-import io.github.poshjosh.ratelimiter.cache.RateCache;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.cache.Cache;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.data.domain.*;
 
 import java.util.Arrays;
@@ -15,9 +16,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RateRepositoryTest {
 
-    private final RateCache<Integer> rateCache = RateCache.ofMap();
+    private final Cache cache = new ConcurrentMapCache("RateRepositoryTest_Cache");
     private final RateRepository<RateEntity<Integer>, Integer> rateRepository =
-            new RateRepositoryForCache<>(new RateCacheWithKeysImpl<>(rateCache));
+            new RateRepositoryForCache<>(new RateCacheSpring<>(cache));
 
     @Test
     void save_returnsSavedEntity() {
