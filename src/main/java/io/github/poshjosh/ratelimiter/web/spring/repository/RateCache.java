@@ -1,8 +1,8 @@
 package io.github.poshjosh.ratelimiter.web.spring.repository;
 
+import io.github.poshjosh.ratelimiter.bandwidths.Bandwidth;
 import io.github.poshjosh.ratelimiter.store.BandwidthsStore;
 import io.github.poshjosh.ratelimiter.annotations.Experimental;
-import io.github.poshjosh.ratelimiter.bandwidths.Bandwidths;
 
 @Experimental
 public interface RateCache<K> extends BandwidthsStore<K> {
@@ -18,12 +18,12 @@ public interface RateCache<K> extends BandwidthsStore<K> {
     boolean containsKey(K key);
 
     @Override
-    Bandwidths get(K key);
+    Bandwidth[] get(K key);
 
-    boolean putIfAbsent(K key, Bandwidths value);
+    boolean putIfAbsent(K key, Bandwidth[] value);
 
     @Override
-    void put(K key, Bandwidths value);
+    void put(K key, Bandwidth[] value);
 
     boolean remove(K key);
 

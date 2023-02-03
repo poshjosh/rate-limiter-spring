@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @WebMvcControllersTest(classes = {
@@ -69,9 +70,7 @@ class PropertiesBoundLimitTest extends AbstractResourceTest{
 
     @Test
     void shouldHaveAMatcher() {
-        Object matcher = resourceLimiterRegistry.matchers()
-                .getOrDefault(Resource.getMethodLimitedViaProperties(), null);
-        assertNotNull(matcher);
+        assertTrue(resourceLimiterRegistry.hasMatching(Resource.getMethodLimitedViaProperties()));
     }
 
     @Test

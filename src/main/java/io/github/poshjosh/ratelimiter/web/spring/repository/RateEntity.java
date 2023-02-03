@@ -1,7 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.repository;
 
 import io.github.poshjosh.ratelimiter.annotations.Experimental;
-import io.github.poshjosh.ratelimiter.bandwidths.Bandwidths;
 
 import java.util.Objects;
 
@@ -10,9 +9,9 @@ import java.util.Objects;
 public class RateEntity<ID> {
 
     private final ID id;
-    private final Bandwidths data;
+    private final Object data;
 
-    public RateEntity(ID id, Bandwidths data) {
+    public RateEntity(ID id, Object data) {
         this.id = id;
         this.data = data;
     }

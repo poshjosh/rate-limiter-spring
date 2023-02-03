@@ -90,7 +90,7 @@ class RateRepositoryTest {
         return new RateEntity<>(id, bandwidths(permitsPerSecond));
     }
     
-    private Bandwidths bandwidths(double permitsPerSecond) {
-        return Bandwidths.of(Bandwidth.bursty(permitsPerSecond));
+    private Bandwidth[] bandwidths(double permitsPerSecond) {
+        return new Bandwidth[]{Bandwidth.bursty(permitsPerSecond)};
     }
 }

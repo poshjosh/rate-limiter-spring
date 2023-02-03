@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NamedLimitTest {
@@ -35,11 +36,12 @@ class NamedLimitTest {
                 .properties(props)
                 .build();
         registries = ResourceLimiterRegistrySpring.of(config);
+        registries.createResourceLimiter();
     }
 
     @Test
     void shouldHaveAMatcherRegisteredForCustomName() {
-        assertNotNull(registries.matchers().getOrDefault(NAME, null));
+        assertTrue(registries.hasMatching(NAME));
     }
 
     @Test

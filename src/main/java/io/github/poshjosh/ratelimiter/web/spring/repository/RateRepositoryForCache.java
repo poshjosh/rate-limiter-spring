@@ -1,6 +1,7 @@
 package io.github.poshjosh.ratelimiter.web.spring.repository;
 
 import io.github.poshjosh.ratelimiter.annotations.Experimental;
+import io.github.poshjosh.ratelimiter.bandwidths.Bandwidth;
 import io.github.poshjosh.ratelimiter.bandwidths.Bandwidths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public <S extends RateEntity<ID>> S save(S s) {
-        rateCache.put(Objects.requireNonNull(s.getId()), (Bandwidths) s.getData());
+        rateCache.put(Objects.requireNonNull(s.getId()), (Bandwidth[])s.getData());
         return s;
     }
 
@@ -90,7 +91,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Optional<RateEntity<ID>> findById(ID id) {
-        Bandwidths data = this.rateCache.get(id);
+        Bandwidth[] data = this.rateCache.get(id);
         return Optional.ofNullable(data == null ? null : new RateEntity<>(id, data));
     }
 
