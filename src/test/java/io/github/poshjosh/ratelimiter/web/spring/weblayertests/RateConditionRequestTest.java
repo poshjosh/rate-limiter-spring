@@ -14,38 +14,38 @@ import java.util.Arrays;
 import java.util.Collections;
 
 @WebMvcControllersTest(classes = {
-        RateConditionSessionTest.Resource.class, RateConditionSessionTest.TestConfig.class })
-class RateConditionSessionTest extends AbstractResourceTest{
+        RateConditionRequestTest.Resource.class, RateConditionRequestTest.TestConfig.class })
+class RateConditionRequestTest extends AbstractResourceTest{
 
     @Configuration
     static class TestConfig {
         public TestConfig(RateLimitPropertiesSpring properties) {
             properties.setResourcePackages(Collections.emptyList());
-            properties.setResourceClasses(Arrays.asList(RateConditionSessionTest.Resource.class));
+            properties.setResourceClasses(Arrays.asList(RateConditionRequestTest.Resource.class));
         }
     }
 
-    private static final String ROOT = "/rate-condition-session-test";
+    private static final String ROOT = "/rate-condition-request-test";
 
     @RestController
     @RequestMapping(ApiEndpoints.API + ROOT)
     public static class Resource { // Has to be public for tests to succeed
 
         interface Endpoints{
-            String SESSION_ID_EXISTS = ApiEndpoints.API + ROOT + "/session-id-exists";
+            String REQUEST_URI_EXISTS = ApiEndpoints.API + ROOT + "/request-uri-exists";
         }
 
-        @RequestMapping("/session-id-exists")
+        @RequestMapping("/request-uri-exists")
         @Rate(1)
-        @RateCondition(WebExpressionKey.SESSION_ID + "!=0") // TODO - Change this to:  !=null
-        public String headerNoMatch(HttpServletRequest request) {
+        @RateCondition(WebExpressionKey.REQUEST_URI + "!=")
+        public String requestUriExists(HttpServletRequest request) {
             return request.getRequestURI();
         }
     }
 
     @Test
-    void shouldBeRateLimited_whenSessionIdExists() throws Exception{
-        final String endpoint = Resource.Endpoints.SESSION_ID_EXISTS;
+    void shouldBeRateLimitedWhenRequestUriExists() throws Exception{
+        final String endpoint = Resource.Endpoints.REQUEST_URI_EXISTS;
         shouldReturnDefaultResult(endpoint);
         shouldReturnStatusOfTooManyRequests(endpoint);
     }

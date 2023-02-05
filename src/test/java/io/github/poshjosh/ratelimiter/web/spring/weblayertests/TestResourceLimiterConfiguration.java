@@ -1,5 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
+import io.github.poshjosh.ratelimiter.UsageListener;
 import io.github.poshjosh.ratelimiter.web.core.Registries;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
@@ -14,6 +15,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 
 @TestConfiguration

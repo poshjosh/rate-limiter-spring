@@ -12,7 +12,7 @@ We believe that rate limiting should be as simple as:
 class GreetingResource {
 
   // Only 2 calls per second to this path, for users in role GUEST
-  @Rate(permits=2, when="web.session.user.role=GUEST")
+  @Rate(permits=2, when="web.request.user.role=GUEST")
   @GetMapping("/smile")
   String smile() {
     return ":)";
@@ -88,7 +88,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyResource {
 
     // Only 25 calls per second for users in role GUEST
-    @Rate(permits=25, when="web.session.user.role=GUEST")
+    @Rate(permits=25, when="web.request.user.role=GUEST")
     @GetMapping("/greet/{name}") 
     public ResponseEntity<String> greet(@PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
@@ -145,7 +145,7 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
 The expression language allows us to write expressive rate conditions, e.g:
 
-`@RateCondition("web.session.user.role=GUEST")`
+`@RateCondition("web.request.user.role=GUEST")`
 
 `@RateCondition("sys.memory.free<1GB")`
 
@@ -153,8 +153,8 @@ format          | example                                  | description
 ----------------|------------------------------------------|------------
 LHS=RHS         | web.request.header=X-RateLimit-Limit     | true, when the X-RateLimit-Limit header exists
 LHS={key=val}   | web.request.parameter={limited=true}     | true, when request parameter limited equals true
-LHS=[A!B]       | web.session.user.role=[GUEST!RESTRICTED] | true, when the user role is either GUEST or RESTRICTED
-LHS=[A&B]       | web.session.user.role=[GUEST&RESTRICTED] | true, when the user role is either GUEST and RESTRICTED
+LHS=[A!B]       | web.request.user.role=[GUEST!RESTRICTED] | true, when the user role is either GUEST or RESTRICTED
+LHS=[A&B]       | web.request.user.role=[GUEST&RESTRICTED] | true, when the user role is either GUEST and RESTRICTED
 LHS={key=[A!B]} | web.request.header={name=[val_0!val_1]}  | true, when either val_0 or val_1 is set a header
 LHS={key=[A&B]} | web.request.header={name=[val_0&val_1]}  | true, when both val_0 and val_1 are set as headers
 
