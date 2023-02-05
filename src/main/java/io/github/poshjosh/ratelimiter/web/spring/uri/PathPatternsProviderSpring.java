@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.uri;
 
-import io.github.poshjosh.ratelimiter.annotation.Element;
+import io.github.poshjosh.ratelimiter.annotation.RateSource;
 import io.github.poshjosh.ratelimiter.web.core.util.PathPatterns;
 import io.github.poshjosh.ratelimiter.web.core.util.PathPatternsProvider;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +12,14 @@ public class PathPatternsProviderSpring implements PathPatternsProvider {
     public PathPatternsProviderSpring() { }
 
     @Override
-    public PathPatterns<String> get(Element source) {
+    public PathPatterns<String> get(RateSource source) {
         if (source.isOwnDeclarer()) {
             return getClassPatterns(source).orElse(PathPatterns.none());
         }
         return getMethodPatterns(source);
     }
 
-    private Optional<PathPatterns<String>> getClassPatterns(Element source) {
+    private Optional<PathPatterns<String>> getClassPatterns(RateSource source) {
 
         final RequestMapping requestAnnotation = source.getAnnotation(RequestMapping.class).orElse(null);
 
@@ -42,10 +42,10 @@ public class PathPatternsProviderSpring implements PathPatternsProvider {
         return Optional.of(new ClassLevelPathPatterns(paths));
     }
 
-    private PathPatterns<String> getMethodPatterns(Element source) {
+    private PathPatterns<String> getMethodPatterns(RateSource source) {
 
-        final PathPatterns<String> classLevelPathPatterns =
-                getClassPatterns(source.getDeclarer()).orElse(PathPatterns.none());
+        final PathPatterns<String> classLevelPathPatterns = source.getDeclarer()
+                .flatMap(this::getClassPatterns).orElse(PathPatterns.none());
 
         GetMapping getMapping = source.getAnnotation(GetMapping.class).orElse(null);
         if (getMapping != null) {
