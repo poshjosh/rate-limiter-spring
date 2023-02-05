@@ -51,19 +51,17 @@ import javax.servlet.*;
 import ResourceLimitingFilter;
 import ResourceLimiterConfiguration;
 
-@SpringBootApplication(scanBasePackageClasses = { 
-        ResourceLimiterConfiguration.class, MySpringApplication.class }) 
-public class MySpringApplication {
-
+@SpringBootApplication(scanBasePackageClasses = {ResourceLimiterConfiguration.class, MyApp.class }) 
+public class MyApp {
     public static void main(String[] args) {
-        SpringApplication.run(MySpringApplication.class, args);
+        SpringApplication.run(MyApp.class, args);
     }
 
     @Component 
-    public static class MySpringApplicationFilter extends ResourceLimitingFilter {
+    public static class MyAppFilter extends ResourceLimitingFilter {
         @Override 
-        protected void onLimitExceeded(HttpServletRequest request,
-                HttpServletResponse response, FilterChain chain) {
+        protected void onLimitExceeded(
+                HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
             response.sendError(429, "Too many requests");
         }
     }
@@ -90,11 +88,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyResource {
 
     // Only 25 calls per second for users in role GUEST
-    @Rate(25)
-    @RateCondition("web.session.user.role=GUEST")
+    @Rate(permits=25, when="web.session.user.role=GUEST")
     @GetMapping("/greet/{name}") 
-    public ResponseEntity<String> greet(
-            @PathVariable String name) {
+    public ResponseEntity<String> greet(@PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
     }
 }
