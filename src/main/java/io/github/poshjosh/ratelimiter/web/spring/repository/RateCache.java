@@ -18,12 +18,12 @@ public interface RateCache<K> extends BandwidthsStore<K> {
     boolean containsKey(K key);
 
     @Override
-    Bandwidth[] get(K key);
+    Bandwidth get(K key);
 
-    boolean putIfAbsent(K key, Bandwidth[] value);
+    boolean putIfAbsent(K key, Bandwidth value);
 
     @Override
-    void put(K key, Bandwidth[] value);
+    void put(K key, Bandwidth value);
 
     boolean remove(K key);
 

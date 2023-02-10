@@ -87,10 +87,10 @@ class RateRepositoryTest {
     }
     
     private RateEntity<Integer> entity(int id, double permitsPerSecond) {
-        return new RateEntity<>(id, bandwidths(permitsPerSecond));
+        return new RateEntity<>(id, bandwidth(permitsPerSecond));
     }
     
-    private Bandwidth[] bandwidths(double permitsPerSecond) {
-        return new Bandwidth[]{Bandwidth.bursty(permitsPerSecond)};
+    private Bandwidth bandwidth(double permitsPerSecond) {
+        return Bandwidth.bursty(permitsPerSecond);
     }
 }

@@ -6,8 +6,9 @@ spring:
 
 logging:
   level:
-    ROOT: ERROR
+    ROOT: DEBUG
     io.github.poshjosh.ratelimiter: DEBUG
+    #io.github.poshjosh.ratelimiter.DefaultResourceLimiter: TRACE
     #io.github.poshjosh.ratelimiter.ResourceLimiters: TRACE
     #io.github.poshjosh.ratelimiter.annotation: TRACE
     org.springframework: ERROR

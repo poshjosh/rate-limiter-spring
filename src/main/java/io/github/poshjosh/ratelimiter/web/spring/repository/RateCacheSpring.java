@@ -60,13 +60,13 @@ public class RateCacheSpring<K> implements RateCache<K> {
     }
 
     @Override
-    public Bandwidth[] get(K key) {
+    public Bandwidth get(K key) {
         Cache.ValueWrapper valueWrapper = delegate.get(key);
-        return valueWrapper == null ? null : (Bandwidth[]) valueWrapper.get();
+        return valueWrapper == null ? null : (Bandwidth) valueWrapper.get();
     }
 
     @Override
-    public boolean putIfAbsent(K key, Bandwidth[] value) {
+    public boolean putIfAbsent(K key, Bandwidth value) {
         Cache.ValueWrapper wrapper = delegate.putIfAbsent(key, value);
         final Object result = wrapper == null ? null : wrapper.get();
         if(result != null) {
@@ -76,7 +76,7 @@ public class RateCacheSpring<K> implements RateCache<K> {
     }
 
     @Override
-    public void put(K key, Bandwidth[] value) {
+    public void put(K key, Bandwidth value) {
         delegate.put(key, value);
         addKey(key);
     }

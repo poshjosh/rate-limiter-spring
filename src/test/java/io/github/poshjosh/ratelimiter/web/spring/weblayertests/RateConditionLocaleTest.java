@@ -6,6 +6,7 @@ import io.github.poshjosh.ratelimiter.web.core.WebExpressionKey;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcControllersTest(classes = {
         RateConditionLocaleTest.Resource.class, RateConditionLocaleTest.TestConfig.class })
@@ -104,8 +103,8 @@ class RateConditionLocaleTest extends AbstractResourceTest{
     }
 
     @Override
-    protected MockHttpServletRequestBuilder doGet(String endpoint) {
-        MockHttpServletRequestBuilder builder = get(endpoint);
+    protected MockHttpServletRequestBuilder requestBuilder(HttpMethod method, String endpoint) {
+        MockHttpServletRequestBuilder builder = super.requestBuilder(method, endpoint);
         builder.header("Accept-Language", acceptLang1 + ',' + acceptLang2);
         return builder;
     }

@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.uri;
 
-import org.springframework.util.StringUtils;
+import io.github.poshjosh.ratelimiter.util.StringUtils;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 

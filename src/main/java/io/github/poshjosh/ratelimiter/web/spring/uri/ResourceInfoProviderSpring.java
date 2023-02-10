@@ -2,88 +2,100 @@ package io.github.poshjosh.ratelimiter.web.spring.uri;
 
 import io.github.poshjosh.ratelimiter.annotation.RateSource;
 import io.github.poshjosh.ratelimiter.web.core.util.PathPatterns;
-import io.github.poshjosh.ratelimiter.web.core.util.PathPatternsProvider;
+import io.github.poshjosh.ratelimiter.web.core.util.ResourceInfoProvider;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class PathPatternsProviderSpring implements PathPatternsProvider {
+public class ResourceInfoProviderSpring implements ResourceInfoProvider {
 
-    public PathPatternsProviderSpring() { }
+    public ResourceInfoProviderSpring() { }
 
     @Override
-    public PathPatterns<String> get(RateSource source) {
+    public ResourceInfoProvider.ResourceInfo get(RateSource source) {
         if (source.isOwnDeclarer()) {
-            return getClassPatterns(source).orElse(PathPatterns.none());
+            return getClassResourceInfo(source).orElse(ResourceInfo.NONE);
         }
-        return getMethodPatterns(source);
+        return getMethodResourceInfo(source);
     }
 
-    private Optional<PathPatterns<String>> getClassPatterns(RateSource source) {
+    private Optional<ResourceInfo> getClassResourceInfo(RateSource source) {
 
-        final RequestMapping requestAnnotation = source.getAnnotation(RequestMapping.class).orElse(null);
+        final RequestMapping requestMapping = source.getAnnotation(RequestMapping.class).orElse(null);
 
-        if(requestAnnotation == null) {
+        if(requestMapping == null) {
             return Optional.empty();
         }
 
-        String [] paths = requestAnnotation.value();
+        String [] paths = requestMapping.value();
 
         if(paths.length == 0) {
-
-            paths = requestAnnotation.path();
+            paths = requestMapping.path();
         }
+
+        final String [] methods = getMethods(requestMapping);
 
         if(paths.length == 0) {
-
-            return Optional.of(PathPatterns.none());
+            return Optional.of(ResourceInfo.of(methods));
         }
 
-        return Optional.of(new ClassLevelPathPatterns(paths));
+        return Optional.of(ResourceInfo.of(new ClassLevelPathPatterns(paths), methods));
     }
 
-    private PathPatterns<String> getMethodPatterns(RateSource source) {
+    private ResourceInfo getMethodResourceInfo(RateSource source) {
 
-        final PathPatterns<String> classLevelPathPatterns = source.getDeclarer()
-                .flatMap(this::getClassPatterns).orElse(PathPatterns.none());
+        final ResourceInfo classResourceInfo = source.getDeclarer()
+                .flatMap(this::getClassResourceInfo).orElse(ResourceInfo.NONE);
+
+        final PathPatterns<String> classLevelPathPatterns = classResourceInfo.getPathPatterns();
 
         GetMapping getMapping = source.getAnnotation(GetMapping.class).orElse(null);
         if (getMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(getMapping.value(), getMapping.path());
-            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
+            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "GET");
         }
 
         PostMapping postMapping = source.getAnnotation(PostMapping.class).orElse(null);
         if (postMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(postMapping.value(), postMapping.path());
-            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
+            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "POST");
         }
 
         PutMapping putMapping = source.getAnnotation(PutMapping.class).orElse(null);
         if (putMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(putMapping.value(), putMapping.path());
-            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
+            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "PUT");
         }
 
         DeleteMapping deleteMapping = source.getAnnotation(DeleteMapping.class).orElse(null);
         if (deleteMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(deleteMapping.value(), deleteMapping.path());
-            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
+            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "DELETE");
         }
 
         PatchMapping patchMapping = source.getAnnotation(PatchMapping.class).orElse(null);
         if (patchMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(patchMapping.value(), patchMapping.path());
-            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
+            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "PATCH");
         }
 
         RequestMapping requestMapping = source.getAnnotation(RequestMapping.class).orElse(null);
         if (requestMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(requestMapping.value(), requestMapping.path());
-            return buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns);
+            return ResourceInfo.of(
+                    buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns),
+                    getMethods(requestMapping));
         }
 
-        return classLevelPathPatterns;
+        return classResourceInfo;
+    }
+
+    private String [] getMethods(RequestMapping requestMapping) {
+        return Arrays.stream(requestMapping.method())
+                .map(Enum::name)
+                .collect(Collectors.toList()).toArray(new String[0]);
     }
 
     private String [] selectPatterns(String [] subPathPatterns1, String [] subPathPatterns2) {

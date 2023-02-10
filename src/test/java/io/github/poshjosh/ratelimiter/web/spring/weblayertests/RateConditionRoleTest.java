@@ -6,6 +6,7 @@ import io.github.poshjosh.ratelimiter.web.core.WebExpressionKey;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +49,7 @@ class RateConditionRoleTest extends AbstractResourceTest{
         @Rate(1)
         @RateCondition(WebExpressionKey.USER_ROLE + "=" + invalidUserRole)
         public String roleNoMatch(HttpServletRequest request) {
+            System.out.println("RateConditionTest#roleNoMatch, sessionId: " + request.getSession().getId());
             return request.getRequestURI();
         }
 
@@ -55,6 +57,7 @@ class RateConditionRoleTest extends AbstractResourceTest{
         @Rate(1)
         @RateCondition(WebExpressionKey.USER_ROLE + "=[" + invalidUserRole + "|" + invalidUserRole2+"]")
         public String roleNoMatch_or(HttpServletRequest request) {
+            System.out.println("RateConditionTest#roleNoMatch_or, sessionId: " + request.getSession().getId());
             return request.getRequestURI();
         }
 
@@ -62,6 +65,7 @@ class RateConditionRoleTest extends AbstractResourceTest{
         @Rate(1)
         @RateCondition(WebExpressionKey.USER_ROLE + "=" + validUserRole)
         public String roleMatch(HttpServletRequest request) {
+            System.out.println("RateConditionTest#roleMatch, sessionId: " + request.getSession().getId());
             return request.getRequestURI();
         }
     }
@@ -83,8 +87,8 @@ class RateConditionRoleTest extends AbstractResourceTest{
     }
 
     @Override
-    protected MockHttpServletRequestBuilder doGet(String endpoint) {
-        MockHttpServletRequestBuilder builder = get(endpoint);
+    protected MockHttpServletRequestBuilder requestBuilder(HttpMethod method, String endpoint) {
+        MockHttpServletRequestBuilder builder = super.requestBuilder(method, endpoint);
         builder.with(request -> {
             request.setUserPrincipal(() -> TestWebSecurityConfigurer.TEST_USER_NAME);
             request.addUserRole(validUserRole);

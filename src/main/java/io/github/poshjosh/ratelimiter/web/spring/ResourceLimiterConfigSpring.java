@@ -1,15 +1,15 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
-import io.github.poshjosh.ratelimiter.web.spring.uri.PathPatternsProviderSpring;
+import io.github.poshjosh.ratelimiter.web.spring.uri.ResourceInfoProviderSpring;
 
 import javax.servlet.http.HttpServletRequest;
 
 public final class ResourceLimiterConfigSpring {
     private ResourceLimiterConfigSpring() {}
-    public static ResourceLimiterConfig.Builder<HttpServletRequest> builder() {
-        return ResourceLimiterConfig.builder(HttpServletRequest.class)
-            .pathPatternsProvider(new PathPatternsProviderSpring())
+    public static ResourceLimiterConfig.Builder builder() {
+        return ResourceLimiterConfig.builder()
+            .resourceInfoProvider(new ResourceInfoProviderSpring())
             .classesInPackageFinder(new ClassesInPackageFinderSpring());
     }
 }

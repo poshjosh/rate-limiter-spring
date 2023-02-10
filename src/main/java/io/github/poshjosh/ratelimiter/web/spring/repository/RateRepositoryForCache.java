@@ -2,7 +2,6 @@ package io.github.poshjosh.ratelimiter.web.spring.repository;
 
 import io.github.poshjosh.ratelimiter.annotations.Experimental;
 import io.github.poshjosh.ratelimiter.bandwidths.Bandwidth;
-import io.github.poshjosh.ratelimiter.bandwidths.Bandwidths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -48,7 +47,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
             result = Page.empty(pageable);
         }else{
 
-            // Though quite sub-optimal, we first find all then sort everything, before applying offset and pageSize
+            // Though quite suboptimal, we first find all then sort everything, before applying offset and pageSize
             final Iterable<RateEntity<ID>> total = select(example);
 
             final Stream<RateEntity<ID>> selected = stream(total, pageable.getSort()).skip(offset).limit(pageSize);
@@ -75,7 +74,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public <S extends RateEntity<ID>> S save(S s) {
-        rateCache.put(Objects.requireNonNull(s.getId()), (Bandwidth[])s.getData());
+        rateCache.put(Objects.requireNonNull(s.getId()), (Bandwidth)s.getData());
         return s;
     }
 
@@ -91,7 +90,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Optional<RateEntity<ID>> findById(ID id) {
-        Bandwidth[] data = this.rateCache.get(id);
+        Bandwidth data = this.rateCache.get(id);
         return Optional.ofNullable(data == null ? null : new RateEntity<>(id, data));
     }
 

@@ -25,21 +25,21 @@ public class ResourceLimiterConfiguration {
 
     @Bean
     public ResourceLimiter<HttpServletRequest> resourceLimiter(
-            ResourceLimiterRegistry<HttpServletRequest> resourceLimiterRegistry) {
+            ResourceLimiterRegistry resourceLimiterRegistry) {
         LOG.info(resourceLimiterRegistry.isRateLimitingEnabled()
                 ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
         return resourceLimiterRegistry.createResourceLimiter();
     }
 
     @Bean
-    public ResourceLimiterRegistry<HttpServletRequest> resourceLimiterRegistry(
+    public ResourceLimiterRegistry resourceLimiterRegistry(
             RateLimitPropertiesSpring properties,
-            @Autowired(required = false) ResourceLimiterConfigurer<HttpServletRequest> configurer) {
+            @Autowired(required = false) ResourceLimiterConfigurer configurer) {
         return ResourceLimiterRegistrySpring
                 .of(resourceLimiterConfigBuilder().properties(properties).configurer(configurer).build());
     }
 
-    protected ResourceLimiterConfig.Builder<HttpServletRequest> resourceLimiterConfigBuilder() {
+    protected ResourceLimiterConfig.Builder resourceLimiterConfigBuilder() {
         return ResourceLimiterConfigSpring.builder();
     }
 }

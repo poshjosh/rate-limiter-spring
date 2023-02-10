@@ -1,6 +1,7 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
 import io.github.poshjosh.ratelimiter.UsageListener;
+import io.github.poshjosh.ratelimiter.util.LimiterConfig;
 import io.github.poshjosh.ratelimiter.web.core.Registries;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
@@ -14,13 +15,11 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Collections;
 
 @TestConfiguration
 public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration
-        implements ResourceLimiterConfigurer<HttpServletRequest> {
+        implements ResourceLimiterConfigurer {
 
     private final RateCache<Object> rateCache;
 
@@ -31,8 +30,18 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
     }
 
     @Override
-    public void configure(Registries<HttpServletRequest> registries) {
+    public void configure(Registries registries) {
         registries.registerStore(rateCache);
+        registries.addListener(new UsageListener() {
+            @Override public void onConsumed(Object request, String resourceId, int permits,
+                    LimiterConfig<?> config) {
+                //System.out.println("TestResourceLimiterConfiguration#onConsumed" + resourceId + ", " + config.getRates());
+            }
+            @Override public void onRejected(Object request, String resourceId, int permits,
+                    LimiterConfig<?> config) {
+                //System.out.println("TestResourceLimiterConfiguration#onRejected" + resourceId + ", " + config.getRates());
+            }
+        });
     }
 
     @Bean
@@ -49,7 +58,7 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
     @Bean
     public ResourceLimiterRegistry resourceLimiterRegistry(
             RateLimitPropertiesSpring properties,
-            @Autowired(required = false) ResourceLimiterConfigurer<HttpServletRequest> configurer) {
+            @Autowired(required = false) ResourceLimiterConfigurer configurer) {
         // Some test classes initialize resource class/packages as required
         // In which case we do not override
         if (properties.getResourceClasses().isEmpty() && properties.getResourcePackages().isEmpty()) {
