@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [ [0.4.0](https://github.com/poshjosh/rate-limiter-spring/tree/0.4.0) ] - 2023-02-11
+
+### Added
+
+- Added `RateLimitProperties#getApplicationPath` to support application path.
+
+### Changed
+
+- Fixed handling of multiple (non-composed) limits on a single node.
+- Fixed handling of multiple methods with same path but different http method.
+
 ## [ [0.3.4](https://github.com/poshjosh/rate-limiter-spring/tree/0.3.4) ] - 2023-02-05
 
 ### Changed
