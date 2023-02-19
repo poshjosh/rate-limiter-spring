@@ -1,6 +1,6 @@
 # rate limiter spring
 
-Light-weight rate limiting library for spring controllers, based on 
+Enterprise rate limiter for spring web apps, based on 
 [rate-limiter-web-core](https://github.com/poshjosh/rate-limiter-web-core).
 
 We believe that rate limiting should be as simple as:
@@ -42,38 +42,49 @@ To add a dependency on `rate-limiter-spring` using Maven, use the following:
         </dependency>
 ```
 
-### Usage
+### Usage (Springframework)
 
-__1. Configure your spring application__
+__1. Extend `ResourceLimitingFilter`__
 
 ```java
-package com.myapplicatioon;
-
-import javax.servlet.*;
-
-import ResourceLimitingFilter;
-import ResourceLimiterConfiguration;
-
-@SpringBootApplication(scanBasePackageClasses = {ResourceLimiterConfiguration.class, MyApp.class }) 
-public class MyApp {
-    public static void main(String[] args) {
-        SpringApplication.run(MyApp.class, args);
+@Component 
+public class ResourceLimitingFilterImpl extends ResourceLimitingFilter {
+    public ResourceLimitingFilterImpl(RateLimitPropertiesSpring properties) {
+        super(properties);
     }
-
-    @Component 
-    public static class MyAppFilter extends ResourceLimitingFilter {
-        @Override 
-        protected void onLimitExceeded(
-                HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-            response.sendError(429, "Too many requests");
-        }
+    @Override 
+    protected void onLimitExceeded(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain) throws IOException {
+        response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
+                HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
     }
 }
 ```
 
-At this point your application is ready to enjoy the benefits of rate limiting
+__2. Implement `RateLimitProperties`__
 
-__2. Annotate classes and/or methods.__
+
+```java
+public class RateLimitPropertiesImpl implements RateLimitProperties {
+
+    // If not using annotations, return an empty list
+    @Override 
+    public List<String> getResourcePackages() {
+        return Collections.singletonList("com.myapplicatioon.web.rest");
+    }
+
+    // If not using properties, return an empty map
+    @Override 
+    public Map<String, Rates> getRateLimitConfigs() {
+        // Accept only 2 tasks per second
+        return Collections.singletonMap("task_queue", Rates.of(Rate.ofSeconds(2)));
+    }
+}
+```
+
+At this point, your application is ready to enjoy the benefits of rate limiting.
+
+__3. Annotate classes and/or methods.__
 
 ```java
 package com.myapplicatioon.web.rest;
@@ -99,7 +110,50 @@ public class MyResource {
 }
 ```
 
-__3. (Optional) Add rate-limiter properties__
+### Spring Boot
+
+__1. Configure your spring application__
+
+```java
+@SpringBootApplication
+@EnableConfigurationProperties(MyRateLimitProperties.class)
+public class MyApp {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApp.class, args);
+    }
+
+    @ConfigurationProperties(prefix = "rate-limiter", ignoreUnknownFields = false)
+    public class MyRateLimitProperties extends RateLimitPropertiesSpring { }
+    
+    @Component 
+    public static class MyAppFilter extends ResourceLimitingFilter {
+        @Override 
+        protected void onLimitExceeded(
+                HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+            response.sendError(429, "Too many requests");
+        }
+    }
+}
+```
+
+__2. Add required rate-limiter properties__
+
+Specify either `resource-packages` or `resource-classes`
+
+```yaml
+rate-limiter:
+  resource-packages: com.myapplicatioon.web.rest
+  #resource-classes: com.myapplicatioon.web.rest.MyResource
+```
+
+At this point your application is ready to enjoy the benefits of rate limiting
+
+__3. Annotate classes and/or methods.__
+
+Annotate classes and/or methods as described previously.
+
+__4. (Optional) Add more rate-limit properties__
 
 ```yaml
 rate-limiter:
@@ -152,14 +206,14 @@ The expression language allows us to write expressive rate conditions, e.g:
 
 `@RateCondition("sys.memory.free<1GB")`
 
-| format          | example                                  | description |
-|-----------------|------------------------------------------|-------------|
-| LHS=RHS         | web.request.header=X-RateLimit-Limit     | true, when the X-RateLimit-Limit header exists |
-| LHS={key=val}   | web.request.parameter={limited=true}     | true, when request parameter limited equals true |
-| LHS=[AlB]       | web.request.user.role=[GUESTlRESTRICTED] | true, when the user role is either GUEST or RESTRICTED |
+| format          | example                                  | description                                             |
+|-----------------|------------------------------------------|---------------------------------------------------------|
+| LHS=RHS         | web.request.header=X-RateLimit-Limit     | true, when the X-RateLimit-Limit header exists          |
+| LHS={key=val}   | web.request.parameter={limited=true}     | true, when request parameter limited equals true        |
+| LHS=[AlB]       | web.request.user.role=[GUESTlRESTRICTED] | true, when the user role is either GUEST or RESTRICTED  |
 | LHS=[A&B]       | web.request.user.role=[GUEST&RESTRICTED] | true, when the user role is either GUEST and RESTRICTED |
-| LHS={key=[AlB]} | web.request.header={name=[val_0lval_1]}  | true, when either val_0 or val_1 is set a header |
-| LHS={key=[A&B]} | web.request.header={name=[val_0&val_1]}  | true, when both val_0 and val_1 are set as headers |
+| LHS={key=[AlB]} | web.request.header={name=[val_0lval_1]}  | true, when either val_0 or val_1 is set a header        |
+| LHS={key=[A&B]} | web.request.header={name=[val_0&val_1]}  | true, when both val_0 and val_1 are set as headers      |     
 
 __Note:__ `|` represents OR, while `&` represents AND
 

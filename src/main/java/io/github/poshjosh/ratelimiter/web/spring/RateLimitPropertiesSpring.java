@@ -2,11 +2,9 @@ package io.github.poshjosh.ratelimiter.web.spring;
 
 import io.github.poshjosh.ratelimiter.util.Rates;
 import io.github.poshjosh.ratelimiter.web.core.util.RateLimitProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.*;
 
-@ConfigurationProperties(prefix = "rate-limiter", ignoreUnknownFields = false)
 public class RateLimitPropertiesSpring implements RateLimitProperties {
 
     private List<String> resourcePackages = Collections.emptyList();

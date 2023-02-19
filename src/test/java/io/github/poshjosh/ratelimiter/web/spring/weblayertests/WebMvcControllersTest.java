@@ -21,7 +21,7 @@ public @interface WebMvcControllersTest {
     @AliasFor(annotation = Import.class, attribute = "value")
     Class<?>[] imports() default {
         TestResourceLimiterConfiguration.class,
-        RequestRateLimitingFilter.class,
+        TestResourceLimitingFilter.class,
         TestWebSecurityConfigurer.class
     };
 }

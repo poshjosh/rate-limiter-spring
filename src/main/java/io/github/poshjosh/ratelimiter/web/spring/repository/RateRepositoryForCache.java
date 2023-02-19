@@ -36,7 +36,7 @@ public class RateRepositoryForCache<ID> implements RateRepository<RateEntity<ID>
 
     @Override
     public Page<RateEntity<ID>> findAll(Example<RateEntity<ID>> example, Pageable pageable) {
-        log.debug("Request to findAll by, example: {}, pageable: {}", example, pageable);
+        log.trace("Request to findAll by, example: {}, pageable: {}", example, pageable);
 
         final Page<RateEntity<ID>> result;
 

@@ -5,21 +5,17 @@ import io.github.poshjosh.ratelimiter.util.LimiterConfig;
 import io.github.poshjosh.ratelimiter.web.core.Registries;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
-import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCacheSpring;
 import io.github.poshjosh.ratelimiter.web.spring.repository.*;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfigurer;
-import io.github.poshjosh.ratelimiter.web.spring.ResourceLimiterConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Collections;
-
 @TestConfiguration
-public class TestResourceLimiterConfiguration extends ResourceLimiterConfiguration
-        implements ResourceLimiterConfigurer {
+@EnableConfigurationProperties(TestRateLimitProperties.class)
+public class TestResourceLimiterConfiguration implements ResourceLimiterConfigurer {
 
     private final RateCache<Object> rateCache;
 
@@ -54,17 +50,8 @@ public class TestResourceLimiterConfiguration extends ResourceLimiterConfigurati
         return new RateRepositoryForCache<>(this.rateCache);
     }
 
-    @Override
     @Bean
-    public ResourceLimiterRegistry resourceLimiterRegistry(
-            RateLimitPropertiesSpring properties,
-            @Autowired(required = false) ResourceLimiterConfigurer configurer) {
-        // Some test classes initialize resource class/packages as required
-        // In which case we do not override
-        if (properties.getResourceClasses().isEmpty() && properties.getResourcePackages().isEmpty()) {
-            properties.setResourcePackages(
-                Collections.singletonList(AbstractResourceTest.class.getPackage().getName()));
-        }
-        return super.resourceLimiterRegistry(properties, configurer);
+    public ResourceLimiterRegistry resourceLimiterRegistry(TestResourceLimitingFilter filter) {
+        return filter.getResourceLimiterRegistry();
     }
 }
