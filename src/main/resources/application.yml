@@ -3,6 +3,6 @@ debug: false
 logging:
   level:
     ROOT: INFO
-    com.looseboxes.ratelimiter: INFO
+    io.github.poshjosh.ratelimiter: INFO
     com.sun: INFO
     com.sun.jmx: INFO
