@@ -55,15 +55,17 @@ public abstract class ResourceLimitingFilter extends GenericFilterBean {
 
         super.initFilterBean();
 
+        ResourceLimiterConfig config = resourceLimiterConfigBuilder().build();
+
         if (resourceLimiterRegistry == null) {
-            resourceLimiterRegistry = resourceLimiterRegistry(resourceLimiterConfig());
+            resourceLimiterRegistry = resourceLimiterRegistry(config);
         }
 
         if (resourceLimiter != null) {
             return;
         }
 
-        if (properties.getResourceClasses().isEmpty() && properties.getResourcePackages().isEmpty()) {
+        if (config.getResourceClassesSupplier().get().isEmpty()) {
             resourceLimiter = ResourceLimiter.noop();
         } else {
             resourceLimiter = resourceLimiterRegistry.createResourceLimiter();
@@ -76,9 +78,9 @@ public abstract class ResourceLimitingFilter extends GenericFilterBean {
         return ResourceLimiterRegistrySpring.of(config);
     }
 
-    protected ResourceLimiterConfig resourceLimiterConfig() {
+    protected ResourceLimiterConfig.Builder resourceLimiterConfigBuilder() {
         return ResourceLimiterConfigSpring.builder()
-                .properties(properties).configurer(configurer).build();
+                .properties(properties).configurer(configurer);
     }
 
     @Override

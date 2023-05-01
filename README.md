@@ -44,27 +44,12 @@ To add a dependency on `rate-limiter-spring` using Maven, use the following:
 
 ### Usage (Springframework)
 
-__1. Extend `ResourceLimitingFilter`__
+Note: Spring boot usage is in the next section.
+
+__1. Implement `RateLimitProperties`__
 
 ```java
-@Component 
-public class ResourceLimitingFilterImpl extends ResourceLimitingFilter {
-    public ResourceLimitingFilterImpl(RateLimitPropertiesSpring properties) {
-        super(properties);
-    }
-    @Override 
-    protected void onLimitExceeded(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain) throws IOException {
-        response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
-                HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
-    }
-}
-```
-
-__2. Implement `RateLimitProperties`__
-
-
-```java
+@Component
 public class RateLimitPropertiesImpl implements RateLimitProperties {
 
     // If not using annotations, return an empty list
@@ -78,6 +63,23 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
     public Map<String, Rates> getRateLimitConfigs() {
         // Accept only 2 tasks per second
         return Collections.singletonMap("task_queue", Rates.of(Rate.ofSeconds(2)));
+    }
+}
+```
+
+__2. Extend `ResourceLimitingFilter`__
+
+```java
+@Component 
+public class ResourceLimitingFilterImpl extends ResourceLimitingFilter {
+    public ResourceLimitingFilterImpl(RateLimitProperties properties) {
+        super(properties);
+    }
+    @Override 
+    protected void onLimitExceeded(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain) throws IOException {
+        response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
+                HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
     }
 }
 ```
@@ -116,7 +118,7 @@ __1. Configure your spring application__
 
 ```java
 @SpringBootApplication
-@EnableConfigurationProperties(MyRateLimitProperties.class)
+@EnableConfigurationProperties(MyApp.MyRateLimitProperties.class)
 public class MyApp {
 
     public static void main(String[] args) {
