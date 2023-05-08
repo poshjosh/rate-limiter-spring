@@ -91,7 +91,7 @@ public abstract class ResourceLimitingFilter extends GenericFilterBean {
 
             final HttpServletRequest httpRequest = (HttpServletRequest)request;
 
-            if (!resourceLimiter.tryConsume(httpRequest)) {
+            if (!tryConsume(httpRequest)) {
                 onLimitExceeded(httpRequest, (HttpServletResponse)response, chain);
                 return;
             }
@@ -100,7 +100,13 @@ public abstract class ResourceLimitingFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
+    protected boolean tryConsume(HttpServletRequest httpRequest) {
+        return getResourceLimiter().tryConsume(httpRequest);
+    }
+
     public ResourceLimiterRegistry getResourceLimiterRegistry() {
         return resourceLimiterRegistry;
     }
+
+    public ResourceLimiter<HttpServletRequest> getResourceLimiter() { return resourceLimiter; }
 }
