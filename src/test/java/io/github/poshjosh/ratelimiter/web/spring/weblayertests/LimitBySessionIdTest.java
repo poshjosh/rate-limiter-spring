@@ -38,21 +38,21 @@ class LimitBySessionIdTest extends AbstractResourceTest{
         }
 
         @GetMapping("/books")
-        @Rate(permits=1, when=WebExpressionKey.SESSION_ID+"!=")
+        @Rate(permits=1, condition=WebExpressionKey.SESSION_ID+"!=")
         public String getAll(HttpServletRequest request) {
             System.out.println("LimitBySessionIdTest.Resource#getAll, sessionId: " + request.getSession().getId());
             return request.getRequestURI();
         }
 
         @GetMapping("/books/{id}")
-        @Rate(permits=1, when=WebExpressionKey.SESSION_ID+"!=")
+        @Rate(permits=1, condition=WebExpressionKey.SESSION_ID+"!=")
         public String getOne(HttpServletRequest request, @PathVariable("id") String id) {
             System.out.println("LimitBySessionIdTest.Resource#getOne, sessionId: " + request.getSession().getId());
             return request.getRequestURI();
         }
 
         @DeleteMapping("/books/{id}")
-        @Rate(permits=1, when=WebExpressionKey.SESSION_ID+"!=")
+        @Rate(permits=1, condition=WebExpressionKey.SESSION_ID+"!=")
         public String deleteOne(HttpServletRequest request, @PathVariable("id") String id) {
             System.out.println("LimitBySessionIdTest.Resource#deleteOne, sessionId: " + request.getSession().getId());
             return request.getRequestURI();
