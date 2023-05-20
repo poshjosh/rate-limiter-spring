@@ -1,5 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
@@ -13,6 +14,7 @@ import java.lang.annotation.*;
 @Inherited
 @WebMvcTest
 @ContextConfiguration
+@ExtendWith(TestExtension.class)
 public @interface WebMvcControllersTest {
 
     @AliasFor(annotation = ContextConfiguration.class, attribute = "classes")

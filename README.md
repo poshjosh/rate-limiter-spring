@@ -20,7 +20,7 @@ public class GreetingResource {
     }
 
     // When system available memory < 1GB - 10 calls per minute
-    @Rate(permits=10, timeUnit=TimeUnit.MINUTES, when="sys.memory.available<1gb")
+    @Rate(permits=10, timeUnit=TimeUnit.MINUTES, when="jvm.memory.available<1gb")
     // When request parameter `who` has value of either ALICE or BOB - 1 permit per second
     @Rate(permits=1, when="web.request.parameter={who=[ALICE|BOB]}")
     @GetMapping("/greet")
@@ -209,7 +209,7 @@ The expression language allows us to write expressive rate conditions, e.g:
 
 `@RateCondition("web.request.user.role=GUEST")`
 
-`@RateCondition("sys.memory.free<1GB")`
+`@RateCondition("jvm.memory.free<1GB")`
 
 | format          | example                                  | description                                             |
 |-----------------|------------------------------------------|---------------------------------------------------------|

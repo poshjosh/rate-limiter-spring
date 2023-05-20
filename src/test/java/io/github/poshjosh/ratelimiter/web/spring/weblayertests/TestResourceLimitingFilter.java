@@ -3,10 +3,11 @@ package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 import io.github.poshjosh.ratelimiter.UsageListener;
 import io.github.poshjosh.ratelimiter.util.LimiterConfig;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfigurer;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import io.github.poshjosh.ratelimiter.web.spring.ResourceLimitingFilter;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
+import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.Usage;
+import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.ResourceLimiterUsageRecorder;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpStatus;
 
@@ -32,6 +33,13 @@ public class TestResourceLimitingFilter extends ResourceLimitingFilter {
                     Collections.singletonList(AbstractResourceTest.class.getPackage().getName()));
         }
         this.rateCache = Objects.requireNonNull(rateCache);
+    }
+
+    protected boolean tryConsume(HttpServletRequest httpRequest) {
+        Usage bookmark = Usage.bookmark();
+        final boolean result = getResourceLimiter().tryConsume(httpRequest);
+        ResourceLimiterUsageRecorder.record(bookmark.current());
+        return result;
     }
 
     @Override
