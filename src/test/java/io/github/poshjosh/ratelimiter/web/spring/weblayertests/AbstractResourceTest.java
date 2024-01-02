@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.BandwidthFactory;
+import io.github.poshjosh.ratelimiter.bandwidths.BandwidthFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;

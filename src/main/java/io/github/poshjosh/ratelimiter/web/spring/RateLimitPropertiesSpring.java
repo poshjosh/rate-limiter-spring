@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
-import io.github.poshjosh.ratelimiter.util.Rates;
+import io.github.poshjosh.ratelimiter.model.Rates;
 import io.github.poshjosh.ratelimiter.web.core.util.RateLimitProperties;
 
 import java.util.*;

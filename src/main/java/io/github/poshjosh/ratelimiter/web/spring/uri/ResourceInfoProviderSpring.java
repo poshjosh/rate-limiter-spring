@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.uri;
 
-import io.github.poshjosh.ratelimiter.annotation.RateSource;
+import io.github.poshjosh.ratelimiter.model.RateSource;
 import io.github.poshjosh.ratelimiter.web.core.util.PathPatterns;
 import io.github.poshjosh.ratelimiter.web.core.util.ResourceInfoProvider;
 import org.springframework.web.bind.annotation.*;

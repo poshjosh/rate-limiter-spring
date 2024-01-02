@@ -91,22 +91,18 @@ __3. Annotate classes and/or methods.__
 ```java
 package com.myapplicatioon.web.rest;
 
-import io.github.poshjosh.ratelimiter.annotations.RateCondition;
-import io.github.poshjosh.ratelimiter.util.Rate;
+import io.github.poshjosh.ratelimiter.model.Rate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController 
-@RequestMapping("/my-resources") 
-public class MyResource {
+@RestController @RequestMapping("/my-resources") public class MyResource {
 
     // Only 25 calls per second for users in role GUEST
-    @Rate(permits=25, when="web.request.user.role=GUEST")
-    @GetMapping("/greet/{name}") 
-    public ResponseEntity<String> greet(@PathVariable String name) {
+    @Rate(permits = 25, when = "web.request.user.role=GUEST") @GetMapping("/greet/{name}") public ResponseEntity<String> greet(
+            @PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
     }
 }
