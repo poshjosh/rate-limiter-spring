@@ -1,7 +1,7 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
 import io.github.poshjosh.ratelimiter.annotation.ElementId;
-import io.github.poshjosh.ratelimiter.Operator;
+import io.github.poshjosh.ratelimiter.util.Operator;
 import io.github.poshjosh.ratelimiter.util.Rate;
 import io.github.poshjosh.ratelimiter.util.Rates;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
