@@ -1,7 +1,7 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
 import io.github.poshjosh.ratelimiter.UsageListener;
-import io.github.poshjosh.ratelimiter.util.LimiterConfig;
+import io.github.poshjosh.ratelimiter.util.LimiterContext;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import io.github.poshjosh.ratelimiter.web.spring.ResourceLimitingFilter;
@@ -56,11 +56,11 @@ public class TestResourceLimitingFilter extends ResourceLimitingFilter {
                 .store(rateCache)
                 .addUsageListener(new UsageListener() {
                     @Override public void onConsumed(
-                            Object request, String resourceId, int permits, LimiterConfig<?> config) {
+                            Object request, String resourceId, int permits, LimiterContext<?> config) {
                         //System.out.println("TestResourceLimiterConfiguration#onConsumed" + resourceId + ", " + config.getRates());
                     }
                     @Override public void onRejected(
-                            Object request, String resourceId, int permits, LimiterConfig<?> config) {
+                            Object request, String resourceId, int permits, LimiterContext<?> config) {
                         //System.out.println("TestResourceLimiterConfiguration#onRejected" + resourceId + ", " + config.getRates());
                     }
                 });
