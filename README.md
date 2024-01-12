@@ -33,7 +33,7 @@ To add a dependency on `rate-limiter-spring` using Maven, use the following:
         <dependency>
             <groupId>io.github.poshjosh</groupId>
             <artifactId>rate-limiter-spring</artifactId>
-            <version>0.5.1</version> 
+            <version>0.6.1</version> 
         </dependency>
 ```
 
