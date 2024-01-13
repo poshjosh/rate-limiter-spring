@@ -62,12 +62,12 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 }
 ```
 
-__2. Extend `ResourceLimitingFilter`__
+__2. Extend `RateLimitingFilter`__
 
 ```java
 @Component 
-public class ResourceLimitingFilterImpl extends ResourceLimitingFilter {
-    public ResourceLimitingFilterImpl(RateLimitProperties properties) {
+public class RateLimitingFilterImpl extends RateLimitingFilter {
+    public RateLimitingFilterImpl(RateLimitProperties properties) {
         super(properties);
     }
     @Override 
@@ -120,7 +120,7 @@ public class MyApp {
     public class MyRateLimitProperties extends RateLimitPropertiesSpring { }
     
     @Component 
-    public static class MyAppFilter extends ResourceLimitingFilter {
+    public static class MyAppFilter extends RateLimitingFilter {
         public MyAppFilter(RateLimitProperties properties) {
             super(properties);
         }
@@ -216,22 +216,23 @@ __Note:__ `|` represents OR, while `&` represents AND
 A rich set of conditions may be expressed as detailed in the
 [web specification](https://github.com/poshjosh/rate-limiter-web-core/blob/master/docs/RATE-CONDITION-EXPRESSION-LANGUAGE.md).
 
-### Manually create and use a ResourceLimiter
+### Manually create and use a RateLimiter
 
-Usually, you are provided with appropriate `ResourceLimiter`s based on the annotations 
-and properties you specify. However, you could manually create and use `ResourceLimiters`.
+Usually, you are provided with appropriate `RateLimiter`s based on the annotations 
+and properties you specify. However, you could manually create and use `RateLimiters`.
 
 ```java
-import io.github.poshjosh.ratelimiter.web.spring.ResourceLimiterRegistrySpring;
-
-public class ResourceLimiterProvider {
-
-    public ResourceLimiter createResourceLimiter() {
-        return ResourceLimiterRegistrySpring.ofDefaults().createResourceLimiter();
+class MyResource {
+    
+    RateLimiter rateLimiter = RateLimiterFactory.of(MyResource.class, "smile");
+    
+    @Rate(name = "smile", permits = 2)
+    String smile() {
+        return ":)";
     }
 }
 ```
-This way you use the `ResourceLimiter` as you see fit.
+This way you use the `RateLimiter` as you see fit.
 
 ### Annotation Specifications
 

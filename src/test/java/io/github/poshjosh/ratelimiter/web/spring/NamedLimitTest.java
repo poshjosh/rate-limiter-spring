@@ -1,8 +1,8 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
 import io.github.poshjosh.ratelimiter.annotations.Rate;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,19 +23,19 @@ class NamedLimitTest {
     @RestController
     static class Resource{ }
 
-    ResourceLimiterRegistry registries;
+    RateLimiterRegistry registries;
 
     @BeforeEach
     void setupRateLimiting() {
         RateLimitPropertiesSpring props = new RateLimitPropertiesSpring();
         props.setResourcePackages(Collections.emptyList());
         props.setResourceClasses(Arrays.asList(Resource.class));
-        ResourceLimiterConfig config =
-                ResourceLimiterConfigSpring.builder()
+        RateLimiterContext config =
+                RateLimiterContextSpring.builder()
                 .properties(props)
                 .build();
-        registries = ResourceLimiterRegistrySpring.of(config);
-        registries.createResourceLimiter();
+        registries = RateLimiterRegistrySpring.of(config);
+        registries.createRateLimiterFactory();
     }
 
     @Test

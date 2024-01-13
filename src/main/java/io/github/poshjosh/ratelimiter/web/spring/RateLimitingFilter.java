@@ -1,9 +1,9 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
-import io.github.poshjosh.ratelimiter.ResourceLimiter;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfigurer;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
+import io.github.poshjosh.ratelimiter.RateLimiterFactory;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterConfigurer;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.core.util.RateLimitProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,30 +15,30 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
-public abstract class ResourceLimitingFilter extends GenericFilterBean {
+public abstract class RateLimitingFilter extends GenericFilterBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceLimitingFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RateLimitingFilter.class);
 
     private final RateLimitProperties properties;
-    private final ResourceLimiterConfigurer configurer;
+    private final RateLimiterConfigurer configurer;
 
-    private ResourceLimiterRegistry resourceLimiterRegistry;
-    private ResourceLimiter<HttpServletRequest> resourceLimiter;
+    private RateLimiterRegistry rateLimiterRegistry;
+    private RateLimiterFactory<HttpServletRequest> rateLimiterFactory;
 
-    protected ResourceLimitingFilter() {
+    protected RateLimitingFilter() {
         this(registries -> {});
     }
 
-    protected ResourceLimitingFilter(RateLimitProperties properties) {
+    protected RateLimitingFilter(RateLimitProperties properties) {
         this(properties, registries -> {});
     }
 
-    protected ResourceLimitingFilter(ResourceLimiterConfigurer configurer) {
+    protected RateLimitingFilter(RateLimiterConfigurer configurer) {
         this(new RateLimitPropertiesSpring(), configurer);
     }
 
-    protected ResourceLimitingFilter(
-            RateLimitProperties properties, ResourceLimiterConfigurer configurer) {
+    protected RateLimitingFilter(
+            RateLimitProperties properties, RateLimiterConfigurer configurer) {
         this.properties = Objects.requireNonNull(properties);
         this.configurer = Objects.requireNonNull(configurer);
     }
@@ -55,31 +55,31 @@ public abstract class ResourceLimitingFilter extends GenericFilterBean {
 
         super.initFilterBean();
 
-        ResourceLimiterConfig config = resourceLimiterConfigBuilder().build();
+        RateLimiterContext config = rateLimiterContextBuilder().build();
 
-        if (resourceLimiterRegistry == null) {
-            resourceLimiterRegistry = resourceLimiterRegistry(config);
+        if (rateLimiterRegistry == null) {
+            rateLimiterRegistry = rateLimiterRegistry(config);
         }
 
-        if (resourceLimiter != null) {
+        if (rateLimiterFactory != null) {
             return;
         }
 
         if (config.getResourceClassesSupplier().get().isEmpty()) {
-            resourceLimiter = ResourceLimiter.noop();
+            rateLimiterFactory = RateLimiterFactory.noop();
         } else {
-            resourceLimiter = resourceLimiterRegistry.createResourceLimiter();
+            rateLimiterFactory = rateLimiterRegistry.createRateLimiterFactory();
         }
-        LOG.info(resourceLimiterRegistry.isRateLimitingEnabled()
+        LOG.info(rateLimiterRegistry.isRateLimitingEnabled()
                 ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
     }
 
-    protected ResourceLimiterRegistry resourceLimiterRegistry(ResourceLimiterConfig config) {
-        return ResourceLimiterRegistrySpring.of(config);
+    protected RateLimiterRegistry rateLimiterRegistry(RateLimiterContext config) {
+        return RateLimiterRegistrySpring.of(config);
     }
 
-    protected ResourceLimiterConfig.Builder resourceLimiterConfigBuilder() {
-        return ResourceLimiterConfigSpring.builder()
+    protected RateLimiterContext.Builder rateLimiterContextBuilder() {
+        return RateLimiterContextSpring.builder()
                 .properties(properties).configurer(configurer);
     }
 
@@ -101,12 +101,12 @@ public abstract class ResourceLimitingFilter extends GenericFilterBean {
     }
 
     protected boolean tryConsume(HttpServletRequest httpRequest) {
-        return getResourceLimiter().tryConsume(httpRequest);
+        return getRateLimiterFactory().getRateLimiter(httpRequest).tryAcquire();
     }
 
-    public ResourceLimiterRegistry getResourceLimiterRegistry() {
-        return resourceLimiterRegistry;
+    public RateLimiterRegistry getRateLimiterRegistry() {
+        return rateLimiterRegistry;
     }
 
-    public ResourceLimiter<HttpServletRequest> getResourceLimiter() { return resourceLimiter; }
+    public RateLimiterFactory<HttpServletRequest> getRateLimiterFactory() { return rateLimiterFactory; }
 }

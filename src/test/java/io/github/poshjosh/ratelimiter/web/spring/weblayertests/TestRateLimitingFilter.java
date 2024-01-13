@@ -1,13 +1,11 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.UsageListener;
-import io.github.poshjosh.ratelimiter.model.RateConfig;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterContext;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
-import io.github.poshjosh.ratelimiter.web.spring.ResourceLimitingFilter;
+import io.github.poshjosh.ratelimiter.web.spring.RateLimitingFilter;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
 import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.Usage;
-import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.ResourceLimiterUsageRecorder;
+import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.RateLimiterUsageRecorder;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpStatus;
 
@@ -19,11 +17,11 @@ import java.util.Collections;
 import java.util.Objects;
 
 @TestComponent
-public class TestResourceLimitingFilter extends ResourceLimitingFilter {
+public class TestRateLimitingFilter extends RateLimitingFilter {
 
     private final RateCache<Object> rateCache;
 
-    public TestResourceLimitingFilter(
+    public TestRateLimitingFilter(
             RateLimitPropertiesSpring properties, RateCache<Object> rateCache) {
         super(properties);
         // Some test classes initialize resource class/packages as required
@@ -37,8 +35,8 @@ public class TestResourceLimitingFilter extends ResourceLimitingFilter {
 
     protected boolean tryConsume(HttpServletRequest httpRequest) {
         Usage bookmark = Usage.bookmark();
-        final boolean result = getResourceLimiter().tryConsume(httpRequest);
-        ResourceLimiterUsageRecorder.record(bookmark.current());
+        final boolean result = getRateLimiterFactory().getRateLimiter(httpRequest).tryAcquire();
+        RateLimiterUsageRecorder.record(bookmark.current());
         return result;
     }
 
@@ -47,22 +45,12 @@ public class TestResourceLimitingFilter extends ResourceLimitingFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException {
         response.sendError(
-                HttpStatus.TOO_MANY_REQUESTS.value(), HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
     }
 
     @Override
-    protected ResourceLimiterConfig.Builder resourceLimiterConfigBuilder() {
-        return super.resourceLimiterConfigBuilder()
-                .store(rateCache)
-                .addUsageListener(new UsageListener() {
-                    @Override public void onConsumed(
-                            Object request, String resourceId, int permits, RateConfig config) {
-                        //System.out.println("TestResourceLimiterConfiguration#onConsumed" + resourceId + ", " + config.getRates());
-                    }
-                    @Override public void onRejected(
-                            Object request, String resourceId, int permits, RateConfig config) {
-                        //System.out.println("TestResourceLimiterConfiguration#onRejected" + resourceId + ", " + config.getRates());
-                    }
-                });
+    protected RateLimiterContext.Builder rateLimiterContextBuilder() {
+        return super.rateLimiterContextBuilder() .store(rateCache);
     }
 }

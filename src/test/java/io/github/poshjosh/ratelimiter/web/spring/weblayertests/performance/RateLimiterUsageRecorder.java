@@ -3,11 +3,11 @@ package io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ResourceLimiterUsageRecorder {
+public final class RateLimiterUsageRecorder {
     private static final Object mutex = new Object();
     private static final List<Usage> usages = new ArrayList<>();
 
-    private ResourceLimiterUsageRecorder() { }
+    private RateLimiterUsageRecorder() { }
 
     public static void record(Usage usage) {
         synchronized (mutex) {

@@ -8,8 +8,6 @@ logging:
   level:
     ROOT: DEBUG
     io.github.poshjosh.ratelimiter: DEBUG
-    #io.github.poshjosh.ratelimiter.DefaultResourceLimiter: TRACE
-    #io.github.poshjosh.ratelimiter.ResourceLimiters: TRACE
     #io.github.poshjosh.ratelimiter.annotation: TRACE
     org.springframework: ERROR
     org.springframework.boot.autoconfigure: ERROR

@@ -4,7 +4,7 @@ import io.github.poshjosh.ratelimiter.annotation.ElementId;
 import io.github.poshjosh.ratelimiter.util.Operator;
 import io.github.poshjosh.ratelimiter.model.Rate;
 import io.github.poshjosh.ratelimiter.model.Rates;
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +66,11 @@ class PropertiesBoundLimitTest extends AbstractResourceTest{
         }
     }
 
-    @Autowired ResourceLimiterRegistry resourceLimiterRegistry;
+    @Autowired RateLimiterRegistry rateLimiterRegistry;
 
     @Test
     void shouldHaveAMatcher() {
-        assertTrue(resourceLimiterRegistry.hasMatching(Resource.getMethodLimitedViaProperties()));
+        assertTrue(rateLimiterRegistry.hasMatching(Resource.getMethodLimitedViaProperties()));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
 import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.Usage;
-import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.ResourceLimiterUsageRecorder;
+import io.github.poshjosh.ratelimiter.web.spring.weblayertests.performance.RateLimiterUsageRecorder;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -24,7 +24,7 @@ public class TestExtension implements BeforeAllCallback, ExtensionContext.Store.
 
     private void beforeAllTests() {
         System.out.println("\n========================\n BEFORE ALL TESTS \n========================\n");
-        ResourceLimiterUsageRecorder.clearUsages();
+        RateLimiterUsageRecorder.clearUsages();
     }
 
     @Override
@@ -35,11 +35,11 @@ public class TestExtension implements BeforeAllCallback, ExtensionContext.Store.
     private void afterAllTests() {
         System.out.println("\n========================\n  AFTER ALL TESTS \n========================\n");
         Usage totalUsage = Usage.of(0, 0);
-        final List<Usage> usageList = ResourceLimiterUsageRecorder.getUsages();
+        final List<Usage> usageList = RateLimiterUsageRecorder.getUsages();
         for(Usage usage : usageList) {
             totalUsage = totalUsage.add(usage);
         }
         final Usage averageUsage = totalUsage.divideBy(usageList.size());
-        System.out.println("ResourceLimiter average " + averageUsage + "\n");
+        System.out.println("RateLimiter average " + averageUsage + "\n");
     }
 }

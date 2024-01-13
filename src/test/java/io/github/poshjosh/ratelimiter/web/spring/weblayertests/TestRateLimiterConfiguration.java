@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterRegistry;
+import io.github.poshjosh.ratelimiter.web.core.RateLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCacheSpring;
 import io.github.poshjosh.ratelimiter.web.spring.repository.*;
@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
 @EnableConfigurationProperties(TestRateLimitProperties.class)
-public class TestResourceLimiterConfiguration {
+public class TestRateLimiterConfiguration {
 
     private final RateCache<Object> rateCache;
 
-    public TestResourceLimiterConfiguration() {
+    public TestRateLimiterConfiguration() {
         String testCacheName = this.getClass().getPackage().getName() + ".cache";
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager(testCacheName);
         this.rateCache = new RateCacheSpring<>(cacheManager.getCache(testCacheName));
@@ -32,7 +32,7 @@ public class TestResourceLimiterConfiguration {
     }
 
     @Bean
-    public ResourceLimiterRegistry resourceLimiterRegistry(TestResourceLimitingFilter filter) {
-        return filter.getResourceLimiterRegistry();
+    public RateLimiterRegistry rateLimiterRegistry(TestRateLimitingFilter filter) {
+        return filter.getRateLimiterRegistry();
     }
 }
