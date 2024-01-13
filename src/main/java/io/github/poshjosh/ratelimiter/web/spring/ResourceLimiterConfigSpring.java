@@ -3,8 +3,6 @@ package io.github.poshjosh.ratelimiter.web.spring;
 import io.github.poshjosh.ratelimiter.web.core.ResourceLimiterConfig;
 import io.github.poshjosh.ratelimiter.web.spring.uri.ResourceInfoProviderSpring;
 
-import javax.servlet.http.HttpServletRequest;
-
 public final class ResourceLimiterConfigSpring {
     private ResourceLimiterConfigSpring() {}
     public static ResourceLimiterConfig.Builder builder() {
