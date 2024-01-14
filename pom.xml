@@ -19,7 +19,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.2.5.RELEASE</spring-boot.version>
         <spring.version>5.2.4.RELEASE</spring.version>
-        <rate-limiter.version>0.6.1-SNAPSHOT</rate-limiter.version>
+        <rate-limiter.version>0.7.0-SNAPSHOT</rate-limiter.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <it.skip>true</it.skip>
         <tests.skip>false</tests.skip>
