@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.web.core.RateLimiterRegistry;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistry;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCacheSpring;
 import io.github.poshjosh.ratelimiter.web.spring.repository.*;
@@ -32,7 +32,7 @@ public class TestRateLimiterConfiguration {
     }
 
     @Bean
-    public RateLimiterRegistry rateLimiterRegistry(TestRateLimitingFilter filter) {
+    public WebRateLimiterRegistry rateLimiterRegistry(TestRateLimitingFilter filter) {
         return filter.getRateLimiterRegistry();
     }
 }

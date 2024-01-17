@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.web.core.RateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterContext;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitPropertiesSpring;
 import io.github.poshjosh.ratelimiter.web.spring.RateLimitingFilter;
 import io.github.poshjosh.ratelimiter.web.spring.repository.RateCache;
@@ -35,7 +35,7 @@ public class TestRateLimitingFilter extends RateLimitingFilter {
 
     protected boolean tryConsume(HttpServletRequest httpRequest) {
         Usage bookmark = Usage.bookmark();
-        final boolean result = getRateLimiterFactory().getRateLimiter(httpRequest).tryAcquire();
+        final boolean result = super.tryConsume(httpRequest);
         RateLimiterUsageRecorder.record(bookmark.current());
         return result;
     }
@@ -50,7 +50,7 @@ public class TestRateLimitingFilter extends RateLimitingFilter {
     }
 
     @Override
-    protected RateLimiterContext.Builder rateLimiterContextBuilder() {
+    protected WebRateLimiterContext.Builder rateLimiterContextBuilder() {
         return super.rateLimiterContextBuilder() .store(rateCache);
     }
 }

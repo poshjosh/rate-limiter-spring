@@ -2,9 +2,9 @@ package io.github.poshjosh.ratelimiter.web.spring;
 
 import io.github.poshjosh.ratelimiter.RateLimiterFactory;
 import io.github.poshjosh.ratelimiter.web.core.RateLimiterConfigurer;
-import io.github.poshjosh.ratelimiter.web.core.RateLimiterContext;
-import io.github.poshjosh.ratelimiter.web.core.RateLimiterRegistry;
-import io.github.poshjosh.ratelimiter.web.core.util.RateLimitProperties;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistry;
+import io.github.poshjosh.ratelimiter.util.RateLimitProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.GenericFilterBean;
@@ -22,7 +22,7 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
     private final RateLimitProperties properties;
     private final RateLimiterConfigurer configurer;
 
-    private RateLimiterRegistry rateLimiterRegistry;
+    private WebRateLimiterRegistry webRateLimiterRegistry;
     private RateLimiterFactory<HttpServletRequest> rateLimiterFactory;
 
     protected RateLimitingFilter() {
@@ -55,31 +55,31 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
 
         super.initFilterBean();
 
-        RateLimiterContext config = rateLimiterContextBuilder().build();
+        WebRateLimiterContext context = rateLimiterContextBuilder().build();
 
-        if (rateLimiterRegistry == null) {
-            rateLimiterRegistry = rateLimiterRegistry(config);
+        if (webRateLimiterRegistry == null) {
+            webRateLimiterRegistry = rateLimiterRegistry(context);
         }
 
         if (rateLimiterFactory != null) {
             return;
         }
 
-        if (config.getResourceClassesSupplier().get().isEmpty()) {
+        if (!context.hasRateSources()) {
             rateLimiterFactory = RateLimiterFactory.noop();
         } else {
-            rateLimiterFactory = rateLimiterRegistry.createRateLimiterFactory();
+            rateLimiterFactory = webRateLimiterRegistry.createRateLimiterFactory();
         }
-        LOG.info(rateLimiterRegistry.isRateLimitingEnabled()
+        LOG.info(webRateLimiterRegistry.isRateLimitingEnabled()
                 ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
     }
 
-    protected RateLimiterRegistry rateLimiterRegistry(RateLimiterContext config) {
+    protected WebRateLimiterRegistry rateLimiterRegistry(WebRateLimiterContext config) {
         return RateLimiterRegistrySpring.of(config);
     }
 
-    protected RateLimiterContext.Builder rateLimiterContextBuilder() {
-        return RateLimiterContextSpring.builder()
+    protected WebRateLimiterContext.Builder rateLimiterContextBuilder() {
+        return RateLimiterWebContextSpring.builder()
                 .properties(properties).configurer(configurer);
     }
 
@@ -104,8 +104,8 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
         return getRateLimiterFactory().getRateLimiter(httpRequest).tryAcquire();
     }
 
-    public RateLimiterRegistry getRateLimiterRegistry() {
-        return rateLimiterRegistry;
+    public WebRateLimiterRegistry getRateLimiterRegistry() {
+        return webRateLimiterRegistry;
     }
 
     public RateLimiterFactory<HttpServletRequest> getRateLimiterFactory() { return rateLimiterFactory; }

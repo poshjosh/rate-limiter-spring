@@ -23,8 +23,8 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
     @Configuration
     static class TestConfig {
         public TestConfig(RateLimitPropertiesSpring properties) {
-            properties.setResourcePackages(Collections.emptyList());
             properties.setResourceClasses(Arrays.asList(DisabledRateLimitingTest.Resource.class));
+            properties.setDisabled(Boolean.TRUE);
         }
     }
 
@@ -32,7 +32,7 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
     @RequestMapping(ApiEndpoints.API)
     static class Resource {
 
-        private static final String _HOME = "/diabled-rate-limiting-test/home";
+        private static final String _HOME = "/disabled-rate-limiting-test/home";
 
         interface Endpoints {
             String HOME = ApiEndpoints.API + Resource._HOME;
@@ -48,25 +48,11 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
     @Autowired
     private RateLimitPropertiesSpring properties;
 
-    private Boolean originallyDisabled;
-
-    @BeforeEach
-    void setupTests() {
-        originallyDisabled = properties.getDisabled();
-        assertFalse(originallyDisabled);
-        properties.setDisabled(Boolean.TRUE);
-    }
-
     @Test
     void shouldSucceedWhenDisabled() throws Exception{
-        assertFalse(originallyDisabled);
         assertTrue(properties.getDisabled());
-        try {
-            final String endpoint = Resource.Endpoints.HOME;
-            shouldReturnDefaultResult(endpoint); // 1 of 1
-            shouldReturnDefaultResult(endpoint); // 2 of 1 - Should succeed if rate limiting is disabled
-        }finally{
-            properties.setDisabled(originallyDisabled);
-        }
+        final String endpoint = Resource.Endpoints.HOME;
+        shouldReturnDefaultResult(endpoint); // 1 of 1
+        shouldReturnDefaultResult(endpoint); // 2 of 1 - Should succeed if rate limiting is disabled
     }
 }

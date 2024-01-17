@@ -1,12 +1,12 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
-import io.github.poshjosh.ratelimiter.web.core.RateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterContext;
 import io.github.poshjosh.ratelimiter.web.spring.uri.ResourceInfoProviderSpring;
 
-public final class RateLimiterContextSpring {
-    private RateLimiterContextSpring() {}
-    public static RateLimiterContext.Builder builder() {
-        return RateLimiterContext.builder()
+public final class RateLimiterWebContextSpring {
+    private RateLimiterWebContextSpring() {}
+    public static WebRateLimiterContext.Builder builder() {
+        return WebRateLimiterContext.builder()
             .resourceInfoProvider(new ResourceInfoProviderSpring())
             .classesInPackageFinder(new ClassesInPackageFinderSpring());
     }
