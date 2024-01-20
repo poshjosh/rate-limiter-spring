@@ -18,7 +18,7 @@ class NamedLimitTest {
 
     final static String NAME = "rate-limiter-name";
 
-    @Rate(name = NAME) // Co-locate with a path related annotation
+    @Rate(id = NAME) // Co-locate with a path related annotation
     @RequestMapping("/named-resource-limiter-test")
     @RestController
     static class Resource{ }

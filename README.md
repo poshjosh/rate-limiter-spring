@@ -184,10 +184,10 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
     Map<String, Rates> ratesMap = new HashMap<>();
     
     // Rate limit a class
-    ratesMap.put(ElementId.of(MyResource.class), Rates.of(Rate.ofMinutes(10)));
+    ratesMap.put(RateId.of(MyResource.class), Rates.of(Rate.ofMinutes(10)));
 
     // Rate limit a method
-    ratesMap.put(ElementId.of(MyResource.class.getMethod("greet", String.class)), Rates.of(Rate.ofMinutes(10)));
+    ratesMap.put(RateId.of(MyResource.class.getMethod("greet", String.class)), Rates.of(Rate.ofMinutes(10)));
     
     return ratesMap;
   }

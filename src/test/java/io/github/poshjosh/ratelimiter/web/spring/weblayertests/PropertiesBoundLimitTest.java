@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.annotation.ElementId;
+import io.github.poshjosh.ratelimiter.annotation.RateId;
 import io.github.poshjosh.ratelimiter.util.Operator;
 import io.github.poshjosh.ratelimiter.model.Rate;
 import io.github.poshjosh.ratelimiter.model.Rates;
@@ -59,7 +59,7 @@ class PropertiesBoundLimitTest extends AbstractResourceTest{
         }
         private static String getMethodLimitedViaProperties() {
             try {
-                return ElementId.of(Resource.class.getMethod("home", HttpServletRequest.class));
+                return RateId.of(Resource.class.getMethod("home", HttpServletRequest.class));
             } catch(NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }

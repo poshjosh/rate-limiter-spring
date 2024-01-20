@@ -30,7 +30,7 @@ class ResourceWithMethodLimitsTest extends AbstractResourceTest {
         }
     }
 
-    @RateGroup(name = "resource-with-method-limit-group", operator = Operator.AND)
+    @RateGroup(id = "resource-with-method-limit-group", operator = Operator.AND)
     @Rate(permits = 1, duration = Resource.DURATION_SECONDS)
     @Rate(permits = 5, duration = Resource.DURATION_SECONDS)
     @Retention(RetentionPolicy.RUNTIME)
