@@ -75,11 +75,11 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
     }
 
     protected WebRateLimiterRegistry rateLimiterRegistry(WebRateLimiterContext config) {
-        return RateLimiterRegistrySpring.of(config);
+        return WebRateLimiterRegistrySpring.of(config);
     }
 
     protected WebRateLimiterContext.Builder rateLimiterContextBuilder() {
-        return RateLimiterWebContextSpring.builder()
+        return WebRateLimiterContextSpring.builder()
                 .properties(properties).configurer(configurer);
     }
 

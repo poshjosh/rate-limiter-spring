@@ -31,10 +31,10 @@ class NamedLimitTest {
         props.setResourcePackages(Collections.emptyList());
         props.setResourceClasses(Arrays.asList(Resource.class));
         WebRateLimiterContext config =
-                RateLimiterWebContextSpring.builder()
+                WebRateLimiterContextSpring.builder()
                 .properties(props)
                 .build();
-        registries = RateLimiterRegistrySpring.of(config);
+        registries = WebRateLimiterRegistrySpring.of(config);
         registries.createRateLimiterFactory();
     }
 
