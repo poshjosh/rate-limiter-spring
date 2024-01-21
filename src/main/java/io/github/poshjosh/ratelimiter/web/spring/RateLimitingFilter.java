@@ -55,27 +55,24 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
 
         super.initFilterBean();
 
+        if (rateLimiterFactory != null) {
+            return;
+        }
+
         WebRateLimiterContext context = rateLimiterContextBuilder().build();
 
         if (webRateLimiterRegistry == null) {
             webRateLimiterRegistry = rateLimiterRegistry(context);
         }
 
-        if (rateLimiterFactory != null) {
-            return;
-        }
+        rateLimiterFactory = webRateLimiterRegistry.createRateLimiterFactory();
 
-        if (!context.hasRateSources()) {
-            rateLimiterFactory = RateLimiterFactory.noop();
-        } else {
-            rateLimiterFactory = webRateLimiterRegistry.createRateLimiterFactory();
-        }
         LOG.info(webRateLimiterRegistry.isRateLimitingEnabled()
                 ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
     }
 
-    protected WebRateLimiterRegistry rateLimiterRegistry(WebRateLimiterContext config) {
-        return WebRateLimiterRegistrySpring.of(config);
+    protected WebRateLimiterRegistry rateLimiterRegistry(WebRateLimiterContext context) {
+        return WebRateLimiterRegistrySpring.of(context);
     }
 
     protected WebRateLimiterContext.Builder rateLimiterContextBuilder() {
