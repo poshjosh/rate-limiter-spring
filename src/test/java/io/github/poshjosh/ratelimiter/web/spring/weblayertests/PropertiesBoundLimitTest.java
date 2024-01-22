@@ -70,7 +70,7 @@ class PropertiesBoundLimitTest extends AbstractResourceTest{
 
     @Test
     void shouldHaveAMatcher() {
-        assertTrue(webRateLimiterRegistry.hasMatching(Resource.getMethodLimitedViaProperties()));
+        assertTrue(webRateLimiterRegistry.hasMatcher(Resource.getMethodLimitedViaProperties()));
     }
 
     @Test

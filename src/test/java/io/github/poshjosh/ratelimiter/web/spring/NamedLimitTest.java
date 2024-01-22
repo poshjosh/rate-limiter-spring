@@ -40,7 +40,7 @@ class NamedLimitTest {
 
     @Test
     void shouldHaveAMatcherRegisteredForCustomName() {
-        assertTrue(registries.hasMatching(NAME));
+        assertTrue(registries.hasMatcher(NAME));
     }
 
     @Test
