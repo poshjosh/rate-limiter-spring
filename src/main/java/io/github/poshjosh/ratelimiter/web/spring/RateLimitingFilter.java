@@ -67,7 +67,7 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
 
         rateLimiterFactory = webRateLimiterRegistry.createRateLimiterFactory();
 
-        LOG.info(webRateLimiterRegistry.isRateLimitingEnabled()
+        LOG.info(context.isRateLimitingEnabled()
                 ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
     }
 
