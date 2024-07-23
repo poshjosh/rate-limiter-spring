@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NamedLimitTest {
@@ -23,7 +22,7 @@ class NamedLimitTest {
     @RestController
     static class Resource{ }
 
-    WebRateLimiterRegistry registries;
+    WebRateLimiterRegistry rateLimiterRegistry;
 
     @BeforeEach
     void setupRateLimiting() {
@@ -34,17 +33,16 @@ class NamedLimitTest {
                 WebRateLimiterContextSpring.builder()
                 .properties(props)
                 .build();
-        registries = WebRateLimiterRegistrySpring.of(config);
-        registries.createRateLimiterFactory();
+        rateLimiterRegistry = WebRateLimiterRegistrySpring.of(config);
     }
 
     @Test
     void shouldHaveAMatcherRegisteredForCustomName() {
-        assertTrue(registries.hasMatcher(NAME));
+        assertTrue(rateLimiterRegistry.hasMatcher(NAME));
     }
 
     @Test
     void shouldBeRateLimited() {
-        assertTrue(registries.isRegistered(NAME));
+        assertTrue(rateLimiterRegistry.isRegistered(NAME));
     }
 }

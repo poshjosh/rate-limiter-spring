@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring;
 
-import io.github.poshjosh.ratelimiter.RateLimiterFactory;
+import io.github.poshjosh.ratelimiter.RateLimiter;
 import io.github.poshjosh.ratelimiter.web.core.RateLimiterConfigurer;
 import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterContext;
 import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistry;
@@ -23,7 +23,6 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
     private final RateLimiterConfigurer configurer;
 
     private WebRateLimiterRegistry webRateLimiterRegistry;
-    private RateLimiterFactory<HttpServletRequest> rateLimiterFactory;
 
     protected RateLimitingFilter() {
         this(registries -> {});
@@ -55,20 +54,12 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
 
         super.initFilterBean();
 
-        if (rateLimiterFactory != null) {
-            return;
-        }
-
-        WebRateLimiterContext context = rateLimiterContextBuilder().build();
-
         if (webRateLimiterRegistry == null) {
+            WebRateLimiterContext context = rateLimiterContextBuilder().build();
             webRateLimiterRegistry = rateLimiterRegistry(context);
+            LOG.info(context.isRateLimitingEnabled()
+                    ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
         }
-
-        rateLimiterFactory = webRateLimiterRegistry.createRateLimiterFactory();
-
-        LOG.info(context.isRateLimitingEnabled()
-                ? "Completed setup of automatic rate limiting" : "Rate limiting is disabled");
     }
 
     protected WebRateLimiterRegistry rateLimiterRegistry(WebRateLimiterContext context) {
@@ -98,12 +89,14 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
     }
 
     protected boolean tryConsume(HttpServletRequest httpRequest) {
-        return getRateLimiterFactory().getRateLimiter(httpRequest).tryAcquire();
+        return getRateLimiter(httpRequest).tryAcquire();
+    }
+
+    public RateLimiter getRateLimiter(HttpServletRequest request) {
+        return webRateLimiterRegistry.getRateLimiterOrUnlimited(request);
     }
 
     public WebRateLimiterRegistry getRateLimiterRegistry() {
         return webRateLimiterRegistry;
     }
-
-    public RateLimiterFactory<HttpServletRequest> getRateLimiterFactory() { return rateLimiterFactory; }
 }

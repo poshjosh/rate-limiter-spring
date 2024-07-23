@@ -224,7 +224,7 @@ and properties you specify. However, you could manually create and use `RateLimi
 ```java
 class MyResource {
     
-    RateLimiter rateLimiter = RateLimiterFactory.of(MyResource.class, "smile");
+    RateLimiter rateLimiter = RateLimiterRegistry.of(MyResource.class, "smile");
     
     @Rate(name = "smile", permits = 2)
     String smile() {
