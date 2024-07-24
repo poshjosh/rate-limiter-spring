@@ -2,6 +2,7 @@ package io.github.poshjosh.ratelimiter.web.spring;
 
 import io.github.poshjosh.ratelimiter.annotations.Rate;
 import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistries;
 import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,11 +30,11 @@ class NamedLimitTest {
         RateLimitPropertiesSpring props = new RateLimitPropertiesSpring();
         props.setResourcePackages(Collections.emptyList());
         props.setResourceClasses(Arrays.asList(Resource.class));
-        WebRateLimiterContext config =
+        WebRateLimiterContext context =
                 WebRateLimiterContextSpring.builder()
                 .properties(props)
                 .build();
-        rateLimiterRegistry = WebRateLimiterRegistrySpring.of(config);
+        rateLimiterRegistry = WebRateLimiterRegistries.of(context);
     }
 
     @Test

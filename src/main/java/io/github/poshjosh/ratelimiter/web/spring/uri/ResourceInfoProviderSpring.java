@@ -1,7 +1,9 @@
 package io.github.poshjosh.ratelimiter.web.spring.uri;
 
 import io.github.poshjosh.ratelimiter.model.RateSource;
-import io.github.poshjosh.ratelimiter.web.core.util.PathPatterns;
+import io.github.poshjosh.ratelimiter.web.core.util.ResourceInfo;
+import io.github.poshjosh.ratelimiter.web.core.util.ResourceInfos;
+import io.github.poshjosh.ratelimiter.web.core.util.ResourcePath;
 import io.github.poshjosh.ratelimiter.web.core.util.ResourceInfoProvider;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +16,9 @@ public class ResourceInfoProviderSpring implements ResourceInfoProvider {
     public ResourceInfoProviderSpring() { }
 
     @Override
-    public ResourceInfoProvider.ResourceInfo get(RateSource source) {
+    public ResourceInfo get(RateSource source) {
         if (source.isOwnDeclarer()) {
-            return getClassResourceInfo(source).orElse(ResourceInfo.NONE);
+            return getClassResourceInfo(source).orElse(ResourceInfos.NONE);
         }
         return getMethodResourceInfo(source);
     }
@@ -38,54 +40,59 @@ public class ResourceInfoProviderSpring implements ResourceInfoProvider {
         final String [] methods = getMethods(requestMapping);
 
         if(paths.length == 0) {
-            return Optional.of(ResourceInfo.of(methods));
+            return Optional.of(ResourceInfos.of(methods));
         }
 
-        return Optional.of(ResourceInfo.of(new ClassLevelPathPatterns(paths), methods));
+        return Optional.of(ResourceInfos.of(new ClassLevelResourcePath(paths), methods));
     }
 
     private ResourceInfo getMethodResourceInfo(RateSource source) {
 
         final ResourceInfo classResourceInfo = source.getDeclarer()
-                .flatMap(this::getClassResourceInfo).orElse(ResourceInfo.NONE);
+                .flatMap(this::getClassResourceInfo).orElse(ResourceInfos.NONE);
 
-        final PathPatterns<String> classLevelPathPatterns = classResourceInfo.getPathPatterns();
+        final ResourcePath<String> classLevelResourcePath = classResourceInfo.getResourcePath();
 
         GetMapping getMapping = source.getAnnotation(GetMapping.class).orElse(null);
         if (getMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(getMapping.value(), getMapping.path());
-            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "GET");
+            return ResourceInfos.of(
+                    buildResourcePath(classLevelResourcePath, methodLevelPathPatterns), "GET");
         }
 
         PostMapping postMapping = source.getAnnotation(PostMapping.class).orElse(null);
         if (postMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(postMapping.value(), postMapping.path());
-            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "POST");
+            return ResourceInfos.of(
+                    buildResourcePath(classLevelResourcePath, methodLevelPathPatterns), "POST");
         }
 
         PutMapping putMapping = source.getAnnotation(PutMapping.class).orElse(null);
         if (putMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(putMapping.value(), putMapping.path());
-            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "PUT");
+            return ResourceInfos.of(
+                    buildResourcePath(classLevelResourcePath, methodLevelPathPatterns), "PUT");
         }
 
         DeleteMapping deleteMapping = source.getAnnotation(DeleteMapping.class).orElse(null);
         if (deleteMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(deleteMapping.value(), deleteMapping.path());
-            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "DELETE");
+            return ResourceInfos.of(
+                    buildResourcePath(classLevelResourcePath, methodLevelPathPatterns), "DELETE");
         }
 
         PatchMapping patchMapping = source.getAnnotation(PatchMapping.class).orElse(null);
         if (patchMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(patchMapping.value(), patchMapping.path());
-            return ResourceInfo.of(buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns), "PATCH");
+            return ResourceInfos.of(
+                    buildResourcePath(classLevelResourcePath, methodLevelPathPatterns), "PATCH");
         }
 
         RequestMapping requestMapping = source.getAnnotation(RequestMapping.class).orElse(null);
         if (requestMapping != null) {
             String [] methodLevelPathPatterns = selectPatterns(requestMapping.value(), requestMapping.path());
-            return ResourceInfo.of(
-                    buildPathPatterns(classLevelPathPatterns, methodLevelPathPatterns),
+            return ResourceInfos.of(
+                    buildResourcePath(classLevelResourcePath, methodLevelPathPatterns),
                     getMethods(requestMapping));
         }
 
@@ -105,10 +112,10 @@ public class ResourceInfoProviderSpring implements ResourceInfoProvider {
         return subPathPatterns1;
     }
 
-    private PathPatterns<String> buildPathPatterns(PathPatterns<String> classLevelPathPatterns, String [] subPathPatterns) {
+    private ResourcePath<String> buildResourcePath(ResourcePath<String> classLevelResourcePath, String [] subPathPatterns) {
         if(subPathPatterns == null || subPathPatterns.length == 0) {
-            return classLevelPathPatterns;
+            return classLevelResourcePath;
         }
-        return classLevelPathPatterns.combine(new MethodLevelPathPatterns(subPathPatterns));
+        return classLevelResourcePath.combine(new MethodLevelResourcePath(subPathPatterns));
     }
 }

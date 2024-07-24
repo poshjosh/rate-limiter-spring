@@ -3,6 +3,7 @@ package io.github.poshjosh.ratelimiter.web.spring;
 import io.github.poshjosh.ratelimiter.RateLimiter;
 import io.github.poshjosh.ratelimiter.web.core.RateLimiterConfigurer;
 import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterContext;
+import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistries;
 import io.github.poshjosh.ratelimiter.web.core.WebRateLimiterRegistry;
 import io.github.poshjosh.ratelimiter.util.RateLimitProperties;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
     }
 
     protected WebRateLimiterRegistry rateLimiterRegistry(WebRateLimiterContext context) {
-        return WebRateLimiterRegistrySpring.of(context);
+        return WebRateLimiterRegistries.of(context);
     }
 
     protected WebRateLimiterContext.Builder rateLimiterContextBuilder() {

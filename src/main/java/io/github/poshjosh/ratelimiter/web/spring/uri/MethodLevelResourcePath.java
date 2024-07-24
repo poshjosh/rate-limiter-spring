@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.uri;
 
-import io.github.poshjosh.ratelimiter.web.core.util.PathPatterns;
+import io.github.poshjosh.ratelimiter.web.core.util.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.PathContainer;
@@ -10,16 +10,16 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class MethodLevelPathPatterns implements PathPatterns<String> {
+final class MethodLevelResourcePath implements ResourcePath<String> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodLevelPathPatterns.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodLevelResourcePath.class);
 
     private final PathPattern [] pathPatterns;
     private final List<String> stringPatterns;
 
     private final PathPatternParser pathPatternParser;
 
-    MethodLevelPathPatterns(String... pathPatterns) {
+    MethodLevelResourcePath(String... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = new PathPattern[pathPatterns.length];
         for(int i = 0; i<pathPatterns.length; i++) {
@@ -29,7 +29,7 @@ final class MethodLevelPathPatterns implements PathPatterns<String> {
         LOG.trace("Path patterns: {}", stringPatterns);
     }
 
-    MethodLevelPathPatterns(PathPattern... pathPatterns) {
+    MethodLevelResourcePath(PathPattern... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = Objects.requireNonNull(pathPatterns);
         this.stringPatterns = Arrays.stream(pathPatterns)
@@ -42,8 +42,8 @@ final class MethodLevelPathPatterns implements PathPatterns<String> {
         return stringPatterns;
     }
 
-    public PathPatterns<String> combine(PathPatterns<String> other) {
-        return new MethodLevelPathPatterns(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
+    public ResourcePath<String> combine(ResourcePath<String> other) {
+        return new MethodLevelResourcePath(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
     }
 
     @Override
@@ -72,7 +72,7 @@ final class MethodLevelPathPatterns implements PathPatterns<String> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MethodLevelPathPatterns that = (MethodLevelPathPatterns) o;
+        MethodLevelResourcePath that = (MethodLevelResourcePath) o;
         return Arrays.equals(pathPatterns, that.pathPatterns);
     }
 
@@ -83,6 +83,6 @@ final class MethodLevelPathPatterns implements PathPatterns<String> {
 
     @Override
     public String toString() {
-        return "MethodLevelPathPatterns{" + Arrays.toString(pathPatterns) + '}';
+        return "MethodLevelResourcePath{" + Arrays.toString(pathPatterns) + '}';
     }
 }

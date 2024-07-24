@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.uri;
 
-import io.github.poshjosh.ratelimiter.web.core.util.PathPatterns;
+import io.github.poshjosh.ratelimiter.web.core.util.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.PathContainer;
@@ -10,16 +10,16 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class ClassLevelPathPatterns implements PathPatterns<String> {
+final class ClassLevelResourcePath implements ResourcePath<String> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ClassLevelPathPatterns.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClassLevelResourcePath.class);
 
     private final PathPattern [] pathPatterns;
     private final List<String> stringPatterns;
 
     private final PathPatternParser pathPatternParser;
 
-    ClassLevelPathPatterns(String... pathPatterns) {
+    ClassLevelResourcePath(String... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = new PathPattern[pathPatterns.length];
         for(int i = 0; i<pathPatterns.length; i++) {
@@ -29,7 +29,7 @@ final class ClassLevelPathPatterns implements PathPatterns<String> {
         LOG.trace("Path patterns: {}", stringPatterns);
     }
 
-    ClassLevelPathPatterns(PathPattern... pathPatterns) {
+    ClassLevelResourcePath(PathPattern... pathPatterns) {
         this.pathPatternParser = new PathPatternParser();
         this.pathPatterns = Objects.requireNonNull(pathPatterns);
         this.stringPatterns = Arrays.stream(pathPatterns)
@@ -42,9 +42,9 @@ final class ClassLevelPathPatterns implements PathPatterns<String> {
         return stringPatterns;
     }
 
-    public PathPatterns<String> combine(PathPatterns<String> other) {
+    public ResourcePath<String> combine(ResourcePath<String> other) {
         // issue #001 For now Parent patterns must always return a child type from the combine method
-        return new MethodLevelPathPatterns(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
+        return new MethodLevelResourcePath(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
     }
 
     @Override
@@ -73,7 +73,7 @@ final class ClassLevelPathPatterns implements PathPatterns<String> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClassLevelPathPatterns that = (ClassLevelPathPatterns) o;
+        ClassLevelResourcePath that = (ClassLevelResourcePath) o;
         return Arrays.equals(pathPatterns, that.pathPatterns);
     }
 
@@ -84,6 +84,6 @@ final class ClassLevelPathPatterns implements PathPatterns<String> {
 
     @Override
     public String toString() {
-        return "ClassLevelPathPatterns{" + Arrays.toString(pathPatterns) + '}';
+        return "ClassLevelResourcePath{" + Arrays.toString(pathPatterns) + '}';
     }
 }

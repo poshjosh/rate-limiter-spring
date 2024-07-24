@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changes from [rate-limiter-web-core v0.7.2](https://github.com/poshjosh/rate-limiter-web-core/blob/v0.7.2/CHANGELOG.md)
 
+### Moved
+
+- Static factory methods from `.WebRateLimiterRegistrySpring` to `.WebRateLimiterRegistries`.
+
 ## [ [0.7.1](https://github.com/poshjosh/rate-limiter-spring/tree/v0.7.1) ] - 2024-01-26
 
 ### Added
