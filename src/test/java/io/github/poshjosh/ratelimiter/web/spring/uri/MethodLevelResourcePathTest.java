@@ -14,7 +14,7 @@ public class MethodLevelResourcePathTest extends AbstractResourcePathTestBase {
     @Test
     public void shouldMatchSinglePathVariable() {
         LOG.debug("#shouldMatchSinglePathVariable()");
-        ResourcePath<String> resourcePath = givenResourcePath("/{id}");
+        ResourcePath resourcePath = givenResourcePath("/{id}");
         assertThat( resourcePath.matches("/1")).isTrue();
         assertThat( resourcePath.matches("/1/fake")).isFalse();
     }
@@ -22,7 +22,7 @@ public class MethodLevelResourcePathTest extends AbstractResourcePathTestBase {
     @Test
     public void shouldMatchMultiplePathVariables() {
         LOG.debug("#shouldMatchSinglePathVariable()");
-        ResourcePath<String> resourcePath = givenResourcePath("/before/{id}/{name}");
+        ResourcePath resourcePath = givenResourcePath("/before/{id}/{name}");
         assertThat( resourcePath.matches("/before/1/jane")).isTrue();
         assertThat( resourcePath.matches("/1/jane")).isFalse();
         assertThat( resourcePath.matches("/before/1")).isFalse();
@@ -32,7 +32,7 @@ public class MethodLevelResourcePathTest extends AbstractResourcePathTestBase {
     @Test
     public void shouldMatchSingleAsterix() {
         LOG.debug("#shouldMatchSingleAsterix()");
-        ResourcePath<String> resourcePath = givenResourcePath("/*");
+        ResourcePath resourcePath = givenResourcePath("/*");
         assertThat( resourcePath.matches("/")).isTrue();
         assertThat( resourcePath.matches("/numbers")).isTrue();
         assertThat( resourcePath.matches("/numbers/1")).isFalse();
@@ -41,13 +41,13 @@ public class MethodLevelResourcePathTest extends AbstractResourcePathTestBase {
     @Test
     public void shouldMatchSingleQuestionMark() {
         LOG.debug("#shouldMatchSingleQuestionMark()");
-        ResourcePath<String> resourcePath = givenResourcePath("/?");
+        ResourcePath resourcePath = givenResourcePath("/?");
         assertThat( resourcePath.matches("/a")).isTrue();
         assertThat( resourcePath.matches("/")).isFalse();
         assertThat( resourcePath.matches("/numbers")).isFalse();
     }
 
-    ResourcePath<String> givenResourcePath(String... uris) {
+    ResourcePath givenResourcePath(String... uris) {
         return new MethodLevelResourcePath(uris);
     }
 }

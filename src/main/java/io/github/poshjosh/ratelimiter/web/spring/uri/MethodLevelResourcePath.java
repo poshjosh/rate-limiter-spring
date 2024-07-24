@@ -10,7 +10,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class MethodLevelResourcePath implements ResourcePath<String> {
+final class MethodLevelResourcePath implements ResourcePath {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodLevelResourcePath.class);
 
@@ -42,7 +42,7 @@ final class MethodLevelResourcePath implements ResourcePath<String> {
         return stringPatterns;
     }
 
-    public ResourcePath<String> combine(ResourcePath<String> other) {
+    public ResourcePath combine(ResourcePath other) {
         return new MethodLevelResourcePath(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
     }
 

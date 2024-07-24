@@ -10,7 +10,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class ClassLevelResourcePath implements ResourcePath<String> {
+final class ClassLevelResourcePath implements ResourcePath {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassLevelResourcePath.class);
 
@@ -42,7 +42,7 @@ final class ClassLevelResourcePath implements ResourcePath<String> {
         return stringPatterns;
     }
 
-    public ResourcePath<String> combine(ResourcePath<String> other) {
+    public ResourcePath combine(ResourcePath other) {
         // issue #001 For now Parent patterns must always return a child type from the combine method
         return new MethodLevelResourcePath(Util.composePathPatterns(pathPatternParser, pathPatterns, other.getPatterns()));
     }

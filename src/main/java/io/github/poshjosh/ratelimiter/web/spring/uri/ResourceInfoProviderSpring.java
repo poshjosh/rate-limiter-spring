@@ -51,7 +51,7 @@ public class ResourceInfoProviderSpring implements ResourceInfoProvider {
         final ResourceInfo classResourceInfo = source.getDeclarer()
                 .flatMap(this::getClassResourceInfo).orElse(ResourceInfos.NONE);
 
-        final ResourcePath<String> classLevelResourcePath = classResourceInfo.getResourcePath();
+        final ResourcePath classLevelResourcePath = classResourceInfo.getResourcePath();
 
         GetMapping getMapping = source.getAnnotation(GetMapping.class).orElse(null);
         if (getMapping != null) {
@@ -112,7 +112,7 @@ public class ResourceInfoProviderSpring implements ResourceInfoProvider {
         return subPathPatterns1;
     }
 
-    private ResourcePath<String> buildResourcePath(ResourcePath<String> classLevelResourcePath, String [] subPathPatterns) {
+    private ResourcePath buildResourcePath(ResourcePath classLevelResourcePath, String [] subPathPatterns) {
         if(subPathPatterns == null || subPathPatterns.length == 0) {
             return classLevelResourcePath;
         }

@@ -9,13 +9,13 @@ class ClassLevelResourcePathTest extends AbstractResourcePathTestBase {
 
     @Test
     void shouldMatchStartOf() {
-        ResourcePath<String> resourcePath = givenResourcePath("/numbers");
+        ResourcePath resourcePath = givenResourcePath("/numbers");
         assertThat( resourcePath.matches("/numbers")).isTrue();
         assertThat( resourcePath.matches("/numbers/1")).isTrue();
         assertThat( resourcePath.matches("/letters/a")).isFalse();
     }
 
-    ResourcePath<String> givenResourcePath(String... uris) {
+    ResourcePath givenResourcePath(String... uris) {
         return new ClassLevelResourcePath(uris);
     }
 }
