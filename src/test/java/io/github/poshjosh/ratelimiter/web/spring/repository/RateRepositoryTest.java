@@ -91,6 +91,6 @@ class RateRepositoryTest {
     }
     
     private Bandwidth bandwidth(double permitsPerSecond) {
-        return Bandwidth.bursty(permitsPerSecond);
+        return Bandwidths.bursty(permitsPerSecond);
     }
 }

@@ -1,6 +1,6 @@
 package io.github.poshjosh.ratelimiter.web.spring.weblayertests;
 
-import io.github.poshjosh.ratelimiter.bandwidths.BandwidthFactory;
+import io.github.poshjosh.ratelimiter.bandwidths.BandwidthFactories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class AbstractResourceTest {
 
     static {
-        final String bandwidthFactoryClass = BandwidthFactory.AllOrNothing.class.getName();
+        final String bandwidthFactoryClass = BandwidthFactories.AllOrNothing.class.getName();
         System.out.printf("%s [%s] INFO  AbstractResourceTest - Using BandwidthFactory: %s\n",
                 java.time.LocalTime.now(), Thread.currentThread().getName(), bandwidthFactoryClass);
         System.setProperty("bandwidth-factory-class", bandwidthFactoryClass);
