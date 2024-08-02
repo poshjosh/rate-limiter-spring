@@ -47,28 +47,28 @@ class RateConditionLocaleTest extends AbstractResourceTest{
 
         @RequestMapping("/lang-no-match-or")
         @Rate(1)
-        @RateCondition(WebExpressionKey.LOCALE + "=[" + noAcceptLang1 + "|" + noAcceptLang2 + "]")
+        @RateCondition(WebExpressionKey.LOCALE + " = [" + noAcceptLang1 + " | " + noAcceptLang2 + "]")
         public String langNoMatch_or(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-match-or")
         @Rate(1)
-        @RateCondition(WebExpressionKey.LOCALE + "=[" + acceptLang1 + "|" + noAcceptLang1 + "]")
+        @RateCondition(WebExpressionKey.LOCALE + " = [" + acceptLang1 + " | " + noAcceptLang1 + "]")
         public String langMatch_or(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-no-match-and")
         @Rate(1)
-        @RateCondition(WebExpressionKey.LOCALE + "=[" + acceptLang1 + "&" + noAcceptLang1 + "]")
+        @RateCondition(WebExpressionKey.LOCALE + " = [" + acceptLang1 + " & " + noAcceptLang1 + "]")
         public String langNoMatch_and(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/lang-match-and")
         @Rate(1)
-        @RateCondition(WebExpressionKey.LOCALE + "=[" + acceptLang1 + "&" + acceptLang1 + "]")
+        @RateCondition(WebExpressionKey.LOCALE + " = [" + acceptLang1 + " & " + acceptLang1 + "]")
         public String langMatch_and(HttpServletRequest request) {
             return request.getRequestURI();
         }

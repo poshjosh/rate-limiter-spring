@@ -11,13 +11,13 @@ We believe that rate limiting should be as simple as:
 @RequestMapping("/api/v1")
 public class GreetingResource {
 
-    @Rate(permits=10, when="web.request.user.role=GUEST")
+    @Rate(permits=10, when="web.request.user.role = GUEST")
     @GetMapping("/smile")
     public String smile() {
         return ":)";
     }
 
-    @Rate(permits=1, when="jvm.memory.available<1gb")
+    @Rate(permits=1, when="jvm.memory.available < 1gb")
     @GetMapping("/greet")
     public String greet(@RequestParam("who") String who) {
         return "Hello " + who;
@@ -96,7 +96,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController @RequestMapping("/my-resources") public class MyResource {
 
     // Only 25 calls per second for users in role GUEST
-    @Rate(permits = 25, when = "web.request.user.role=GUEST") @GetMapping("/greet/{name}") public ResponseEntity<String> greet(
+    @Rate(permits = 25, when = "web.request.user.role = GUEST") @GetMapping("/greet/{name}") public ResponseEntity<String> greet(
             @PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
     }
@@ -198,20 +198,18 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
 The expression language allows us to write expressive rate conditions, e.g:
 
-`@RateCondition("web.request.user.role=GUEST")`
+`@RateCondition("web.request.user.role = GUEST")`
 
-`@RateCondition("jvm.memory.free<1GB")`
+`@RateCondition("jvm.memory.free < 1GB")`
 
-| format          | example                                  | description                                             |
-|-----------------|------------------------------------------|---------------------------------------------------------|
-| LHS=RHS         | web.request.header=X-RateLimit-Limit     | true, when the X-RateLimit-Limit header exists          |
-| LHS={key=val}   | web.request.parameter={limited=true}     | true, when request parameter limited equals true        |
-| LHS=[AlB]       | web.request.user.role=[GUESTlRESTRICTED] | true, when the user role is either GUEST or RESTRICTED  |
-| LHS=[A&B]       | web.request.user.role=[GUEST&RESTRICTED] | true, when the user role is either GUEST and RESTRICTED |
-| LHS={key=[AlB]} | web.request.header={name=[val_0lval_1]}  | true, when either val_0 or val_1 is set a header        |
-| LHS={key=[A&B]} | web.request.header={name=[val_0&val_1]}  | true, when both val_0 and val_1 are set as headers      |     
-
-__Note:__ `|` represents OR, while `&` represents AND
+| format                      | example                                            | description                                             |
+|-----------------------------|----------------------------------------------------|---------------------------------------------------------|
+| LHS = RHS                   | web.request.header = X-RateLimit-Limit             | true, when the X-RateLimit-Limit header exists          |
+| LHS = {key = val}           | web.request.parameter = {limited = true}           | true, when request parameter limited equals true        |
+| LHS = [A &#9122; B]         | web.request.user.role = [GUEST &#9122; RESTRICTED] | true, when the user role is either GUEST or RESTRICTED  |
+| LHS = [A & B]               | web.request.user.role = [GUEST & RESTRICTED]       | true, when the user role is either GUEST and RESTRICTED |
+| LHS = {key = [A &#9122; B]} | web.request.header = {name=[val_0 &#9122; val_1]}  | true, when either val_0 or val_1 is set a header        |
+| LHS = {key = [A & B]}       | web.request.header = {name=[val_0 & val_1]}        | true, when both val_0 and val_1 are set as headers      |
 
 A rich set of conditions may be expressed as detailed in the
 [web specification](https://github.com/poshjosh/rate-limiter-web-core/blob/master/docs/RATE-CONDITION-EXPRESSION-LANGUAGE.md).

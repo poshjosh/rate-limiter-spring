@@ -50,42 +50,42 @@ class RateConditionHeaderTest extends AbstractResourceTest{
 
         @RequestMapping("/header-no-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + "={invalid-header-name=invalid-header-value}")
+        @RateCondition(WebExpressionKey.HEADER + " = {invalid-header-name = invalid-header-value}")
         public String headerNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-negate-no-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + "!={invalid-header-name=invalid-header-value}")
+        @RateCondition(WebExpressionKey.HEADER + " != {invalid-header-name = invalid-header-value}")
         public String headerNegateNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + "={"+headerName+"="+headerValue+"}")
+        @RateCondition(WebExpressionKey.HEADER + " = {"+headerName+" = "+headerValue+"}")
         public String headerMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match-name-only")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + "=" + headerName)
+        @RateCondition(WebExpressionKey.HEADER + " = " + headerName)
         public String headerMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-negate-match-name-only")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + "!=" + headerName)
+        @RateCondition(WebExpressionKey.HEADER + " != " + headerName)
         public String headerNegateMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match-or")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + "={" + headerName + "=[invalid-header-value|" + headerValue + "]}")
+        @RateCondition(WebExpressionKey.HEADER + " = {" + headerName + " = [invalid-header-value | " + headerValue + "]}")
         public String headerMatchOr(HttpServletRequest request) {
             return request.getRequestURI();
         }
@@ -93,7 +93,7 @@ class RateConditionHeaderTest extends AbstractResourceTest{
         @RequestMapping("/header-no-match-bad-or")
         @Rate(1)
         // Badly formatted, should be {header={name=[A|B]}}, but the second equals sign is missing
-        @RateCondition(WebExpressionKey.HEADER + "={" + headerName + "[invalid-header-value|" + headerValue + "]}")
+        @RateCondition(WebExpressionKey.HEADER + " = {" + headerName + "[invalid-header-value | " + headerValue + "]}")
         public String headerNoMatchBadOr(HttpServletRequest request) {
             return request.getRequestURI();
         }

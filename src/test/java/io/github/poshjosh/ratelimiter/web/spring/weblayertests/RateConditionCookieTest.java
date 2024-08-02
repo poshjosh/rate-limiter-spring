@@ -50,35 +50,35 @@ class RateConditionCookieTest extends AbstractResourceTest{
 
         @RequestMapping("/cookie-no-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.COOKIE + "={"+cookieName+"=invalid-value}")
+        @RateCondition(WebExpressionKey.COOKIE + " = {"+cookieName+" = invalid-value}")
         public String cookieNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.COOKIE + "={"+cookieName+"="+cookieValue+"}")
+        @RateCondition(WebExpressionKey.COOKIE + " = {"+cookieName+" = "+cookieValue+"}")
         public String cookieMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-match-name-only")
         @Rate(1)
-        @RateCondition(WebExpressionKey.COOKIE + "=" + cookieName)
+        @RateCondition(WebExpressionKey.COOKIE + " = " + cookieName)
         public String cookieMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-negate-match-name-only")
         @Rate(1)
-        @RateCondition(WebExpressionKey.COOKIE + "!=" + cookieName)
+        @RateCondition(WebExpressionKey.COOKIE + " != " + cookieName)
         public String cookieNegateMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-match-or")
         @Rate(1)
-        @RateCondition(WebExpressionKey.COOKIE + "={" + cookieName + "=[invalid-cookie-value|" + cookieValue + "]}")
+        @RateCondition(WebExpressionKey.COOKIE + " = {" + cookieName + " = [invalid-cookie-value | " + cookieValue + "]}")
         public String cookieMatchOr(HttpServletRequest request) {
             return request.getRequestURI();
         }
@@ -86,7 +86,7 @@ class RateConditionCookieTest extends AbstractResourceTest{
         @RequestMapping("/cookie-no-match-bad-or")
         @Rate(1)
         // Badly formatted, should be {cookie={name=[A|B]}}, but the second equals sign is missing
-        @RateCondition(WebExpressionKey.COOKIE + "={" + cookieName + "[invalid-cookie-value|" + cookieValue + "]}")
+        @RateCondition(WebExpressionKey.COOKIE + " = {" + cookieName + "[invalid-cookie-value | " + cookieValue + "]}")
         public String cookieNoMatchBadOr(HttpServletRequest request) {
             return request.getRequestURI();
         }
