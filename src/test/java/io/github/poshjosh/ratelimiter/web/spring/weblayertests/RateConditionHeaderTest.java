@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcControllersTest(classes = {
@@ -50,50 +51,50 @@ class RateConditionHeaderTest extends AbstractResourceTest{
 
         @RequestMapping("/header-no-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + " = {invalid-header-name = invalid-header-value}")
+        @RateCondition(WebExpressionKey.HEADER + "[invalid-header-name] = invalid-header-value")
         public String headerNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-negate-no-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + " != {invalid-header-name = invalid-header-value}")
+        @RateCondition(WebExpressionKey.HEADER + "[invalid-header-name] != invalid-header-value")
         public String headerNegateNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + " = {"+headerName+" = "+headerValue+"}")
+        @RateCondition(WebExpressionKey.HEADER + "["+headerName+"] = "+headerValue)
         public String headerMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match-name-only")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + " = " + headerName)
+        @RateCondition(WebExpressionKey.HEADER + "[" + headerName + "] =")
         public String headerMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-negate-match-name-only")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + " != " + headerName)
+        @RateCondition(WebExpressionKey.HEADER + "[" + headerName + "] !=")
         public String headerNegateMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-match-or")
         @Rate(1)
-        @RateCondition(WebExpressionKey.HEADER + " = {" + headerName + " = [invalid-header-value | " + headerValue + "]}")
+        @RateCondition(WebExpressionKey.HEADER + "[" + headerName + "] = [invalid-header-value | " + headerValue + "]")
         public String headerMatchOr(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/header-no-match-bad-or")
         @Rate(1)
-        // Badly formatted, should be {header={name=[A|B]}}, but the second equals sign is missing
-        @RateCondition(WebExpressionKey.HEADER + " = {" + headerName + "[invalid-header-value | " + headerValue + "]}")
+        // Badly formatted
+        @RateCondition(WebExpressionKey.HEADER + " = " + headerName + "[invalid-header-value | " + headerValue + "]")
         public String headerNoMatchBadOr(HttpServletRequest request) {
             return request.getRequestURI();
         }
@@ -121,17 +122,17 @@ class RateConditionHeaderTest extends AbstractResourceTest{
     }
 
     @Test
-    void shouldBeRateLimitedWhenHeaderMatchNameOnly() throws Exception{
+    void shouldNotBeRateLimitedWhenHeaderMatchNameOnly() throws Exception{
         final String endpoint = Resource.Endpoints.HEADER_MATCH_NAME_ONLY;
         shouldReturnDefaultResult(endpoint);
-        shouldReturnStatusOfTooManyRequests(endpoint);
+        shouldReturnDefaultResult(endpoint);
     }
 
     @Test
-    void shouldNotBeRateLimitedWhenHeaderNegateMatchNameOnly() throws Exception{
+    void shouldBeRateLimitedWhenHeaderNegateMatchNameOnly() throws Exception{
         final String endpoint = Resource.Endpoints.HEADER_NEGATE_MATCH_NAME_ONLY;
         shouldReturnDefaultResult(endpoint);
-        shouldReturnDefaultResult(endpoint);
+        shouldReturnStatusOfTooManyRequests(endpoint);
     }
 
     @Test
@@ -142,10 +143,9 @@ class RateConditionHeaderTest extends AbstractResourceTest{
     }
 
     @Test
-    void shouldNotBeRateLimitedWhenHeaderNoMatch_givenBadOr() throws Exception{
+    void shouldThrowException_givenBadCondition() {
         final String endpoint = Resource.Endpoints.HEADER_NO_MATCH_BAD_OR;
-        shouldReturnDefaultResult(endpoint);
-        shouldReturnDefaultResult(endpoint);
+        assertThrows(UnsupportedOperationException.class, () -> shouldReturnDefaultResult(endpoint));
     }
 
     @Override

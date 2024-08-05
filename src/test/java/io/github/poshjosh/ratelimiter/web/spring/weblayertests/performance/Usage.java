@@ -31,7 +31,8 @@ public final class Usage {
     }
 
     public Usage divideBy(long amount) {
-        return Usage.of(duration / amount, memory / amount);
+        return Usage.of(amount == 0 ? Long.MAX_VALUE : duration / amount,
+                amount == 0 ? Long.MAX_VALUE : memory / amount);
     }
 
     public Usage multiplyBy(long amount) {

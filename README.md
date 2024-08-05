@@ -202,14 +202,13 @@ The expression language allows us to write expressive rate conditions, e.g:
 
 `@RateCondition("jvm.memory.free < 1GB")`
 
-| format                      | example                                            | description                                             |
-|-----------------------------|----------------------------------------------------|---------------------------------------------------------|
-| LHS = RHS                   | web.request.header = X-RateLimit-Limit             | true, when the X-RateLimit-Limit header exists          |
-| LHS = {key = val}           | web.request.parameter = {limited = true}           | true, when request parameter limited equals true        |
-| LHS = [A &#9122; B]         | web.request.user.role = [GUEST &#9122; RESTRICTED] | true, when the user role is either GUEST or RESTRICTED  |
-| LHS = [A & B]               | web.request.user.role = [GUEST & RESTRICTED]       | true, when the user role is either GUEST and RESTRICTED |
-| LHS = {key = [A &#9122; B]} | web.request.header = {name=[val_0 &#9122; val_1]}  | true, when either val_0 or val_1 is set a header        |
-| LHS = {key = [A & B]}       | web.request.header = {name=[val_0 & val_1]}        | true, when both val_0 and val_1 are set as headers      |
+| format                   | example                                            | description                                                       |  
+|--------------------------|----------------------------------------------------|-------------------------------------------------------------------|
+| LHS = RHS                | web.request.header[X-RateLimit-Limit] !=           | true, when the X-RateLimit-Limit header exists                    |  
+| LHS[key] = val           | web.request.parameter[limited] = true              | true, when request parameter limited equals true                  |  
+| LHS = [A &#9122; B]      | web.request.user.role = [GUEST &#9122; RESTRICTED] | true, when the user role is either GUEST or RESTRICTED            |
+| LHS[key] = [A &#9122; B] | web.request.cookie[name] = [val_0 &#9122; val_1]   | true, when cookie named `name` is either val_0 or val_1           |  
+| LHS[key] = [A & B]       | web.request.header[name] = [val_0 & val_1]         | true, when header named `name` has both val_0 and val_1 as values |  
 
 A rich set of conditions may be expressed as detailed in the
 [web specification](https://github.com/poshjosh/rate-limiter-web-core/blob/master/docs/RATE-CONDITION-EXPRESSION-LANGUAGE.md).
