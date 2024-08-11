@@ -90,7 +90,7 @@ public abstract class RateLimitingFilter extends GenericFilterBean {
     }
 
     protected boolean tryConsume(HttpServletRequest httpRequest) {
-        return getRateLimiter(httpRequest).tryAcquire();
+        return webRateLimiterRegistry.tryAcquire(httpRequest, 1);
     }
 
     public RateLimiter getRateLimiter(HttpServletRequest request) {
