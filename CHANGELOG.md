@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Decoupled from `javax.servlet` by replaced `javax.servlet.HttpServletRequest` with `RequestInfo`
+- Return type of `RateLimitProperties#getRateLimitConfigs()` from `Map` to `List`.
 
 ## [ [0.8.0](https://github.com/poshjosh/rate-limiter-spring/tree/v0.8.0) ] - 2024-08-05
 

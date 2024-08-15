@@ -13,7 +13,7 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
 
     private Boolean disabled = Boolean.FALSE;
 
-    private Map<String, Rates> rateLimitConfigs = Collections.emptyMap();
+    private List<Rates> rateLimitConfigs = Collections.emptyList();
 
     @Override
     public List<String> getResourcePackages() {
@@ -43,11 +43,11 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
     }
 
     @Override
-    public Map<String, Rates> getRateLimitConfigs() {
+    public List<Rates> getRateLimitConfigs() {
         return rateLimitConfigs;
     }
 
-    public void setRateLimitConfigs(Map<String, Rates> rateLimitConfigs) {
+    public void setRateLimitConfigs(List<Rates> rateLimitConfigs) {
         this.rateLimitConfigs = rateLimitConfigs;
     }
 

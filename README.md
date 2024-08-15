@@ -50,14 +50,14 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
     // If not using annotations, return an empty list
     @Override 
     public List<String> getResourcePackages() {
-        return Collections.singletonList("com.myapplicatioon.web.rest");
+        return Collections.singletonList("com.myapp.web.rest");
     }
 
     // If not using properties, return an empty map
     @Override 
-    public Map<String, Rates> getRateLimitConfigs() {
+    public List<Rates> getRateLimitConfigs() {
         // Accept only 2 tasks per second
-        return Collections.singletonMap("task_queue", Rates.of(Rate.ofSeconds(2)));
+        return Collections.singletonList(Rates.of("task_queue", Rate.ofSeconds(2)));
     }
 }
 ```
@@ -84,7 +84,7 @@ At this point, your application is ready to enjoy the benefits of rate limiting.
 __3. Annotate classes and/or methods.__
 
 ```java
-package com.myapplicatioon.web.rest;
+package com.myapp.web.rest;
 
 import io.github.poshjosh.ratelimiter.model.Rate;
 import org.springframework.http.ResponseEntity;
@@ -139,8 +139,8 @@ Specify either `resource-packages` or `resource-classes`
 
 ```yaml
 rate-limiter:
-  resource-packages: com.myapplicatioon.web.rest
-  #resource-classes: com.myapplicatioon.web.rest.MyResource
+  resource-packages: com.myapp.web.rest
+  #resource-classes: com.myapp.web.rest.MyResource
 ```
 
 At this point your application is ready to enjoy the benefits of rate limiting
@@ -153,17 +153,20 @@ __4. (Optional) Add more rate-limit properties__
 
 ```yaml
 rate-limiter:
-  resource-packages: com.myapplicatioon.web.rest
+  resource-packages: com.myapp.web.rest
   rate-limit-configs:
-    task_queue: # Accept only 2 tasks per second 
-      permits: 2
-      duration: PT1S
-    video_download: # Cap streaming of video to 5kb per second
+    # Cap streaming of video to 5kb per second
+    - id: video_download
       permits: 5000
       duration: PT1S
-    com.myapplicatioon.web.rest.MyResource: # Limit requests to this resource to 10 per minute
+    # Limit requests to this resource to 10 per minute
+    - id: com.myapp.web.rest.MyResource
       permits: 10
-      duration: PT1M 
+      duration: PT1M
+    # Accept only 2 tasks per second
+    - id: task_queue
+      permits: 2
+      duration: PT1S
 ```
 
 ### Fine-grained configuration of rate limiting
@@ -179,17 +182,19 @@ When you configure rate limiting using properties, you could:
 ```java
 public class RateLimitPropertiesImpl implements RateLimitProperties {
   @Override
-  public Map<String, Rates> getRateLimitConfigs() {
+  public List<Rates> getRateLimitConfigs() {
     
-    Map<String, Rates> ratesMap = new HashMap<>();
+    List<Rates> ratesList = new ArrayList<>();
     
     // Rate limit a class
-    ratesMap.put(RateId.of(MyResource.class), Rates.of(Rate.ofMinutes(10)));
+    String classId = RateId.of(MyResource.class);  
+    ratesList.add(Rates.of(classId, Rate.ofMinutes(10)));
 
     // Rate limit a method
-    ratesMap.put(RateId.of(MyResource.class.getMethod("greet", String.class)), Rates.of(Rate.ofMinutes(10)));
+    String methodId = RateId.of(MyResource.class.getMethod("greet", String.class));
+    ratesList.add(Rates.of(methodId, Rate.ofMinutes(10)));
     
-    return ratesMap;
+    return ratesList;
   }
 }
 ```

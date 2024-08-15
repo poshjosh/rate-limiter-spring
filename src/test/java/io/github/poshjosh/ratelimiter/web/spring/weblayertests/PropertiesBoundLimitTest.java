@@ -31,11 +31,10 @@ class PropertiesBoundLimitTest extends AbstractResourceTest{
         public TestConfig(RateLimitPropertiesSpring properties) {
             properties.setResourcePackages(Collections.emptyList());
             properties.setResourceClasses(Arrays.asList(PropertiesBoundLimitTest.Resource.class));
-            properties.setRateLimitConfigs(
-                    Collections.singletonMap(Resource.getMethodLimitedViaProperties(), getRateLimitConfigList()));
+            properties.setRateLimitConfigs(Collections.singletonList(getRateLimitConfigList()));
         }
         private Rates getRateLimitConfigList() {
-            return Rates.of(Operator.OR, getRateLimits());
+            return Rates.of(Resource.getMethodLimitedViaProperties(), Operator.OR, "", getRateLimits());
         }
         private Rate[] getRateLimits() {
             return new Rate[]{Rate.ofSeconds(LIMIT)};
