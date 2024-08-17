@@ -25,7 +25,7 @@ class ResourceWithClassLimitTest extends AbstractResourceTest{
 
     @RestController
     @RequestMapping(ApiEndpoints.API + Resource._BASE)
-    @Rate(1)
+    @Rate("1/s")
     static class Resource {
 
         private static final String _BASE = "/resource-with-class-limit-test";

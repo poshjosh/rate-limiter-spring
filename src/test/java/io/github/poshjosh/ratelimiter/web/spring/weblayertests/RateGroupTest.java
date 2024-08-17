@@ -32,7 +32,7 @@ class RateGroupTest extends AbstractResourceTest{
 
     private static final String GROUP_NAME = "test-group";
 
-    @Rate(1)
+    @Rate("1/s")
     @RateGroup(GROUP_NAME)
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE, ElementType.METHOD})

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Direct registration of Rates using  method: `RateLimiterRegistry#register(String, Rates)`.
 - Direct rate limiting using method: `RateLimiterRegistry#tryAcquire`.
 - Method `RateLimiterRegistry#isWithinLimit(K key)`.
+- Field `rate` to the `@Rate` annotation. It is the default. Example use: `@Rate("9/s")`.
 
 ### Changed
 

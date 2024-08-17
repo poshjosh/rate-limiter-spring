@@ -6,7 +6,7 @@ Enterprise rate limiter for spring web apps, based on
 We believe that rate limiting should be as simple as:
 
 ```java
-@Rate(10) // 10 permits per second for all methods in this class
+@Rate("10/s") // 10 permits per second for all methods in this class
 @Controller
 @RequestMapping("/api/v1")
 public class GreetingResource {

@@ -36,7 +36,7 @@ class RateConditionRequestTest extends AbstractResourceTest{
         }
 
         @RequestMapping("/request-uri-exists")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.REQUEST_URI + " !=")
         public String requestUriExists(HttpServletRequest request) {
             return request.getRequestURI();

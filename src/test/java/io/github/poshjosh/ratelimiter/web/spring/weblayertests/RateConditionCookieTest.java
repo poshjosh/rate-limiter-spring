@@ -50,42 +50,42 @@ class RateConditionCookieTest extends AbstractResourceTest{
         }
 
         @RequestMapping("/cookie-no-match")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.COOKIE + "["+cookieName+"] = invalid-value")
         public String cookieNoMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-match")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.COOKIE + "["+cookieName+"] = "+cookieValue)
         public String cookieMatch(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-match-name-only")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.COOKIE + "[" + cookieName + "] =")
         public String cookieMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-negate-match-name-only")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.COOKIE + "[" + cookieName + "] !=")
         public String cookieNegateMatchNameOnly(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-match-or")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.COOKIE + "[" + cookieName + "] = [invalid-cookie-value | " + cookieValue + "]")
         public String cookieMatchOr(HttpServletRequest request) {
             return request.getRequestURI();
         }
 
         @RequestMapping("/cookie-no-match-bad-or")
-        @Rate(1)
+        @Rate("1/s")
         // Badly formatted
         @RateCondition(WebExpressionKey.COOKIE + " = " + cookieName + "[invalid-cookie-value | " + cookieValue + "]")
         public String cookieNoMatchBadOr(HttpServletRequest request) {

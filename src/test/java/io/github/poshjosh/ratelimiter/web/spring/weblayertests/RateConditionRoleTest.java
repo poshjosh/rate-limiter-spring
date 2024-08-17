@@ -46,7 +46,7 @@ class RateConditionRoleTest extends AbstractResourceTest{
         }
 
         @RequestMapping("/role-no-match")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.USER_ROLE + " = " + invalidUserRole)
         public String roleNoMatch(HttpServletRequest request) {
             System.out.println("RateConditionTest#roleNoMatch, sessionId: " + request.getSession().getId());
@@ -54,7 +54,7 @@ class RateConditionRoleTest extends AbstractResourceTest{
         }
 
         @RequestMapping("/role-no-match-or")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.USER_ROLE + " = [" + invalidUserRole + " | " + invalidUserRole2+"]")
         public String roleNoMatch_or(HttpServletRequest request) {
             System.out.println("RateConditionTest#roleNoMatch_or, sessionId: " + request.getSession().getId());
@@ -62,7 +62,7 @@ class RateConditionRoleTest extends AbstractResourceTest{
         }
 
         @RequestMapping("/role-match")
-        @Rate(1)
+        @Rate("1/s")
         @RateCondition(WebExpressionKey.USER_ROLE + " = " + validUserRole)
         public String roleMatch(HttpServletRequest request) {
             System.out.println("RateConditionTest#roleMatch, sessionId: " + request.getSession().getId());

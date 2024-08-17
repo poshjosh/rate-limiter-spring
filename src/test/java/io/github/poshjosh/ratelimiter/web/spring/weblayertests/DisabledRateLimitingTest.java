@@ -39,7 +39,7 @@ class DisabledRateLimitingTest extends AbstractResourceTest{
         }
 
         @RequestMapping(DisabledRateLimitingTest.Resource._HOME)
-        @Rate(1)
+        @Rate("1/s")
         public String home(HttpServletRequest request) {
             return request.getRequestURI();
         }
