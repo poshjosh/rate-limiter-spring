@@ -55,7 +55,7 @@ public class RateLimitPropertiesImpl implements RateLimitProperties {
 
     // If not using properties, return an empty map
     @Override 
-    public List<Rates> getRateLimitConfigs() {
+    public List<Rates> getRates() {
         // Accept only 2 tasks per second
         return Collections.singletonList(Rates.of("task_queue", Rate.ofSeconds(2)));
     }
@@ -154,7 +154,7 @@ __4. (Optional) Add more rate-limit properties__
 ```yaml
 rate-limiter:
   resource-packages: com.myapp.web.rest
-  rate-limit-configs:
+  rates:
     # Cap streaming of video to 5kb per second
     - id: video_download
       permits: 5000
@@ -182,7 +182,7 @@ When you configure rate limiting using properties, you could:
 ```java
 public class RateLimitPropertiesImpl implements RateLimitProperties {
   @Override
-  public List<Rates> getRateLimitConfigs() {
+  public List<Rates> getRates() {
     
     List<Rates> ratesList = new ArrayList<>();
     

@@ -67,7 +67,7 @@ class LimitBySessionIdTest extends AbstractResourceTest{
     }
 
     @Test
-    void limitBySessionId_givenSameSessionIdAndEndpoint_differentHttpMethodsShouldBeRateLimitedSeparately() throws Exception{
+    void givenSameSessionIdAndEndpoint_differentHttpMethodsShouldBeRateLimitedSeparately() throws Exception{
         final String endpoint = Resource.Endpoints.BOOKS + "/1";
         shouldReturnDefaultResult(HttpMethod.GET, endpoint);
         shouldReturnDefaultResult(HttpMethod.DELETE, endpoint);
@@ -76,7 +76,7 @@ class LimitBySessionIdTest extends AbstractResourceTest{
     }
 
     @Test
-    void limitBySessionId_givenDifferentSessionIdsAndSameEndpoint_shouldNotBeRateLimited() throws Exception{
+    void givenDifferentSessionIdsAndSameEndpoint_shouldNotBeRateLimited() throws Exception{
         final String endpoint = Resource.Endpoints.BOOKS + "/1";
         shouldReturnDefaultResult(HttpMethod.GET, endpoint);
         session = new MockHttpSession();
@@ -88,7 +88,7 @@ class LimitBySessionIdTest extends AbstractResourceTest{
     }
 
     @Test
-    void limitBySessionId_givenSameSessionIdAndHttpMethod_differentEndpointShouldBeRateLimitedSeparately() throws Exception{
+    void givenSameSessionIdAndHttpMethod_differentEndpointShouldBeRateLimitedSeparately() throws Exception{
         shouldReturnDefaultResult(HttpMethod.GET, Resource.Endpoints.BOOKS + "/1");
         shouldReturnDefaultResult(HttpMethod.GET, Resource.Endpoints.BOOKS);
         shouldReturnStatusOfTooManyRequests(HttpMethod.GET, Resource.Endpoints.BOOKS + "/1");

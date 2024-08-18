@@ -43,7 +43,7 @@ public class RateLimitPropertiesSpring implements RateLimitProperties {
     }
 
     @Override
-    public List<Rates> getRateLimitConfigs() {
+    public List<Rates> getRates() {
         return rateLimitConfigs;
     }
 
