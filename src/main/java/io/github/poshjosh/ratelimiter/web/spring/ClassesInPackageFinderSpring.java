@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
+public final class ClassesInPackageFinderSpring implements ClassesInPackageFinder {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassesInPackageFinderSpring.class);
 
-    ClassesInPackageFinderSpring() { }
+    public ClassesInPackageFinderSpring() { }
 
     @Override
     public List<Class<?>> findClasses(String packageName, ClassFilter classFilter) {
