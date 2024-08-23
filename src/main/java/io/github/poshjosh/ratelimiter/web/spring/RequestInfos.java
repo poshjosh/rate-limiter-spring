@@ -35,14 +35,14 @@ public interface RequestInfos {
         @Override public String getContextPath() { return request.getContextPath(); }
         @Override public List<Cookie> getCookies() {
             javax.servlet.http.Cookie [] cookies = request.getCookies();
-            return cookies == null || cookies.length == 0 ? Collections.emptyList() :
+            return cookies == null ? null :
                     Arrays.stream(request.getCookies())
                             .map(cookie -> Cookie.of(cookie.getName(), cookie.getValue()))
                             .collect(Collectors.toList());
         }
         @Override public List<String> getHeaders(String name) {
             Enumeration<String> headers = request.getHeaders(name);
-            return headers == null ? Collections.emptyList() :
+            return headers == null ? null :
                     Collections.list(request.getHeaders(name));
         }
         @Override public Object getAttribute(String name, Object resultIfNone) {
@@ -51,15 +51,14 @@ public interface RequestInfos {
         }
         @Override public List<String> getParameters(String name) {
             String [] values = request.getParameterValues(name);
-            return values == null || values.length == 0
-                    ? Collections.emptyList() : Arrays.asList(values);
+            return values == null ? null : Arrays.asList(values);
         }
         @Override public String getRemoteAddr(String resultIfNone) {
             return getClientIpAddress(request, resultIfNone);
         }
         @Override public List<Locale> getLocales() {
             Enumeration<Locale> locales = request.getLocales();
-            return locales == null ? Collections.emptyList() : Collections.list(locales);
+            return locales == null ? null : Collections.list(locales);
         }
 
         @Override public String getMethod() {
