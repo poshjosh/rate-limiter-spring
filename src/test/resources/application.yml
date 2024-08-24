@@ -8,6 +8,9 @@ logging:
   level:
     ROOT: INFO
     io.github.poshjosh.ratelimiter: INFO
+#    io.github.poshjosh.ratelimiter.matcher.MatchVisitors: TRACE
+#    io.github.poshjosh.ratelimiter.matcher.MatchContexts: TRACE
+#    io.github.poshjosh.ratelimiter.matcher.DefaultMatchContext: TRACE
     #io.github.poshjosh.ratelimiter.annotation: TRACE
     org.springframework: ERROR
     org.springframework.boot.autoconfigure: ERROR
