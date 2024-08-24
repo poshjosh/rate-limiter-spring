@@ -6,8 +6,8 @@ spring:
 
 logging:
   level:
-    ROOT: DEBUG
-    io.github.poshjosh.ratelimiter: DEBUG
+    ROOT: INFO
+    io.github.poshjosh.ratelimiter: INFO
     #io.github.poshjosh.ratelimiter.annotation: TRACE
     org.springframework: ERROR
     org.springframework.boot.autoconfigure: ERROR
