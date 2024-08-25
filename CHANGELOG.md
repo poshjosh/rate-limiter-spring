@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Direct rate limiting using method: `RateLimiterRegistry#tryAcquire`.
 - Method `RateLimiterRegistry#isWithinLimit(K key)`.
 - Field `rate` to the `@Rate` annotation. It is the default. Example use: `@Rate("9/s")`.
+- Fix for matching case-insensitive header names.
 
 ### Changed
 

@@ -41,9 +41,17 @@ public interface RequestInfos {
                             .collect(Collectors.toList());
         }
         @Override public List<String> getHeaders(String name) {
-            Enumeration<String> headers = request.getHeaders(name);
-            return headers == null ? null :
-                    Collections.list(request.getHeaders(name));
+            Enumeration<String> headerNames = request.getHeaderNames();
+            if (headerNames == null) {
+                return null;
+            }
+            while(headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                if(headerName.equalsIgnoreCase(name)) { // Case-insensitive
+                    return Collections.list(request.getHeaders(headerName));
+                }
+            }
+            return null;
         }
         @Override public Object getAttribute(String name, Object resultIfNone) {
             Object attribute = request.getAttribute(name);
